@@ -160,6 +160,11 @@ struct CatGameView: View {
 
     private var scoreHeader: some View {
         HStack(alignment: .center) {
+            Image(systemName: "star.fill")
+                .font(.headline)
+                .foregroundStyle(Gold.mid)
+                .frame(width: 34, height: 34)
+                .background(Circle().fill(Gold.light.opacity(theme.isDark ? 0.2 : 0.8)))
             VStack(alignment: .leading, spacing: 0) {
                 Text("Score")
                     .font(.caption.weight(.semibold))
@@ -184,6 +189,9 @@ struct CatGameView: View {
             .accessibilityElement()
             .accessibilityLabel(Text("\(game.remainingLives) paws left"))
         }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(ModeStyle.cats.background(theme)))
     }
 
     private var board: some View {
@@ -447,17 +455,21 @@ struct CatHelperButton: View {
         Button(action: action) {
             VStack(spacing: 6) {
                 ZStack(alignment: .topTrailing) {
-                    Circle()
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .fill(theme.surface)
-                        .shadow(color: theme.cardShadow, radius: 6, y: 2)
-                        .frame(width: 62, height: 62)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                .strokeBorder(tint.opacity(0.35), lineWidth: 1.5)
+                        )
+                        .shadow(color: tint.opacity(theme.isDark ? 0 : 0.2), radius: 6, y: 3)
+                        .frame(width: 64, height: 64)
                         .overlay {
                             Image(systemName: systemImage)
                                 .font(.system(size: 26, weight: .bold))
                                 .foregroundStyle(tint)
                         }
                         .overlay {
-                            Circle()
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
                                 .stroke(theme.accent, lineWidth: 3)
                                 .padding(-5)
                                 .opacity(isGuided ? 1 : 0)

@@ -3,41 +3,41 @@ import SwiftUI
 
 // MARK: - Ortak parçalar
 
-/// Mod ekranının üstündeki büyük kart: başlık, kısa açıklama, ilerleme.
+/// Mod ekranının üstündeki büyük kart: modun pastel renginde başlık, kısa açıklama, ilerleme.
 @MainActor
 struct HubHero<Art: View>: View {
     @Environment(\.appTheme) private var theme
     let title: LocalizedStringResource
     let subtitle: Text
     let progress: Double
-    let colors: [Color]
+    let style: ModeStyle
     @ViewBuilder let art: () -> Art
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 8) {
+                    ModeIcon(style: style, size: 40)
                     Text(title)
-                        .font(.title.bold())
+                        .font(.title2.bold())
+                        .foregroundStyle(style.ink(theme))
                     subtitle
                         .font(.subheadline.weight(.medium))
-                        .opacity(0.9)
+                        .foregroundStyle(style.ink(theme).opacity(0.8))
                 }
                 Spacer(minLength: 8)
                 art()
                     .frame(width: 92, height: 92)
             }
-            ProgressView(value: min(max(progress, 0), 1))
-                .tint(.white)
-                .background(Capsule().fill(.white.opacity(0.25)))
+            ProgressBar(value: min(max(progress, 0), 1), tint: style.tint(theme))
         }
-        .foregroundStyle(.white)
         .padding(20)
-        .background(
+        .background(RoundedRectangle(cornerRadius: 28, style: .continuous).fill(style.background(theme)))
+        .overlay(
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing))
+                .strokeBorder(.white.opacity(theme.isDark ? 0.06 : 0.7), lineWidth: 1)
         )
-        .shadow(color: colors.last?.opacity(0.35) ?? .clear, radius: 12, y: 6)
+        .shadow(color: style.tint(theme).opacity(theme.isDark ? 0 : 0.16), radius: 10, y: 5)
     }
 }
 
@@ -131,9 +131,11 @@ struct CollectionHubView: View {
                     title: mode.title,
                     subtitle: Text("\(model.collectedBreeds.count) of \(model.breeds.count) breeds collected"),
                     progress: model.breeds.isEmpty ? 0 : Double(model.collectedBreeds.count) / Double(model.breeds.count),
-                    colors: [Color(red: 0.98, green: 0.62, blue: 0.45), Color(red: 0.86, green: 0.36, blue: 0.48)]
+                    style: .collection
                 ) {
-                    if let chapter = model.collectedBreeds.last ?? model.breeds.first {
+                    if Illustration.exists(ModeStyle.collection.illustration) {
+                        IllustrationView(name: ModeStyle.collection.illustration)
+                    } else if let chapter = model.collectedBreeds.last ?? model.breeds.first {
                         ChapterBadge(chapter: chapter, size: 92)
                     }
                 }
@@ -210,9 +212,13 @@ struct CatHubView: View {
                     title: mode.title,
                     subtitle: Text("\(cats.solvedCount) of \(cats.levels.count) levels solved"),
                     progress: cats.levels.isEmpty ? 0 : Double(cats.solvedCount) / Double(cats.levels.count),
-                    colors: [Color(red: 0.36, green: 0.72, blue: 0.70), Color(red: 0.45, green: 0.38, blue: 0.80)]
+                    style: .cats
                 ) {
-                    CatGridArt()
+                    if Illustration.exists(ModeStyle.cats.illustration) {
+                        IllustrationView(name: ModeStyle.cats.illustration)
+                    } else {
+                        CatGridArt()
+                    }
                 }
 
                 if let level = cats.resumableLevel {

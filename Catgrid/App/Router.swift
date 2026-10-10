@@ -15,6 +15,8 @@ enum Route: Hashable {
     /// Kedi Bulmaca modu.
     case catHub
     case catLevels
+    /// Kedi Bulmaca teması (1–4): o temanın boyutlarındaki bölümler.
+    case catTheme(Int)
     case catGame(levelID: String)
     case catStats
 }

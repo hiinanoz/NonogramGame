@@ -31,6 +31,7 @@ struct RootView: View {
                     case .collection: CollectionView()
                     case .catHub: CatHubView()
                     case .catLevels: CatLevelsView()
+                    case .catTheme(let index): CatThemeLevelsView(catTheme: CatTheme(rawValue: index) ?? .spring)
                     case .catGame(let levelID): CatGameScreen(levelID: levelID)
                     case .catStats: CatStatsView()
                     }
