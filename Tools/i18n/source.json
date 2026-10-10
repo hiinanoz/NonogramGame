@@ -1915,6 +1915,130 @@
   "Let's Play!": {
    "en": "Let's Play!",
    "tr": "Hadi oynayalım!"
+  },
+  "Nonogram · Cat Puzzle · Cards": {
+   "en": "Nonogram · Cat Puzzle · Cards",
+   "tr": "Nonogram · Kedi Bulmaca · Kartlar"
+  },
+  "Today's nonogram": {
+   "en": "Today's nonogram",
+   "tr": "Bugünün nonogramı"
+  },
+  "Daily streak": {
+   "en": "Daily streak",
+   "tr": "Günlük seri"
+  },
+  "Collection": {
+   "en": "Collection",
+   "tr": "Koleksiyon"
+  },
+  "Last level": {
+   "en": "Last level",
+   "tr": "Son bölüm"
+  },
+  "Cats from My Collection": {
+   "en": "Cats from My Collection",
+   "tr": "Koleksiyonumdan Kediler"
+  },
+  "All": {
+   "en": "All",
+   "tr": "Tümü"
+  },
+  "More with Premium": {
+   "en": "More with Premium",
+   "tr": "Premium ile daha fazlası"
+  },
+  "Ad-free · Golden puzzles · Special cards": {
+   "en": "Ad-free · Golden puzzles · Special cards",
+   "tr": "Reklamsız · Altın bulmacalar · Özel kartlar"
+  },
+  "All Badges": {
+   "en": "All Badges",
+   "tr": "Tüm Rozetler"
+  },
+  "Collected": {
+   "en": "Collected",
+   "tr": "Toplandı"
+  },
+  "Puzzles": {
+   "en": "Puzzles",
+   "tr": "Bulmacalar"
+  },
+  "Cards": {
+   "en": "Cards",
+   "tr": "Kartlar"
+  },
+  "Previous month": {
+   "en": "Previous month",
+   "tr": "Önceki ay"
+  },
+  "Next month": {
+   "en": "Next month",
+   "tr": "Sonraki ay"
+  },
+  "Today's Puzzle": {
+   "en": "Today's Puzzle",
+   "tr": "Bugünün Bulmacası"
+  },
+  "Weekly Badge": {
+   "en": "Weekly Badge",
+   "tr": "Haftalık Rozet"
+  },
+  "This week: %lld/7 days": {
+   "en": "This week: %lld/7 days",
+   "tr": "Bu hafta: %lld/7 gün"
+  },
+  "Solve all 7 daily puzzles of a week, Monday to Sunday.": {
+   "en": "Solve all 7 daily puzzles of a week, Monday to Sunday.",
+   "tr": "Bir haftanın 7 günlük bulmacasının hepsini çöz (pazartesiden pazara)."
+  },
+  "Congratulations!": {
+   "en": "Congratulations!",
+   "tr": "Tebrikler!"
+  },
+  "You completed today's puzzle.": {
+   "en": "You completed today's puzzle.",
+   "tr": "Bugünün bulmacasını tamamladın."
+  },
+  "Your Rewards": {
+   "en": "Your Rewards",
+   "tr": "Kazandıkların"
+  },
+  "New card!": {
+   "en": "New card!",
+   "tr": "Yeni kart!"
+  },
+  "Expert": {
+   "en": "Expert",
+   "tr": "Uzman"
+  },
+  "Medium": {
+   "en": "Medium",
+   "tr": "Orta"
+  },
+  "Chapters": {
+   "en": "Chapters",
+   "tr": "Bölümler"
+  },
+  "Difficulties": {
+   "en": "Difficulties",
+   "tr": "Zorluklar"
+  },
+  "Spring Garden": {
+   "en": "Spring Garden",
+   "tr": "Bahar Bahçesi"
+  },
+  "Summer Beach": {
+   "en": "Summer Beach",
+   "tr": "Yaz Sahili"
+  },
+  "Autumn Forest": {
+   "en": "Autumn Forest",
+   "tr": "Sonbahar Ormanı"
+  },
+  "Winter Tale": {
+   "en": "Winter Tale",
+   "tr": "Kış Masalı"
   }
  },
  "infoplist": {
