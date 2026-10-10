@@ -104,6 +104,35 @@ final class AppModel {
         recentDays.contains(day)
     }
 
+    /// Haftalık rozet için: verilen günün haftası, pazartesiden pazara.
+    func week(containing day: DayKey) -> [DayKey] {
+        let monday = day.dayNumber - Self.weekdayIndex(of: day)
+        return (0..<7).map { Self.dayKey(dayNumber: monday + $0) }
+    }
+
+    /// Pazartesi 0 … pazar 6 (takvim ayarından bağımsız).
+    static func weekdayIndex(of day: DayKey) -> Int {
+        // Gün numarası 1, 1 Ocak 0001 (pazartesi) olacak biçimde sayılır; ofset ona göre bulunur
+        let reference = DayKey(year: 2024, month: 1, day: 1) // pazartesi
+        return ((day.dayNumber - reference.dayNumber) % 7 + 7) % 7
+    }
+
+    static func dayKey(dayNumber: Int) -> DayKey {
+        let reference = DayKey(year: 2024, month: 1, day: 1)
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC") ?? .current
+        let base = calendar.date(from: DateComponents(year: 2024, month: 1, day: 1)) ?? Date()
+        let date = calendar.date(byAdding: .day, value: dayNumber - reference.dayNumber, to: base) ?? base
+        return DayKey(date, calendar: calendar)
+    }
+
+    /// 7 günü de çözülmüş (pazartesi–pazar) hafta sayısı.
+    static func fullWeeks(in days: Set<DayKey>) -> Int {
+        let numbers = Set(days.map(\.dayNumber))
+        let mondays = Set(days.map { $0.dayNumber - weekdayIndex(of: $0) })
+        return mondays.filter { monday in (0..<7).allSatisfy { numbers.contains(monday + $0) } }.count
+    }
+
     /// Kesintisiz günlük bulmaca serisi.
     var dailyStreak: Int {
         let days = progress.completedIDs.compactMap(DayKey.init(puzzleID:))
@@ -180,6 +209,7 @@ final class AppModel {
                 return DayKey(solvedAt) != day
             }.count,
             hasDailyWeekend: hasWeekend,
+            dailyFullWeeks: Self.fullWeeks(in: dailyDays),
             fastestDaily: dailyRecords.compactMap(\.bestTime).min(),
             catsFound: cats.stats.catsFound,
             catLevelsSolved: solvedCatLevels.count,

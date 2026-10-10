@@ -65,6 +65,7 @@ enum Badge: String, CaseIterable, Identifiable, Codable {
     case dailyCatchUp10
     case dailyWeekend
     case dailyFast
+    case dailyFullWeek
 
     // MARK: Kedi Bulmaca
     case catFirst
@@ -102,7 +103,7 @@ enum Badge: String, CaseIterable, Identifiable, Codable {
             .collection
         case .dailyFirst, .dailyStreak3, .dailyWeek, .dailyStreak14, .dailyStreak30, .dailyStreak60, .dailyStreak100,
              .daily10, .daily25, .daily50, .daily100, .daily200, .daily365, .dailyPerfect, .dailyPerfect10,
-             .dailyFourStars, .dailyFourStars10, .dailyCatchUp, .dailyCatchUp10, .dailyWeekend, .dailyFast:
+             .dailyFourStars, .dailyFourStars10, .dailyCatchUp, .dailyCatchUp10, .dailyWeekend, .dailyFast, .dailyFullWeek:
             .daily
         default:
             .cats
@@ -158,6 +159,7 @@ enum Badge: String, CaseIterable, Identifiable, Codable {
         case .dailyCatchUp10: "arrow.uturn.backward.circle.fill"
         case .dailyWeekend: "sofa.fill"
         case .dailyFast: "hare.fill"
+        case .dailyFullWeek: "gift.fill"
         case .catFirst: "cat.fill"
         case .catGraduate: "graduationcap.fill"
         case .catSolved10: "square.grid.2x2.fill"
@@ -230,6 +232,7 @@ enum Badge: String, CaseIterable, Identifiable, Codable {
         case .dailyCatchUp10: "Catching Up"
         case .dailyWeekend: "Weekend Warrior"
         case .dailyFast: "Speedy Daily"
+        case .dailyFullWeek: "Weekly Badge"
         case .catFirst: "First Whiskers"
         case .catGraduate: "Cat Puzzle Graduate"
         case .catSolved10: "Cat Spotter"
@@ -302,6 +305,7 @@ enum Badge: String, CaseIterable, Identifiable, Codable {
         case .dailyCatchUp10: "Solve 10 Daily Puzzles from past days."
         case .dailyWeekend: "Solve both the Saturday and Sunday puzzles of a weekend."
         case .dailyFast: "Solve a Daily Puzzle in under 3 minutes."
+        case .dailyFullWeek: "Solve all 7 daily puzzles of a week, Monday to Sunday."
         case .catFirst: "Find your first cat."
         case .catGraduate: "Finish the first Cat Puzzle level."
         case .catSolved10: "Solve 10 Cat Puzzle levels."
@@ -374,6 +378,7 @@ enum Badge: String, CaseIterable, Identifiable, Codable {
         case .dailyCatchUp10: progress.dailyCatchUps >= 10
         case .dailyWeekend: progress.hasDailyWeekend
         case .dailyFast: progress.fastestDaily.map { $0 < 180 } ?? false
+        case .dailyFullWeek: progress.dailyFullWeeks >= 1
         case .catFirst: progress.catsFound >= 1
         case .catGraduate: progress.catLevelsSolved >= 1
         case .catSolved10: progress.catLevelsSolved >= 10
@@ -422,6 +427,8 @@ struct BadgeProgress: Equatable {
     var dailyFourStars = 0
     var dailyCatchUps = 0
     var hasDailyWeekend = false
+    /// Pazartesiden pazara 7 günü de çözülmüş haftalar.
+    var dailyFullWeeks = 0
     var fastestDaily: TimeInterval?
     // Kedi Bulmaca
     var catsFound = 0
