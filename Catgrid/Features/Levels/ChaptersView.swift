@@ -1,17 +1,23 @@
 import NonogramKit
 import SwiftUI
 
-/// Eğitim + 15 kedi türü. Kilitli türler soluk görünür.
+/// Eğitim ve kedi türleri: türler portreli kart ızgarasında, katalog sırasıyla.
+/// Kilitli türler soluk; dokununca türün sayfası (Bulmacalar | Kartlar) açılır.
 @MainActor
 struct ChaptersView: View {
     @Environment(AppModel.self) private var model
     @Environment(Router.self) private var router
 
+    private let columns = [GridItem(.adaptive(minimum: 100), spacing: 12)]
+
     var body: some View {
         let progression = model.progression
+        let chapters = model.catalog.chapters
+        let tutorials = chapters.filter { $0.kind == .tutorial }
+        let breeds = chapters.filter { $0.kind != .tutorial }
         ScrollView {
-            LazyVStack(spacing: 14) {
-                ForEach(model.catalog.chapters) { chapter in
+            VStack(alignment: .leading, spacing: 16) {
+                ForEach(tutorials) { chapter in
                     let isUnlocked = progression.isUnlocked(chapter)
                     Button {
                         router.push(.chapter(id: chapter.id))
@@ -27,12 +33,46 @@ struct ChaptersView: View {
                     .disabled(!isUnlocked)
                     .accessibilityIdentifier("chapter.\(chapter.id)")
                 }
+
+                // Sıradaki kilitli tür: nasıl açılacağı
+                if let next = breeds.first(where: { !progression.isUnlocked($0) && !$0.puzzles.isEmpty }),
+                   let hint = unlockHint(for: next, progression: progression) {
+                    Label { hint } icon: { Image(systemName: "lock.fill") }
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(ModeStyle.collection.ink(theme))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(ModeStyle.collection.background(theme)))
+                }
+
+                LazyVGrid(columns: columns, spacing: 12) {
+                    ForEach(breeds) { chapter in
+                        let isUnlocked = progression.isUnlocked(chapter)
+                        Button {
+                            router.push(.chapter(id: chapter.id))
+                        } label: {
+                            BreedTile(
+                                chapter: chapter,
+                                isCollected: model.isCollected(chapter),
+                                isGolden: model.isGoldenCollected(chapter),
+                                isLocked: !isUnlocked,
+                                progress: (progression.completedCount(in: chapter), chapter.puzzles.count)
+                            )
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .disabled(!isUnlocked)
+                        .accessibilityIdentifier("chapter.\(chapter.id)")
+                    }
+                }
             }
             .padding(20)
         }
         .themedScreen()
         .screenTitle("Levels")
     }
+
+    @Environment(\.appTheme) private var theme
 
     /// Kilitli türün altında: neyin çözülmesi gerektiği.
     private func unlockHint(for chapter: Chapter, progression: Progression) -> Text? {

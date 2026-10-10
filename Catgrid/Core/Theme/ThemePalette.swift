@@ -22,9 +22,9 @@ enum ThemePalette: String, CaseIterable, Identifiable {
     func spec(isDark: Bool) -> ThemeSpec {
         switch (self, isDark) {
         case (.pastel, false):
-            ThemeSpec(background: "#FFF7F2", surface: "#FFFFFF", surfaceMuted: "#FBE9E4", separator: "#F0DCD5",
-                      textPrimary: "#4A3B3F", textSecondary: "#8E7A80", accent: "#E88B8B", onAccent: "#FFFFFF",
-                      cellFilled: "#5E4B56", cellCross: "#C9A9B0", gridLine: "#EAD7D2", gridLineMajor: "#C8ADB0",
+            ThemeSpec(background: "#FFF6EE", surface: "#FFFFFF", surfaceMuted: "#F9ECE3", separator: "#F0E0D6",
+                      textPrimary: "#3F3236", textSecondary: "#8A777C", accent: "#E5847F", onAccent: "#FFFFFF",
+                      cellFilled: "#463840", cellCross: "#C9A9B0", gridLine: "#EEE0DA", gridLineMajor: "#BFA3A8",
                       highlight: "#FCE3DC", mistake: "#E5484D", success: "#5FA884")
         case (.pastel, true):
             ThemeSpec(background: "#1E1A1F", surface: "#2A2429", surfaceMuted: "#342C33", separator: "#3E353D",

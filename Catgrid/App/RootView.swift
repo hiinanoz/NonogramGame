@@ -17,7 +17,7 @@ struct RootView: View {
         @Bindable var router = router
         @Bindable var ads = ads
         NavigationStack(path: $router.path) {
-            HomeView()
+            MainTabsView()
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .collectionHub: CollectionHubView()

@@ -1,15 +1,23 @@
 import NonogramKit
 import SwiftUI
 
-/// Bir türün 30 bulmacası: çözülenler küçük resim olarak, sıradaki vurgulu, gerisi kilitli.
+/// Bir türün sayfası: üstte portre ve ilerleme, altında "Bulmacalar | Kartlar" sekmeleri.
+/// Bulmacalar: standart bulmacalar (çözülenler küçük resim, sıradaki vurgulu, gerisi kilitli)
+/// ve ayrı bölümde Altın bulmacalar. Kartlar: türün kartı ve Altın Kartı (ön/arka yüz).
 @MainActor
 struct ChapterView: View {
+    enum Tab: Hashable {
+        case puzzles
+        case cards
+    }
+
     @Environment(AppModel.self) private var model
     @Environment(Router.self) private var router
     @Environment(StoreManager.self) private var store
     @Environment(\.appTheme) private var theme
     let chapterID: String
     @State private var isShowingPaywall = false
+    @State private var tab = Tab.puzzles
 
     private let columns = [GridItem(.adaptive(minimum: 72), spacing: 12)]
 
@@ -18,56 +26,17 @@ struct ChapterView: View {
             let progression = model.progression
             ScrollView {
                 VStack(spacing: 20) {
-                    HStack(spacing: 14) {
-                        ChapterBadge(chapter: chapter, size: 56)
-                        VStack(alignment: .leading, spacing: 6) {
-                            if let subtitle = chapter.subtitle {
-                                Text(verbatim: subtitle.resolved)
-                                    .font(.headline)
-                                    .foregroundStyle(theme.textPrimary)
-                            }
-                            Text("\(progression.completedCount(in: chapter)) of \(chapter.puzzles.count) solved")
-                                .font(.subheadline)
-                                .foregroundStyle(theme.textSecondary)
-                            ProgressBar(
-                                value: Double(progression.completedCount(in: chapter)) / Double(max(chapter.puzzles.count, 1)),
-                                tint: chapter.accentColor.map { Color($0) }
-                            )
-                        }
+                    header(chapter, progression: progression)
+
+                    if chapter.card != nil {
+                        PillPicker(selection: $tab, options: [(.puzzles, Text("Puzzles")), (.cards, Text("Cards"))])
                     }
 
-                    LazyVGrid(columns: columns, spacing: 12) {
-                        ForEach(Array(chapter.puzzles.enumerated()), id: \.element.id) { offset, puzzle in
-                            let state = PuzzleTile.TileState(
-                                isCompleted: progression.isCompleted(puzzle.id),
-                                isUnlocked: progression.isUnlocked(puzzle.id)
-                            )
-                            Button {
-                                router.push(.game(puzzleID: puzzle.id))
-                            } label: {
-                                PuzzleTile(
-                                    puzzle: puzzle,
-                                    number: offset + 1,
-                                    state: state,
-                                    isInProgress: model.progress.hasSavedGame(for: puzzle.id),
-                                    stars: model.stars(for: puzzle)
-                                )
-                            }
-                            .buttonStyle(PressableButtonStyle())
-                            .disabled(state == .locked)
-                        }
-                    }
-
-                    if !chapter.premiumPuzzles.isEmpty {
-                        if model.canPlayGolden(chapter, isPremium: store.isPremium) {
-                            premiumSection(chapter, progression: progression)
-                        } else if model.isGoldenGift(chapter) {
-                            // Hediye tür: tamamı bitince Altın bulmacalar ücretsiz açılır
-                            GoldenGiftTeaser(chapterTitle: chapter.title.resolved)
-                        } else {
-                            // Abone olmayanlar bulmacaları görmez; yalnızca kısa bir tanıtım
-                            PremiumTeaser { isShowingPaywall = true }
-                        }
+                    switch tab {
+                    case .puzzles:
+                        puzzlesTab(chapter, progression: progression)
+                    case .cards:
+                        cardsTab(chapter)
                     }
                 }
                 .padding(20)
@@ -81,6 +50,128 @@ struct ChapterView: View {
             ContentUnavailableView("Chapter not found", systemImage: "questionmark.circle")
                 .themedScreen()
         }
+    }
+
+    private func header(_ chapter: Chapter, progression: Progression) -> some View {
+        HStack(spacing: 14) {
+            if chapter.kind == .tutorial {
+                ChapterBadge(chapter: chapter, size: 64)
+            } else {
+                BreedTile(chapter: chapter, isCollected: model.isCollected(chapter), isGolden: model.isGoldenCollected(chapter))
+                    .frame(width: 84)
+            }
+            VStack(alignment: .leading, spacing: 6) {
+                if let subtitle = chapter.subtitle {
+                    Text(verbatim: subtitle.resolved)
+                        .font(.headline)
+                        .foregroundStyle(theme.textPrimary)
+                }
+                Text("\(progression.completedCount(in: chapter)) of \(chapter.puzzles.count) solved")
+                    .font(.subheadline)
+                    .foregroundStyle(theme.textSecondary)
+                ProgressBar(
+                    value: Double(progression.completedCount(in: chapter)) / Double(max(chapter.puzzles.count, 1)),
+                    tint: chapter.accentColor.map { Color($0) }
+                )
+            }
+        }
+        .padding(14)
+        .card(cornerRadius: 22)
+    }
+
+    @ViewBuilder
+    private func puzzlesTab(_ chapter: Chapter, progression: Progression) -> some View {
+        LazyVGrid(columns: columns, spacing: 12) {
+            ForEach(Array(chapter.puzzles.enumerated()), id: \.element.id) { offset, puzzle in
+                let state = PuzzleTile.TileState(
+                    isCompleted: progression.isCompleted(puzzle.id),
+                    isUnlocked: progression.isUnlocked(puzzle.id)
+                )
+                Button {
+                    router.push(.game(puzzleID: puzzle.id))
+                } label: {
+                    PuzzleTile(
+                        puzzle: puzzle,
+                        number: offset + 1,
+                        state: state,
+                        isInProgress: model.progress.hasSavedGame(for: puzzle.id),
+                        stars: model.stars(for: puzzle)
+                    )
+                }
+                .buttonStyle(PressableButtonStyle())
+                .disabled(state == .locked)
+            }
+        }
+
+        if !chapter.premiumPuzzles.isEmpty {
+            if model.canPlayGolden(chapter, isPremium: store.isPremium) {
+                premiumSection(chapter, progression: progression)
+            } else if model.isGoldenGift(chapter) {
+                // Hediye tür: tamamı bitince Altın bulmacalar ücretsiz açılır
+                GoldenGiftTeaser(chapterTitle: chapter.title.resolved)
+            } else {
+                // Abone olmayanlar bulmacaları görmez; yalnızca kısa bir tanıtım
+                PremiumTeaser { isShowingPaywall = true }
+            }
+        }
+    }
+
+    /// Türün kartı ve (varsa) Altın Kartı; kazanılmamışsa nasıl kazanılacağı.
+    @ViewBuilder
+    private func cardsTab(_ chapter: Chapter) -> some View {
+        if let card = chapter.card {
+            VStack(spacing: 18) {
+                if model.isCollected(chapter) {
+                    FlippableBreedCard(chapter: chapter, card: card)
+                        .frame(maxWidth: 360)
+                    Label("Tap the card to flip it", systemImage: "hand.tap.fill")
+                        .font(.footnote)
+                        .foregroundStyle(theme.textSecondary)
+                } else {
+                    LockedCardPlaceholder(chapter: chapter, message: Text("Finish all puzzles of a breed to win its card."))
+                }
+                if !chapter.premiumPuzzles.isEmpty {
+                    if model.isGoldenCollected(chapter) {
+                        FlippableBreedCard(chapter: chapter, card: card, isGolden: true)
+                            .frame(maxWidth: 360)
+                    } else {
+                        LockedCardPlaceholder(chapter: chapter, message: Text("Solve all golden puzzles to win this breed's Golden Card."), isGolden: true)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+}
+
+/// Henüz kazanılmamış kart: soluk portre, kilit ve nasıl kazanılacağı.
+@MainActor
+struct LockedCardPlaceholder: View {
+    @Environment(\.appTheme) private var theme
+    let chapter: Chapter
+    let message: Text
+    var isGolden = false
+
+    var body: some View {
+        VStack(spacing: 12) {
+            BreedTile(chapter: chapter, isCollected: false, isLocked: true)
+                .frame(width: 120)
+            Label {
+                message
+            } icon: {
+                Image(systemName: isGolden ? "crown.fill" : "lock.fill")
+                    .foregroundStyle(isGolden ? Gold.deep : theme.textSecondary)
+            }
+            .font(.subheadline)
+            .multilineTextAlignment(.center)
+            .foregroundStyle(theme.textSecondary)
+        }
+        .padding(20)
+        .frame(maxWidth: 360)
+        .background(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .strokeBorder(isGolden ? AnyShapeStyle(Gold.foil) : AnyShapeStyle(theme.separator), style: StrokeStyle(lineWidth: 2, dash: [6, 5]))
+        )
     }
 }
 

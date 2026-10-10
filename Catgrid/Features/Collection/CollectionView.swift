@@ -1,34 +1,45 @@
 import NonogramKit
 import SwiftUI
 
-/// Kazanılan kedi kartları. Toplam tür sayısı bilerek gösterilmez; yeni türler geldikçe koleksiyon büyür.
+/// Kedi kartları: kazanılanlar (Altın Kartlar ayrı) kazanma sırasıyla, ardından henüz
+/// tanışılmayan türler soluk ve kilitli. Kazanılan karta dokununca kart açılır.
 @MainActor
 struct CollectionView: View {
     @Environment(AppModel.self) private var model
+    @Environment(Router.self) private var router
     @Environment(\.appTheme) private var theme
     @State private var selected: CardSelection?
 
-    private let columns = [GridItem(.adaptive(minimum: 150), spacing: 14)]
+    private let columns = [GridItem(.adaptive(minimum: 100), spacing: 12)]
 
     var body: some View {
+        let others = model.breeds.filter { !model.isCollected($0) }
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 16) {
                 CollectionSummary()
+                ProgressBar(
+                    value: model.breeds.isEmpty ? 0 : Double(model.collectedBreeds.count) / Double(model.breeds.count),
+                    tint: ModeStyle.collection.tint(theme)
+                )
 
-                LazyVGrid(columns: columns, spacing: 14) {
+                LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(model.collectedCards) { selection in
-                        if let card = selection.chapter.card {
-                            Button {
-                                selected = selection
-                            } label: {
-                                BreedCardView(chapter: selection.chapter, card: card, style: .compact, isGolden: selection.isGolden)
-                            }
-                            .buttonStyle(PressableButtonStyle())
-                            .accessibilityIdentifier("collection.card.\(selection.id)")
+                        Button {
+                            selected = selection
+                        } label: {
+                            BreedTile(chapter: selection.chapter, isCollected: true, isGolden: selection.isGolden)
                         }
+                        .buttonStyle(PressableButtonStyle())
+                        .accessibilityIdentifier("collection.card.\(selection.id)")
                     }
-                    if model.hasUnmetBreeds {
-                        MysteryCardView()
+                    ForEach(others) { chapter in
+                        Button {
+                            router.push(.chapter(id: chapter.id))
+                        } label: {
+                            BreedTile(chapter: chapter, isCollected: false, isLocked: true)
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .disabled(!model.progression.isUnlocked(chapter))
                     }
                 }
             }
@@ -176,54 +187,5 @@ struct CardDetailSheet: View {
             .animation(.easeOut(duration: 1.6), value: hasArrived)
             .allowsHitTesting(false)
             .accessibilityHidden(true)
-    }
-}
-
-/// Ana sayfadaki yatay kart şeridi.
-@MainActor
-struct CollectionShelf: View {
-    @Environment(AppModel.self) private var model
-    @Environment(Router.self) private var router
-    @Environment(\.appTheme) private var theme
-    /// Ana sayfa ekrana sığsın diye küçük ekranlarda kartlar küçülür, özet gizlenir.
-    var cardWidth: CGFloat = 104
-    var showsSummary = true
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("Card Collection")
-                    .font(.title3.bold())
-                    .foregroundStyle(theme.textPrimary)
-                Spacer()
-                Button("See All") { router.push(.collection) }
-                    .accessibilityIdentifier("home.collection")
-                    .font(.subheadline.bold())
-            }
-            if showsSummary {
-                CollectionSummary()
-            }
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(model.collectedCards.reversed()) { selection in
-                        if let card = selection.chapter.card {
-                            Button {
-                                router.push(.collection)
-                            } label: {
-                                BreedCardView(chapter: selection.chapter, card: card, style: .compact, isGolden: selection.isGolden)
-                                    .frame(width: cardWidth)
-                            }
-                            .buttonStyle(PressableButtonStyle())
-                        }
-                    }
-                    if model.hasUnmetBreeds {
-                        MysteryCardView()
-                            .frame(width: cardWidth)
-                    }
-                }
-                .padding(.vertical, 4)
-                .padding(.horizontal, 2)
-            }
-        }
     }
 }

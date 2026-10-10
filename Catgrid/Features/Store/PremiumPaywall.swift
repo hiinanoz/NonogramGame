@@ -95,38 +95,51 @@ struct PremiumPaywall: View {
 /// Ana sayfadaki "Premium'a geç" bannerı (yalnızca abone olmayanlara).
 @MainActor
 struct PremiumBanner: View {
+    @Environment(\.appTheme) private var theme
     let action: () -> Void
+
+    /// Şampanya tonları: göze batmayan, zarif bir altın şerit.
+    private var champagne: LinearGradient {
+        theme.isDark
+            ? LinearGradient(colors: [Color(hex: "#4A3B1E"), Color(hex: "#3A2E17")], startPoint: .leading, endPoint: .trailing)
+            : LinearGradient(colors: [Color(hex: "#FFF6DD"), Color(hex: "#F8E6B4")], startPoint: .leading, endPoint: .trailing)
+    }
+
+    private var ink: Color { theme.isDark ? Gold.light : Gold.ink }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: "crown.fill")
-                    .font(.title3)
-                    .foregroundStyle(Gold.ink)
-                    .frame(width: 40, height: 40)
-                    .background(Circle().fill(Gold.light.opacity(0.7)))
+                    .font(.headline)
+                    .foregroundStyle(Gold.deep)
+                    .frame(width: 36, height: 36)
+                    .background(Circle().fill(Gold.light.opacity(theme.isDark ? 0.2 : 0.9)))
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Go Premium")
-                        .font(.headline)
-                    Text("No ads · Golden puzzles · Golden Cards")
+                    Text("More with Premium")
+                        .font(.subheadline.bold())
+                    Text("Ad-free · Golden puzzles · Special cards")
                         .font(.caption)
+                        .opacity(0.8)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.8)
+                        .minimumScaleFactor(0.75)
                 }
-                .foregroundStyle(Gold.ink)
+                .foregroundStyle(ink)
                 Spacer(minLength: 4)
+                IllustrationView(name: "premium-cat")
+                    .frame(maxHeight: 44)
                 Image(systemName: "chevron.right")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(Gold.ink.opacity(0.7))
+                    .font(.footnote.bold())
+                    .foregroundStyle(ink.opacity(0.6))
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Gold.foil))
+            .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(champagne))
             .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .strokeBorder(Gold.deep.opacity(0.5), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .strokeBorder(Gold.mid.opacity(0.45), lineWidth: 1)
             )
-            .shadow(color: Gold.deep.opacity(0.25), radius: 8, y: 3)
+            .shadow(color: Gold.deep.opacity(theme.isDark ? 0 : 0.12), radius: 8, y: 3)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier("home.premiumBanner")
