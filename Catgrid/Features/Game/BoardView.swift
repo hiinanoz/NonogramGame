@@ -170,7 +170,7 @@ struct BoardView: View {
 
     private func clueLabel(_ text: String, width: CGFloat, height: CGFloat) -> some View {
         Text(verbatim: String(text.split(separator: ":").last ?? ""))
-            .font(.system(size: min(min(width, height) * 0.55, 22), weight: .semibold, design: .rounded))
+            .font(.system(size: min(min(width, height) * 0.6, 22), weight: .bold, design: .rounded))
             .monospacedDigit()
             .minimumScaleFactor(0.6)
             .frame(width: width, height: height)
@@ -337,7 +337,7 @@ struct BoardCanvas: View {
             var line = Path()
             line.move(to: start)
             line.addLine(to: end)
-            context.stroke(line, with: .color(major ? theme.gridLineMajor : theme.gridLine), lineWidth: major ? 1.5 : 0.75)
+            context.stroke(line, with: .color(major ? theme.gridLineMajor : theme.gridLine), lineWidth: major ? 1.25 : 0.6)
         }
         // Önce ince, sonra kalın çizgiler: kesişimlerde kalın olan üstte kalsın
         for major in [false, true] {

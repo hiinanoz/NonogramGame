@@ -162,6 +162,12 @@ struct GameView: View {
             }
         }
         .overlay {
+            if game.status == .won {
+                celebration
+                    .transition(.opacity.combined(with: .scale(scale: 1.04)))
+            }
+        }
+        .overlay {
             ConfettiView(start: confettiStart)
                 .ignoresSafeArea()
         }
@@ -534,18 +540,6 @@ struct GameView: View {
 
     // MARK: - Sonuç
 
-    /// Her parça tek argümanlı ayrı bir çeviri anahtarıdır. Çoğul biçimli ("1 mistake / 2 mistakes")
-    /// bir anahtara ikinci argüman eklemek, Xcode'un çoğul kuralını yanlış argümana uygulamasına ve
-    /// sayının nesne gibi okunup çökmesine yol açıyordu (bkz. Tools/validate_strings.py).
-    private func resultDetail(_ result: CompletionResult) -> Text {
-        let separator = Text(verbatim: " · ")
-        let time = Text("Time \(formatDuration(result.elapsed))")
-        if let best = result.previousBest, !result.isNewBest {
-            return time + separator + Text("Best \(formatDuration(best))")
-        }
-        return time + separator + Text("\(result.mistakes) mistakes")
-    }
-
     /// Hız yıldızı kaçtıysa hedef süre hatırlatılır.
     private func speedStarNote(_ result: CompletionResult) -> Text? {
         let puzzle = viewModel.puzzle
@@ -554,65 +548,83 @@ struct GameView: View {
         return Text("Solve within \(formatDuration(target)) for the 4th star")
     }
 
+    /// Bulmaca çözülünce tam sayfa kutlama. Ödüller mevcut sistemden: yıldızlar, en iyi süre,
+    /// günlük seri, yeni rozetler ve (gelecekse) yeni kart.
+    private var celebration: some View {
+        let result = completionResult
+        var rewards: [CelebrationReward] = []
+        if isDaily {
+            rewards.append(CelebrationReward(id: "streak", icon: "flame.fill", tint: Color(hex: "#F06A5A"), value: Text(verbatim: "\(model.dailyStreak)"), label: Text("Daily streak")))
+        }
+        if let stars = result?.stars {
+            rewards.append(CelebrationReward(id: "stars", icon: "star.fill", tint: Gold.mid, value: Text(verbatim: "+\(stars)"), label: Text("Stars")))
+        }
+        if !isDaily, result?.isNewBest == true {
+            rewards.append(CelebrationReward(id: "best", icon: "trophy.fill", tint: theme.success, value: nil, label: Text("New best time!")))
+        }
+        for badge in result?.newBadges ?? [] {
+            rewards.append(CelebrationReward(id: "badge-\(badge.rawValue)", icon: badge.icon, tint: Gold.deep, value: nil, label: Text(badge.title)))
+        }
+        if isCardPending || newCard != nil {
+            rewards.append(CelebrationReward(id: "card", icon: "rectangle.portrait.on.rectangle.portrait.fill", tint: ModeStyle.collection.tint(theme), value: nil, label: Text("New card!")))
+        }
+        return CelebrationView(
+            subtitle: isDaily ? Text("You completed today's puzzle.") : Text(verbatim: viewModel.puzzle.title.resolved),
+            artwork: viewModel.puzzle.artwork,
+            time: result?.elapsed ?? game.elapsed,
+            difficulty: isDaily ? Text("Expert") : (isHardMode && !isEasyLocked ? Text("Hard") : Text("Easy")),
+            mistakes: result?.mistakes ?? game.mistakes,
+            stars: result?.stars,
+            starNote: result.flatMap { speedStarNote($0) },
+            rewards: rewards
+        ) {
+            if isCardPending {
+                // Kart penceresi açılana/kapanana kadar geçiş düğmeleri yok
+                HStack(spacing: 8) {
+                    ProgressView()
+                    Text("Your card is on its way…")
+                }
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(theme.textSecondary)
+                .frame(maxWidth: .infinity, minHeight: 52)
+            } else if isDaily {
+                Text("A new puzzle is waiting tomorrow.")
+                    .font(.subheadline)
+                    .foregroundStyle(theme.textSecondary)
+                    .accessibilityIdentifier("result.streak")
+                Button("Continue") { router.pop() }
+                    .buttonStyle(PrimaryButtonStyle())
+            } else {
+                let next = model.nextPuzzle(after: viewModel.puzzle)
+                if let next {
+                    nextButton(next)
+                }
+                if let unlocked = newlyUnlockedChapter,
+                   let first = unlocked.puzzles.first,
+                   next.flatMap({ model.catalog.chapter(containing: $0.id)?.id }) != unlocked.id {
+                    // Yeni tür açıldı: oyuncu isterse hemen yeni kediye geçebilir
+                    Button {
+                        leave(to: .game(puzzleID: first.id))
+                    } label: {
+                        Label("New cat unlocked: \(unlocked.title.resolved)", systemImage: "lock.open.fill")
+                    }
+                    .buttonStyle(SecondaryButtonStyle())
+                    .accessibilityIdentifier("result.newCat")
+                }
+                Button("Back to Levels") { leave(to: nil) }
+                    .buttonStyle(SecondaryButtonStyle())
+            }
+        }
+    }
+
     @ViewBuilder
     private var resultCard: some View {
         switch game.status {
         case .playing:
             EmptyView()
         case .won:
-            ResultCard(
-                icon: "pawprint.fill",
-                tint: theme.success,
-                title: "Purrfect!",
-                message: Text(verbatim: viewModel.puzzle.title.resolved),
-                detail: completionResult.map { resultDetail($0) },
-                badge: isDaily ? nil : (completionResult?.isNewBest == true ? "New best time!" : nil),
-                stars: completionResult?.stars,
-                starNote: completionResult.flatMap { speedStarNote($0) },
-                newBadges: completionResult?.newBadges ?? [],
-                artwork: viewModel.puzzle.artwork
-            ) {
-                if isCardPending {
-                    // Kart penceresi açılana/kapanana kadar geçiş düğmeleri yok
-                    HStack(spacing: 8) {
-                        ProgressView()
-                        Text("Your card is on its way…")
-                    }
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(theme.textSecondary)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                } else if isDaily {
-                    Label("\(model.dailyStreak)-day streak", systemImage: "flame.fill")
-                        .font(.headline)
-                        .foregroundStyle(theme.accent)
-                        .accessibilityIdentifier("result.streak")
-                    Text("A new puzzle is waiting tomorrow.")
-                        .font(.subheadline)
-                        .foregroundStyle(theme.textSecondary)
-                    Button("Daily Puzzles") { router.pop() }
-                        .buttonStyle(PrimaryButtonStyle())
-                } else {
-                    let next = model.nextPuzzle(after: viewModel.puzzle)
-                    if let next {
-                        nextButton(next)
-                    }
-                    if let unlocked = newlyUnlockedChapter,
-                       let first = unlocked.puzzles.first,
-                       next.flatMap({ model.catalog.chapter(containing: $0.id)?.id }) != unlocked.id {
-                        // Yeni tür açıldı: oyuncu isterse hemen yeni kediye geçebilir
-                        Button {
-                            leave(to: .game(puzzleID: first.id))
-                        } label: {
-                            Label("New cat unlocked: \(unlocked.title.resolved)", systemImage: "lock.open.fill")
-                        }
-                        .buttonStyle(SecondaryButtonStyle())
-                        .accessibilityIdentifier("result.newCat")
-                    }
-                    Button("Back to Levels") { leave(to: nil) }
-                        .buttonStyle(SecondaryButtonStyle())
-                }
-            }
-            .transition(.move(edge: .bottom).combined(with: .opacity))
+            // Tam sayfa kutlama ayrı katmanda (celebration)
+            EmptyView()
         case .lost(let reason):
             ResultCard(
                 icon: reason == .outOfTime ? "hourglass" : "heart.slash.fill",
@@ -694,6 +706,10 @@ struct GameStatusBar: View {
             } icon: {
                 Image(systemName: game.rules.timeLimit == nil ? "clock" : "hourglass")
             }
+            .font(.subheadline.weight(.bold))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(theme.surface))
             .foregroundStyle(isRunningOut ? theme.mistake : theme.textSecondary)
 
             // Zorluk: "Zor"da tamamlanan satırlara otomatik X konmaz
@@ -721,7 +737,7 @@ struct GameStatusBar: View {
                     Image(systemName: "pause.fill")
                         .font(.subheadline.weight(.bold))
                         .frame(width: 34, height: 34)
-                        .background(Circle().fill(theme.surfaceMuted))
+                        .background(Circle().fill(theme.surface))
                         .foregroundStyle(theme.textPrimary)
                 }
                 .buttonStyle(PressableButtonStyle())
@@ -826,7 +842,9 @@ struct GameControls: View {
                 Image(systemName: "arrow.uturn.backward")
                     .font(.title3.weight(.semibold))
                     .frame(width: 56, height: 56)
-                    .background(Circle().fill(theme.surfaceMuted))
+                    .background(Circle().fill(theme.surface))
+                    .overlay(Circle().strokeBorder(theme.separator, lineWidth: 1))
+                    .shadow(color: theme.cardShadow, radius: 6, y: 3)
                     .foregroundStyle(canUndo ? theme.textPrimary : theme.textSecondary.opacity(0.4))
             }
             .buttonStyle(PressableButtonStyle())
@@ -845,13 +863,22 @@ struct GameControls: View {
             Label(title, systemImage: systemImage)
                 .font(.headline)
                 .frame(maxWidth: .infinity, minHeight: 56)
-                .background(Capsule().fill(isSelected ? theme.accent : theme.surfaceMuted))
+                .background(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .fill(isSelected ? theme.accent : theme.surface)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .strokeBorder(isSelected ? .clear : theme.separator, lineWidth: 1)
+                )
+                .shadow(color: isSelected ? theme.accent.opacity(0.3) : theme.cardShadow, radius: 6, y: 3)
                 .foregroundStyle(isSelected ? theme.onAccent : theme.textPrimary)
+                .animation(.snappy(duration: 0.2), value: isSelected)
         }
         .buttonStyle(PressableButtonStyle())
         .overlay {
             if guidedTool == value {
-                Capsule()
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
                     .stroke(theme.accent, lineWidth: 3)
                     .padding(-5)
                     .allowsHitTesting(false)
