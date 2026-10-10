@@ -34,11 +34,11 @@ struct CelebrationView<Actions: View>: View {
         ZStack(alignment: .top) {
             background
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     hero
-                    VStack(spacing: 6) {
+                    VStack(spacing: 4) {
                         Text("Congratulations!")
-                            .font(.system(size: 34, weight: .heavy, design: .rounded))
+                            .font(.system(size: 30, weight: .heavy, design: .rounded))
                             .foregroundStyle(theme.textPrimary)
                             .scaleEffect(appeared || reduceMotion ? 1 : 0.5)
                         subtitle
@@ -46,37 +46,51 @@ struct CelebrationView<Actions: View>: View {
                             .multilineTextAlignment(.center)
                             .foregroundStyle(theme.textSecondary)
                     }
-                    ArtworkThumbnail(artwork: artwork)
-                        .padding(10)
-                        .frame(maxWidth: 170, maxHeight: 150)
-                        .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(theme.surface))
-                        .shadow(color: theme.cardShadow, radius: 8, y: 3)
-                    if let stars {
-                        StarsView(count: stars, size: 26)
-                            .scaleEffect(appeared || reduceMotion ? 1 : 0.4)
-                            .opacity(appeared ? 1 : 0)
-                        if let starNote {
-                            starNote
-                                .font(.caption)
-                                .multilineTextAlignment(.center)
-                                .foregroundStyle(theme.textSecondary)
+                    HStack(spacing: 14) {
+                        ArtworkThumbnail(artwork: artwork)
+                            .padding(8)
+                            .frame(width: 104, height: 92)
+                            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(theme.surface))
+                            .shadow(color: theme.cardShadow, radius: 6, y: 3)
+                        if let stars {
+                            VStack(spacing: 6) {
+                                StarsView(count: stars, size: 22)
+                                    .scaleEffect(appeared || reduceMotion ? 1 : 0.4)
+                                    .opacity(appeared ? 1 : 0)
+                                if let starNote {
+                                    starNote
+                                        .font(.caption2)
+                                        .multilineTextAlignment(.center)
+                                        .foregroundStyle(theme.textSecondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+                            .frame(maxWidth: 170)
                         }
                     }
                     statsRow
                     if !rewards.isEmpty {
                         rewardsSection
                     }
-                    VStack(spacing: 10) {
-                        actions()
-                    }
-                    .padding(.top, 4)
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 24)
+                .padding(.bottom, 12)
                 .frame(maxWidth: 480)
                 .frame(maxWidth: .infinity)
             }
             .scrollBounceBehavior(.basedOnSize)
+            // Devam düğmeleri hep görünür: içerik uzarsa yalnızca üst kısım kayar
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                VStack(spacing: 8) {
+                    actions()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                .padding(.bottom, 8)
+                .frame(maxWidth: 480)
+                .frame(maxWidth: .infinity)
+                .background(theme.background.opacity(0.96).ignoresSafeArea(edges: .bottom))
+            }
         }
         .onAppear {
             withAnimation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.1)) { appeared = true }
@@ -104,14 +118,16 @@ struct CelebrationView<Actions: View>: View {
     @ViewBuilder
     private var hero: some View {
         if hasArt {
-            IllustrationView(name: "celebrate-hero", contentMode: .fill)
-                .frame(height: 220)
-                .frame(maxWidth: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-                .padding(.top, 8)
+            Color.clear
+                .frame(height: 170)
+                .overlay {
+                    IllustrationView(name: "celebrate-hero", contentMode: .fill)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
+                .padding(.top, 6)
         } else {
             MuffinView(pose: .cheer, speechID: 1)
-                .frame(height: 150)
+                .frame(height: 120)
                 .scaleEffect(appeared || reduceMotion ? 1 : 0.6)
                 .padding(.top, 8)
         }
@@ -125,8 +141,8 @@ struct CelebrationView<Actions: View>: View {
             Rectangle().fill(theme.separator).frame(width: 1, height: 34)
             stat(title: "Mistakes", value: mistakes.map { Text(verbatim: "\($0)") } ?? Text(verbatim: "–"))
         }
-        .padding(.vertical, 12)
-        .card(cornerRadius: 20)
+        .padding(.vertical, 10)
+        .card(cornerRadius: 18)
     }
 
     private func stat(title: LocalizedStringKey, value: Text) -> some View {
@@ -145,31 +161,35 @@ struct CelebrationView<Actions: View>: View {
     }
 
     private var rewardsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("Your Rewards")
                 .font(.headline)
                 .foregroundStyle(theme.textPrimary)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 96), spacing: 10)], spacing: 10) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 8)], spacing: 8) {
                 ForEach(rewards) { reward in
-                    VStack(spacing: 6) {
+                    HStack(spacing: 10) {
                         Image(systemName: reward.icon)
-                            .font(.title2)
+                            .font(.title3)
                             .foregroundStyle(reward.tint)
-                        if let value = reward.value {
-                            value
-                                .font(.headline.monospacedDigit())
-                                .foregroundStyle(theme.textPrimary)
+                            .frame(width: 28)
+                        VStack(alignment: .leading, spacing: 0) {
+                            if let value = reward.value {
+                                value
+                                    .font(.headline.monospacedDigit())
+                                    .foregroundStyle(theme.textPrimary)
+                            }
+                            reward.label
+                                .font(.caption)
+                                .foregroundStyle(theme.textSecondary)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.8)
                         }
-                        reward.label
-                            .font(.caption)
-                            .multilineTextAlignment(.center)
-                            .foregroundStyle(theme.textSecondary)
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.8)
+                        Spacer(minLength: 0)
                     }
-                    .frame(maxWidth: .infinity, minHeight: 96)
-                    .padding(8)
-                    .card(cornerRadius: 18)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .frame(minHeight: 52)
+                    .card(cornerRadius: 16)
                     .accessibilityElement(children: .combine)
                     .accessibilityIdentifier("result.reward.\(reward.id)")
                 }

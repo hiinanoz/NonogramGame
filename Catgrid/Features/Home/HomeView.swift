@@ -73,6 +73,7 @@ struct HomeView: View {
                 }
             }
             .padding(.horizontal, 16)
+            Spacer(minLength: 0)
         }
         .padding(.bottom, compact ? 6 : 12)
     }
@@ -184,20 +185,25 @@ struct HomeHero: View {
                 }
             }
             if hasArt {
-                Spacer(minLength: compact ? 70 : 120)
+                // Uyuyan kedilere yer: sabit yükseklik (boş alanı esneyip doldurmasın)
+                Color.clear.frame(height: compact ? 96 : 140)
             }
         }
         .padding(.horizontal, 16)
         .padding(.top, 4)
         .padding(.bottom, hasArt ? 0 : 2)
-        .background(alignment: .bottom) {
+        .background {
             if hasArt {
-                IllustrationView(name: "home-hero", contentMode: .fill)
-                    .mask(LinearGradient(stops: [.init(color: .black, location: 0.75), .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom))
+                // Çizim durum çubuğunun arkasına kadar uzanır; taşan kısmı kırpılır
+                Color.clear
+                    .overlay(alignment: .bottom) {
+                        IllustrationView(name: "home-hero", contentMode: .fill)
+                    }
+                    .clipped()
+                    .mask(LinearGradient(stops: [.init(color: .black, location: 0.8), .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom))
                     .ignoresSafeArea(edges: .top)
             }
         }
-        .clipped()
     }
 }
 
@@ -219,12 +225,13 @@ struct ModeCard<Caption: View>: View {
                 Text(title)
                     .font((compact ? Font.subheadline : .headline).bold())
                     .multilineTextAlignment(.center)
-                    .lineLimit(2)
+                    // Tek satırlık başlıkta da iki satır yer: çizimler aynı hizada dursun
+                    .lineLimit(2, reservesSpace: true)
                     .minimumScaleFactor(0.7)
                     .foregroundStyle(style.ink(theme))
                     .frame(maxWidth: .infinity)
                 IllustrationView(name: style.illustration)
-                    .frame(maxHeight: compact ? 56 : 84)
+                    .frame(height: compact ? 56 : 84)
                 Spacer(minLength: 0)
                 HStack(alignment: .bottom, spacing: 4) {
                     caption()
@@ -344,6 +351,8 @@ struct HomeCollectionPreview: View {
                 .padding(.vertical, 4)
                 .padding(.horizontal, 2)
             }
+            // Sıkışık ekranda kartlar ezilmesin: portre (kare) + ad + kenar boşlukları
+            .frame(height: tileWidth + 42)
         }
     }
 }

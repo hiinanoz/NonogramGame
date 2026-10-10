@@ -103,7 +103,7 @@ struct CatLevelsView: View {
     var body: some View {
         let cats = model.cats
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 18) {
                 PillPicker(selection: $tab, options: [(.chapters, Text("Chapters")), (.difficulties, Text("Difficulties"))])
                 switch tab {
                 case .chapters:
@@ -180,8 +180,11 @@ struct CatLevelsView: View {
                         }
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(theme.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                     }
                 }
+                // Yazılar afişin solundaki açık alanda kalsın
+                .containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in width * 0.55 }
                 Spacer(minLength: 0)
                 Image(systemName: isUnlocked ? "chevron.right" : "lock.fill")
                     .font(.subheadline.weight(.bold))
@@ -190,15 +193,19 @@ struct CatLevelsView: View {
                     .background(Circle().fill(.white.opacity(theme.isDark ? 0.1 : 0.7)))
             }
             .padding(16)
-            .frame(maxWidth: .infinity, minHeight: 104, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)
             .background {
-                ZStack(alignment: .trailing) {
-                    LinearGradient(colors: catTheme.colors(theme), startPoint: .leading, endPoint: .trailing)
-                    // Tema afişi varsa sağda, solu yazı için açık
-                    IllustrationView(name: catTheme.illustration, contentMode: .fill)
-                        .mask(LinearGradient(colors: [.clear, .black], startPoint: .leading, endPoint: .center))
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                // Afiş kartın içine kırpılır (taşıp komşu kartın üstüne binmez); sol taraf yazı için açık
+                LinearGradient(colors: catTheme.colors(theme), startPoint: .leading, endPoint: .trailing)
+                    .overlay {
+                        Color.clear
+                            .overlay(alignment: .trailing) {
+                                IllustrationView(name: catTheme.illustration, contentMode: .fill)
+                            }
+                            .clipped()
+                            .mask(LinearGradient(stops: [.init(color: .clear, location: 0.25), .init(color: .black, location: 0.7)], startPoint: .leading, endPoint: .trailing))
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
             }
             .shadow(color: tint.opacity(theme.isDark ? 0 : 0.18), radius: 8, y: 4)
             .saturation(isUnlocked ? 1 : 0.4)
