@@ -28,4 +28,4 @@ CATGRID PREMIUM (İSTEĞE BAĞLI ABONELİK)
 Premium, aylık ya da yıllık otomatik yenilenen abonelik olarak sunulur. Ödeme, satın alma onaylandığında Apple Hesabından alınır. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmezse otomatik olarak yenilenir. Aboneliğini App Store hesap ayarlarından yönetebilir ya da iptal edebilirsin.
 
 Kullanım Koşulları: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Gizlilik Politikası: https://uyelikposya.github.io/NonogramGame/privacy.html
+Gizlilik Politikası: https://hii.othinks.com/catgrid/privacy

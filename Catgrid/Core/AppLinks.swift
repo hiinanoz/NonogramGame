@@ -1,10 +1,9 @@
 import Foundation
 
-/// App Store'un istediği bağlantılar. Sayfalar `docs/` klasöründe; GitHub Pages
-/// açıldığında bu adreslerde yayınlanır. Kendi alan adına taşırsan yalnızca burayı değiştir.
+/// App Store'un istediği bağlantılar: gizlilik ve destek sayfaları hii.othinks.com'da.
 enum AppLinks {
-    static let privacyPolicy = URL(string: "https://uyelikposya.github.io/NonogramGame/privacy.html")!
-    static let support = URL(string: "https://uyelikposya.github.io/NonogramGame/support.html")!
+    static let privacyPolicy = URL(string: "https://hii.othinks.com/catgrid/privacy")!
+    static let support = URL(string: "https://hii.othinks.com/catgrid/support")!
     /// Apple'ın standart kullanım koşulları (EULA); abonelikli uygulamalarda bağlantı zorunlu.
     static let termsOfUse = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
     /// App Store Connect'teki uygulama kimliği (Apple ID, yalnızca rakamlar). Doldurulunca

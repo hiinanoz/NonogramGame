@@ -28,4 +28,4 @@ CATGRID PREMIUM (OPTIONALES ABO)
 Premium wird als sich automatisch verlängerndes Monats- oder Jahresabo angeboten. Die Zahlung wird bei Bestätigung des Kaufs über deinen Apple Account abgerechnet. Das Abo verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt wird. Du kannst es in deinen App Store-Accounteinstellungen verwalten oder kündigen.
 
 Nutzungsbedingungen: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Datenschutzerklärung: https://uyelikposya.github.io/NonogramGame/privacy.html
+Datenschutzerklärung: https://hii.othinks.com/catgrid/privacy

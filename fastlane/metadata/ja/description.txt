@@ -28,4 +28,4 @@ CATGRID PREMIUM（任意のサブスクリプション）
 Premiumは、月額または年額の自動更新サブスクリプションとしてご提供しています。お支払いは購入の確定時にAppleアカウントに請求されます。サブスクリプションは、現在の期間が終了する24時間以上前に解約しない限り、自動的に更新されます。サブスクリプションの管理や解約は、App Storeのアカウント設定から行えます。
 
 利用規約: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-プライバシーポリシー: https://uyelikposya.github.io/NonogramGame/privacy.html
+プライバシーポリシー: https://hii.othinks.com/catgrid/privacy
