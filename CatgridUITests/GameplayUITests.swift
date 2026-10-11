@@ -23,18 +23,22 @@ final class GameplayUITests: XCTestCase {
         let board = app.descendants(matching: .any)["game.board"]
         XCTAssertTrue(board.waitForExistence(timeout: 10), "Tahta görünmedi")
 
-        // Tek tek dokunuşlar
-        for (x, y) in [(0.5, 0.5), (0.3, 0.3), (0.7, 0.7), (0.5, 0.5)] {
+        // Tek tek dokunuşlar. Ders çözülünce tam sayfa kutlama tahtayı örter: o andan sonra
+        // dokunmak kutlamadaki düğmelere denk gelir, bu yüzden durulur.
+        let next = app.buttons["result.next"]
+        for (x, y) in [(0.5, 0.5), (0.3, 0.3), (0.7, 0.7), (0.5, 0.5)] where !next.exists {
             board.coordinate(withNormalizedOffset: CGVector(dx: x, dy: y)).tap()
         }
         // Sürükleme
-        let from = board.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
-        let to = board.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5))
-        from.press(forDuration: 0.1, thenDragTo: to)
+        if !next.exists {
+            let from = board.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
+            let to = board.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5))
+            from.press(forDuration: 0.1, thenDragTo: to)
+        }
 
         XCTAssertEqual(app.state, .runningForeground, "Uygulama çöktü")
         // İlk ders (2x1) dokunuşlarla bitebilir: o zaman tahtanın yerinde sonuç kartı olur
-        XCTAssertTrue(board.exists || app.buttons["result.next"].waitForExistence(timeout: 5), "Tahta da sonuç kartı da yok")
+        XCTAssertTrue(board.exists || next.waitForExistence(timeout: 5), "Tahta da sonuç kartı da yok")
     }
 
     /// Kullanıcı bildirimi: eğitimde yanlış hamleden hemen sonra tahtaya tekrar dokununca
