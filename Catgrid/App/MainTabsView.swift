@@ -17,13 +17,29 @@ struct MainTabsView: View {
         Group {
             switch tab {
             case .home: HomeView { tab = .settings }
-            case .badges: BadgesTabView()
-            case .settings: SettingsView()
+            case .badges: BadgesTabView().toolbar { homeButton }
+            case .settings: SettingsView().toolbar { homeButton }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             MainTabBar(selection: $tab)
+        }
+    }
+
+    /// Rozetler ve Ayarlar sekmelerinde sol üstte: ana sayfaya dönüş.
+    private var homeButton: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                withAnimation(.snappy(duration: 0.2)) { tab = .home }
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.left")
+                        .font(.body.weight(.semibold))
+                    Text("Home")
+                }
+            }
+            .accessibilityIdentifier("tab.back")
         }
     }
 }

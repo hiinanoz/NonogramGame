@@ -25,7 +25,7 @@ enum CatTutorialStep: Equatable {
         case .first:
             "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!"
         case .useHint:
-            "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and then Apply: I'll cross those squares out for you."
+            "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you."
         case .second:
             "Now this color has only one free square left. Find its cat!"
         case .finder:

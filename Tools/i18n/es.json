@@ -472,7 +472,6 @@
   "The cats didn't even have time to hide!": "¡Los gatos ni tuvieron tiempo de esconderse!",
   "Every cat is found. Nothing gets past you!": "Todos los gatos encontrados. ¡No se te escapa nada!",
   "Hide and seek is over. You win!": "Se acabó el escondite. ¡Ganaste!",
-  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and then Apply: I'll cross those squares out for you.": "¡Encontraste un gato! No puede haber otro en su fila, columna o color, ni justo a su lado. Toca ? abajo y luego Aplicar: tacharé esas casillas por ti.",
   "Now this color has only one free square left. Find its cat!": "Ahora este color solo tiene una casilla libre. ¡Encuentra su gato!",
   "Stuck? The cat button below shows where a cat is hiding. You get 6 Cat Finders and 6 hints; watch a short video for more.": "¿Atascado? El botón del gato de abajo muestra dónde se esconde un gato. Tienes 6 buscagatos y 6 pistas; mira un video corto para conseguir más.",
   "Solve %lld levels of %lld×%lld to unlock.": "Resuelve %lld niveles de %lld×%lld para desbloquear.",
@@ -522,7 +521,16 @@
   "Spring Garden": "Jardín de primavera",
   "Summer Beach": "Playa de verano",
   "Autumn Forest": "Bosque de otoño",
-  "Winter Tale": "Cuento de invierno"
+  "Winter Tale": "Cuento de invierno",
+  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you.": "¡Encontraste un gato! No puede haber otro en su fila, columna o color, ni justo a su lado. Toca ? abajo y tacharé esas casillas por ti.",
+  "Magic Eraser": "Borrador mágico",
+  "On": "Activado",
+  "Off": "Desactivado",
+  "Assisted Drag": "Deslizar asistido",
+  "Free Drag": "Deslizar libre",
+  "Drag Mode": "Modo de deslizar",
+  "Hold a square and slide: only that row or column is marked, in a straight line.": "Mantén una casilla y desliza: solo se marca esa fila o columna, en línea recta.",
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Mantén una casilla y desliza en cualquier dirección, incluso en diagonal: se marca cada casilla por la que pases."
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

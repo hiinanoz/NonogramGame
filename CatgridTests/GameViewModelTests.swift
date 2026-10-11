@@ -11,6 +11,35 @@ final class GameViewModelTests: XCTestCase {
         GridPosition(row: row, column: column)
     }
 
+    /// Yardımlı kaydırma: parmak çapraz kaysa da yalnızca ilk karenin satırı işaretlenir;
+    /// hızlı kaydırmada atlanan kareler de dolar.
+    func testAssistedDragStaysOnOneLine() {
+        let big = Puzzle(id: "big", pattern: ["####", "....", "....", "...."])
+        let viewModel = GameViewModel(puzzle: big, rules: freeRules)
+        viewModel.autoCrosses = false
+        viewModel.dragBegan(at: position(0, 0))
+        viewModel.dragMoved(to: position(1, 1))
+        viewModel.dragMoved(to: position(1, 3))
+        viewModel.dragEnded()
+        for column in 0..<4 {
+            XCTAssertEqual(viewModel.game.board[position(0, column)], .filled)
+        }
+        XCTAssertEqual(viewModel.game.board[position(1, 1)], .blank)
+        XCTAssertEqual(viewModel.game.board[position(1, 3)], .blank)
+    }
+
+    /// Serbest kaydırma: parmağın geçtiği her kare işaretlenir.
+    func testFreeDragMarksEveryTouchedSquare() {
+        let big = Puzzle(id: "big", pattern: ["####", "....", "....", "...."])
+        let viewModel = GameViewModel(puzzle: big, rules: freeRules)
+        viewModel.autoCrosses = false
+        viewModel.assistedDrag = false
+        viewModel.dragBegan(at: position(0, 0))
+        viewModel.dragMoved(to: position(1, 1))
+        viewModel.dragEnded()
+        XCTAssertEqual(viewModel.game.board[position(1, 1)], .filled)
+    }
+
     /// "Zor" mod: tamamlanan satıra otomatik X gelmez; "Tekrar Dene"den sonra da öyle kalır.
     func testHardModeSurvivesRestart() {
         let plus = Puzzle(id: "plus", pattern: [".#.", "###", ".#."])

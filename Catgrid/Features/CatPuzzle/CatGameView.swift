@@ -223,22 +223,14 @@ struct CatGameView: View {
         .animation(.snappy(duration: 0.2), value: viewModel.pendingHint)
     }
 
-    @ViewBuilder
     private var bottomBar: some View {
-        if viewModel.pendingHint != nil {
-            HStack(spacing: 12) {
-                Button("Cancel") { viewModel.dismissHint() }
-                    .buttonStyle(SecondaryButtonStyle())
-                Button {
-                    applyHint()
-                } label: {
-                    Label("Apply", systemImage: "checkmark")
+        HStack(spacing: 22) {
+                CatEraserButton(isOn: viewModel.isErasing) {
+                    audio.play(.tap)
+                    Haptics.selection()
+                    withAnimation(.snappy(duration: 0.2)) { viewModel.toggleEraser() }
                 }
-                .buttonStyle(PrimaryButtonStyle())
-                .accessibilityIdentifier("cat.hint.apply")
-            }
-        } else {
-            HStack(spacing: 28) {
+                .accessibilityIdentifier("cat.eraser")
                 CatHelperButton(
                     systemImage: "cat.fill",
                     title: "Find a Cat",
@@ -268,7 +260,6 @@ struct CatGameView: View {
                         .transition(.opacity)
                 }
             }
-        }
     }
 
     // MARK: - Eylemler
@@ -328,12 +319,15 @@ struct CatGameView: View {
         viewModel.revealCat()
     }
 
+    /// "?" ipucu: bir hak harcanır ve ipucu kendiliğinden uygulanır (mantık adımı yoksa hak gitmez).
     private func showHint() {
+        guard viewModel.pendingHint == nil else { return }
         guard isTutorial || cats.markCharges > 0 else {
             adOffer = .mark
             return
         }
-        if viewModel.previewHint() {
+        if viewModel.useHint() {
+            if !isTutorial { _ = cats.useMarkCharge() }
             audio.play(.catHint)
         } else {
             withAnimation { noHintNote = true }
@@ -342,15 +336,6 @@ struct CatGameView: View {
                 withAnimation { noHintNote = false }
             }
         }
-    }
-
-    private func applyHint() {
-        guard isTutorial || cats.useMarkCharge() else {
-            viewModel.dismissHint()
-            adOffer = .mark
-            return
-        }
-        viewModel.applyHint()
     }
 
     private func watchAd(for helper: CatHelper) {
@@ -612,5 +597,52 @@ struct CatToken: View {
         }
         .scaleEffect(isFound ? 1 : 0.9)
         .animation(.spring(response: 0.35, dampingFraction: 0.5), value: isFound)
+    }
+}
+
+/// Sihirli silgi: açıkken X'lere dokunmak ya da üzerlerinden sürüklemek onları siler.
+/// Kedilere ve boş karelere dokunmaz; boş bir kareye dokununca kendiliğinden kapanır.
+@MainActor
+struct CatEraserButton: View {
+    @Environment(\.appTheme) private var theme
+    let isOn: Bool
+    let action: () -> Void
+
+    var body: some View {
+        let tint = Color(hex: "#E58BB0")
+        Button(action: action) {
+            VStack(spacing: 6) {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(isOn ? tint : theme.surface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .strokeBorder(tint.opacity(isOn ? 0 : 0.35), lineWidth: 1.5)
+                    )
+                    .shadow(color: tint.opacity(theme.isDark ? 0 : (isOn ? 0.45 : 0.2)), radius: isOn ? 10 : 6, y: 3)
+                    .frame(width: 64, height: 64)
+                    .overlay {
+                        Image(systemName: "eraser.fill")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(isOn ? .white : tint)
+                            .rotationEffect(.degrees(isOn ? -12 : 0))
+                    }
+                    .overlay(alignment: .topTrailing) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(isOn ? Gold.bright : tint.opacity(0.7))
+                            .offset(x: 4, y: -4)
+                    }
+                    .scaleEffect(isOn ? 1.06 : 1)
+                Text("Magic Eraser")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(isOn ? tint : theme.textSecondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
+        }
+        .buttonStyle(PressableButtonStyle())
+        .accessibilityLabel(Text("Magic Eraser"))
+        .accessibilityValue(isOn ? Text("On") : Text("Off"))
+        .accessibilityAddTraits(isOn ? .isSelected : [])
     }
 }

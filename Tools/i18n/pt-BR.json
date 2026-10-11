@@ -472,7 +472,6 @@
   "The cats didn't even have time to hide!": "Os gatos nem tiveram tempo de se esconder!",
   "Every cat is found. Nothing gets past you!": "Todos os gatos encontrados. Nada escapa de você!",
   "Hide and seek is over. You win!": "O esconde-esconde acabou. Você venceu!",
-  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and then Apply: I'll cross those squares out for you.": "Você achou um gato! Nenhum outro gato pode estar na linha, coluna ou cor dele, nem logo ao lado. Toque em ? lá embaixo e depois em Aplicar: eu marco esses quadrados para você.",
   "Now this color has only one free square left. Find its cat!": "Agora esta cor só tem um quadrado livre. Ache o gato dela!",
   "Stuck? The cat button below shows where a cat is hiding. You get 6 Cat Finders and 6 hints; watch a short video for more.": "Travou? O botão do gato lá embaixo mostra onde um gato está escondido. Você tem 6 localizadores e 6 dicas; assista a um vídeo curto para ganhar mais.",
   "Solve %lld levels of %lld×%lld to unlock.": "Resolva %lld níveis de %lld×%lld para desbloquear.",
@@ -522,7 +521,16 @@
   "Spring Garden": "Jardim de Primavera",
   "Summer Beach": "Praia de Verão",
   "Autumn Forest": "Floresta de Outono",
-  "Winter Tale": "Conto de Inverno"
+  "Winter Tale": "Conto de Inverno",
+  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you.": "Você achou um gato! Nenhum outro gato pode estar na linha, coluna ou cor dele, nem logo ao lado. Toque em ? lá embaixo e eu marco esses quadrados para você.",
+  "Magic Eraser": "Borracha mágica",
+  "On": "Ligada",
+  "Off": "Desligada",
+  "Assisted Drag": "Deslizar assistido",
+  "Free Drag": "Deslizar livre",
+  "Drag Mode": "Modo de deslizar",
+  "Hold a square and slide: only that row or column is marked, in a straight line.": "Segure um quadrado e deslize: só aquela linha ou coluna é marcada, em linha reta.",
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Segure um quadrado e deslize em qualquer direção, até na diagonal: cada quadrado por onde passar é marcado."
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

@@ -1836,10 +1836,6 @@
    "en": "Hide and seek is over. You win!",
    "tr": "Saklambaç bitti. Sen kazandın!"
   },
-  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and then Apply: I'll cross those squares out for you.": {
-   "en": "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and then Apply: I'll cross those squares out for you.",
-   "tr": "Bir kedi buldun! Onun satırında, sütununda, renginde ve hemen yanında başka kedi olamaz. Alttaki ?'ye dokun, sonra Uygula'ya bas: o kareleri senin için X'leyeyim."
-  },
   "Now this color has only one free square left. Find its cat!": {
    "en": "Now this color has only one free square left. Find its cat!",
    "tr": "Şimdi bu renkte tek bir boş kare kaldı. Kedisini bul!"
@@ -2039,6 +2035,42 @@
   "Winter Tale": {
    "en": "Winter Tale",
    "tr": "Kış Masalı"
+  },
+  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you.": {
+   "en": "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you.",
+   "tr": "Bir kedi buldun! Onun satırında, sütununda, renginde ve hemen yanında başka kedi olamaz. Alttaki ?'ye dokun, o kareleri senin için X'leyeyim."
+  },
+  "Magic Eraser": {
+   "en": "Magic Eraser",
+   "tr": "Sihirli Silgi"
+  },
+  "On": {
+   "en": "On",
+   "tr": "Açık"
+  },
+  "Off": {
+   "en": "Off",
+   "tr": "Kapalı"
+  },
+  "Assisted Drag": {
+   "en": "Assisted Drag",
+   "tr": "Yardımlı Kaydırma"
+  },
+  "Free Drag": {
+   "en": "Free Drag",
+   "tr": "Serbest Kaydırma"
+  },
+  "Drag Mode": {
+   "en": "Drag Mode",
+   "tr": "Kaydırma Türü"
+  },
+  "Hold a square and slide: only that row or column is marked, in a straight line.": {
+   "en": "Hold a square and slide: only that row or column is marked, in a straight line.",
+   "tr": "Bir kareyi basılı tutup kaydır: yalnızca o satır ya da sütun, düz bir çizgide işaretlenir."
+  },
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": {
+   "en": "Hold a square and slide in any direction, even diagonally: every square you pass is marked.",
+   "tr": "Bir kareyi basılı tutup istediğin yöne, çapraz da olsa kaydır: geçtiğin her kare işaretlenir."
   }
  },
  "infoplist": {

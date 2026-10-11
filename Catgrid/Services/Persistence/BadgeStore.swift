@@ -15,6 +15,15 @@ enum BadgeMode: String, CaseIterable, Identifiable, Hashable {
         case .cats: "Cat Puzzle"
         }
     }
+
+    /// Dar yerler (Rozetler sekmesindeki seçici) için kısa ad.
+    var shortTitle: LocalizedStringResource {
+        switch self {
+        case .collection: "Card Collection"
+        case .daily: "Daily Puzzle"
+        case .cats: "Cat Puzzle"
+        }
+    }
 }
 
 /// Oyuncunun kazanabileceği rozetler. Ham değerler kayıtta saklanır; değiştirilmemeli.

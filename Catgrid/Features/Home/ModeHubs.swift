@@ -86,6 +86,8 @@ struct ContinueCard<Icon: View>: View {
     let title: LocalizedStringKey
     let detail: Text
     let isResuming: Bool
+    /// Simgenin genişliği (Kedi Bulmaca'da tema görseli için daha geniş).
+    var iconWidth: CGFloat = 48
     @ViewBuilder let icon: () -> Icon
     let action: () -> Void
 
@@ -93,7 +95,7 @@ struct ContinueCard<Icon: View>: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 14) {
                 icon()
-                    .frame(width: 48, height: 48)
+                    .frame(width: iconWidth, height: 48)
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
                         .font(.headline)
@@ -226,14 +228,8 @@ struct CatHubView: View {
                         title: "Continue where you left off",
                         detail: Text("Level \(cats.number(of: level)) · \(level.size)×\(level.size)"),
                         isResuming: cats.hasSavedGame(level),
-                        icon: {
-                            ZStack {
-                                Circle().fill(CatPalette.color(cats.number(of: level)).opacity(0.3))
-                                Image(systemName: "cat.fill")
-                                    .font(.title2)
-                                    .foregroundStyle(CatPalette.color(cats.number(of: level)))
-                            }
-                        },
+                        iconWidth: 96,
+                        icon: { CatThemeThumbnail(catTheme: CatTheme.theme(forSize: level.size)) },
                         action: { router.push(.catGame(levelID: level.id)) }
                     )
                 } else {
@@ -359,5 +355,31 @@ struct CatStatsView: View {
         }
         .themedScreen()
         .screenTitle("Statistics")
+    }
+}
+
+/// Kedi Bulmaca temasının küçük afişi (Bahar Bahçesi, Yaz Sahili…); çizim yoksa temanın renkleri ve simgesi.
+@MainActor
+struct CatThemeThumbnail: View {
+    @Environment(\.appTheme) private var theme
+    let catTheme: CatTheme
+
+    var body: some View {
+        LinearGradient(colors: catTheme.colors(theme), startPoint: .leading, endPoint: .trailing)
+            .overlay {
+                if Illustration.exists(catTheme.illustration) {
+                    Color.clear
+                        .overlay(alignment: .trailing) {
+                            IllustrationView(name: catTheme.illustration, contentMode: .fill)
+                        }
+                        .clipped()
+                } else {
+                    Image(systemName: catTheme.icon)
+                        .font(.title2)
+                        .foregroundStyle(catTheme.tint(theme))
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .accessibilityLabel(Text(catTheme.title))
     }
 }

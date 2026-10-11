@@ -73,17 +73,71 @@ final class GameViewModel {
         handle(game.toggle(at: position, with: tool), at: position, target: target)
     }
 
+    /// Yardımlı kaydırma (varsayılan): sürükleme ilk karenin satırında ya da sütununda düz
+    /// ilerler; parmak biraz kaysa da yalnızca o çizgi işaretlenir. Kapalıyken serbest kaydırma:
+    /// parmağın geçtiği her kare (çapraz dahil) işaretlenir.
+    var assistedDrag = true
+    private var dragStart: GridPosition?
+    private var dragAxis: HintFinder.Axis?
+    private var dragLast: GridPosition?
+
     /// Sürüklemenin ilk karesi hedefi belirler: boş kareden başlanırsa aracın işareti
     /// konur, işaretli kareden başlanırsa geçilen aynı işaretler silinir.
     func dragBegan(at position: GridPosition) {
         guard game.board.contains(position) else { return }
         let current = game.board[position]
         dragTarget = current == .blank ? tool.cellState : (current == tool.cellState ? .blank : nil)
-        dragMoved(to: position)
+        dragStart = position
+        dragAxis = nil
+        dragLast = position
+        apply(at: position)
     }
 
     func dragMoved(to position: GridPosition) {
         guard game.board.contains(position) else { return }
+        guard assistedDrag, let start = dragStart else {
+            apply(at: position)
+            return
+        }
+        if position == start {
+            // Başlangıç karesine dönünce yön yeniden seçilebilir
+            dragAxis = nil
+            dragLast = start
+            apply(at: start)
+            return
+        }
+        if dragAxis == nil {
+            let rowDelta = abs(position.row - start.row)
+            let columnDelta = abs(position.column - start.column)
+            dragAxis = columnDelta >= rowDelta ? .row : .column
+        }
+        // Parmak çizgiden sapsa da hedef, başlangıcın satırına/sütununa izdüşürülür
+        let target = dragAxis == .row
+            ? GridPosition(row: start.row, column: position.column)
+            : GridPosition(row: position.row, column: start.column)
+        let from = dragLast ?? start
+        // Hızlı kaydırmada atlanan kareler de sırayla işaretlenir
+        for cell in Self.cells(from: from, to: target) where cell != from {
+            apply(at: cell)
+            if isFinished { break }
+        }
+        dragLast = target
+    }
+
+    /// Aynı satır ya da sütundaki iki kare arasındaki kareler (ikisi dahil, sırayla).
+    static func cells(from: GridPosition, to: GridPosition) -> [GridPosition] {
+        if from.row == to.row {
+            let step = to.column >= from.column ? 1 : -1
+            return stride(from: from.column, through: to.column, by: step).map { GridPosition(row: from.row, column: $0) }
+        }
+        if from.column == to.column {
+            let step = to.row >= from.row ? 1 : -1
+            return stride(from: from.row, through: to.row, by: step).map { GridPosition(row: $0, column: from.column) }
+        }
+        return [to]
+    }
+
+    private func apply(at position: GridPosition) {
         // Aynı karede sürüklerken gözlemcileri boşuna tetikleme
         if !isFinished, activeCell != position { activeCell = position }
         guard let target = dragTarget else { return }
@@ -100,6 +154,9 @@ final class GameViewModel {
 
     func dragEnded() {
         dragTarget = nil
+        dragStart = nil
+        dragAxis = nil
+        dragLast = nil
         if activeCell != nil { activeCell = nil }
     }
 

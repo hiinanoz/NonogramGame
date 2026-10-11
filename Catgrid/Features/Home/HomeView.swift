@@ -66,10 +66,15 @@ struct HomeView: View {
             HomeHero(compact: compact, openSettings: openSettings)
             VStack(spacing: compact ? 10 : 14) {
                 modeCards(compact: compact)
+                    // Kartlar çizimin solan alt kenarına biner: arada boşluk kalmaz
+                    .padding(.top, compact ? -16 : -26)
                 HomeStatsStrip()
                 HomeCollectionPreview(tileWidth: compact ? 78 : 92) { shownCard = $0 }
                 if !store.isPremium {
                     PremiumBanner { isShowingPaywall = true }
+                } else {
+                    // Premium oyunculara şerit yerine kedili bir sahne (çizim varsa)
+                    PremiumHomeArt()
                 }
             }
             .padding(.horizontal, 16)
@@ -138,7 +143,12 @@ struct HomeHero: View {
     let compact: Bool
     let openSettings: () -> Void
 
-    private var hasArt: Bool { Illustration.exists("home-hero") }
+    /// Koyu temada gece çizimi (varsa).
+    private var artName: String {
+        theme.isDark && Illustration.exists("home-hero-dark") ? "home-hero-dark" : "home-hero"
+    }
+
+    private var hasArt: Bool { Illustration.exists(artName) }
 
     var body: some View {
         VStack(spacing: compact ? 4 : 8) {
@@ -186,7 +196,7 @@ struct HomeHero: View {
             }
             if hasArt {
                 // Uyuyan kedilere yer: sabit yükseklik (boş alanı esneyip doldurmasın)
-                Color.clear.frame(height: compact ? 96 : 140)
+                Color.clear.frame(height: compact ? 84 : 116)
             }
         }
         .padding(.horizontal, 16)
@@ -197,7 +207,7 @@ struct HomeHero: View {
                 // Çizim durum çubuğunun arkasına kadar uzanır; taşan kısmı kırpılır
                 Color.clear
                     .overlay(alignment: .bottom) {
-                        IllustrationView(name: "home-hero", contentMode: .fill)
+                        IllustrationView(name: artName, contentMode: .fill)
                     }
                     .clipped()
                     .mask(LinearGradient(stops: [.init(color: .black, location: 0.8), .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom))
@@ -231,7 +241,7 @@ struct ModeCard<Caption: View>: View {
                     .foregroundStyle(style.ink(theme))
                     .frame(maxWidth: .infinity)
                 IllustrationView(name: style.illustration)
-                    .frame(height: compact ? 56 : 84)
+                    .frame(height: compact ? 62 : 96)
                 Spacer(minLength: 0)
                 HStack(alignment: .bottom, spacing: 4) {
                     caption()
@@ -403,3 +413,26 @@ struct ChapterBadge: View {
     }
 }
 
+
+/// Premium oyuncuların ana sayfasının altındaki kedi sahnesi (açık/koyu tema).
+@MainActor
+struct PremiumHomeArt: View {
+    @Environment(\.appTheme) private var theme
+
+    private var name: String {
+        theme.isDark && Illustration.exists("home-premium-dark") ? "home-premium-dark" : "home-premium"
+    }
+
+    var body: some View {
+        if Illustration.exists(name) {
+            Color.clear
+                .aspectRatio(1600.0 / 460.0, contentMode: .fit)
+                .overlay {
+                    IllustrationView(name: name, contentMode: .fill)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .shadow(color: theme.cardShadow, radius: 8, y: 3)
+                .accessibilityHidden(true)
+        }
+    }
+}

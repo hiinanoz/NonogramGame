@@ -12,6 +12,8 @@ enum SettingsKeys {
     static let largeBoardCursor = "settings.largeBoardCursor"
     /// Çift el (joystick) ya da tek el (panel) imleç.
     static let cursorStyle = "settings.cursorStyle"
+    /// Yardımlı kaydırma (düz çizgi) ya da serbest kaydırma.
+    static let assistedDrag = "settings.assistedDrag"
 }
 
 /// Sakin: sade oyun. Enerjik (varsayılan): satır parıltıları, kutlamalar, hareketli müzik.
@@ -67,6 +69,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.haptics) private var hapticsEnabled = true
     @AppStorage(SettingsKeys.largeBoardCursor) private var usesLargeBoardCursor = true
     @AppStorage(SettingsKeys.cursorStyle) private var cursorStyle = CursorStyle.twoHands
+    @AppStorage(SettingsKeys.assistedDrag) private var assistedDrag = true
     @AppStorage(SettingsKeys.playMode) private var playMode = PlayMode.dopamine
     @State private var isConfirmingReset = false
     @State private var isShowingPaywall = false
@@ -204,6 +207,21 @@ struct SettingsView: View {
                             Label("Haptics", systemImage: "iphone.radiowaves.left.and.right")
                                 .foregroundStyle(theme.textPrimary)
                         }
+                        Divider()
+                        Picker(selection: $assistedDrag) {
+                            Text("Assisted Drag").tag(true)
+                            Text("Free Drag").tag(false)
+                        } label: {
+                            Text("Drag Mode")
+                        }
+                        .pickerStyle(.segmented)
+                        .accessibilityIdentifier("settings.dragMode")
+                        Text(assistedDrag
+                             ? LocalizedStringKey("Hold a square and slide: only that row or column is marked, in a straight line.")
+                             : LocalizedStringKey("Hold a square and slide in any direction, even diagonally: every square you pass is marked."))
+                            .font(.footnote)
+                            .foregroundStyle(theme.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
                         Divider()
                         Toggle(isOn: $usesLargeBoardCursor) {
                             Label("Cursor on Large Puzzles", systemImage: "scope")

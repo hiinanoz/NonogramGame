@@ -472,7 +472,6 @@
   "The cats didn't even have time to hide!": "Les chats n'ont même pas eu le temps de se cacher !",
   "Every cat is found. Nothing gets past you!": "Tous les chats sont trouvés. Rien ne t'échappe !",
   "Hide and seek is over. You win!": "La partie de cache-cache est finie. Tu as gagné !",
-  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and then Apply: I'll cross those squares out for you.": "Tu as trouvé un chat ! Aucun autre chat ne peut être sur sa ligne, sa colonne, sa couleur ni juste à côté. Touche ? en bas puis Appliquer : je barre ces cases pour toi.",
   "Now this color has only one free square left. Find its cat!": "Cette couleur n'a plus qu'une case libre. Trouve son chat !",
   "Stuck? The cat button below shows where a cat is hiding. You get 6 Cat Finders and 6 hints; watch a short video for more.": "Bloqué ? Le bouton chat en bas montre où se cache un chat. Tu as 6 détecteurs et 6 indices ; regarde une courte vidéo pour en avoir plus.",
   "Solve %lld levels of %lld×%lld to unlock.": "Résous %lld niveaux de %lld×%lld pour débloquer.",
@@ -522,7 +521,16 @@
   "Spring Garden": "Jardin de printemps",
   "Summer Beach": "Plage d'été",
   "Autumn Forest": "Forêt d'automne",
-  "Winter Tale": "Conte d'hiver"
+  "Winter Tale": "Conte d'hiver",
+  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you.": "Tu as trouvé un chat ! Aucun autre chat ne peut être sur sa ligne, sa colonne, sa couleur ni juste à côté. Touche ? en bas et je barre ces cases pour toi.",
+  "Magic Eraser": "Gomme magique",
+  "On": "Activée",
+  "Off": "Désactivée",
+  "Assisted Drag": "Glisser assisté",
+  "Free Drag": "Glisser libre",
+  "Drag Mode": "Mode de glisser",
+  "Hold a square and slide: only that row or column is marked, in a straight line.": "Maintiens une case et glisse : seule cette ligne ou colonne est marquée, en ligne droite.",
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Maintiens une case et glisse dans n'importe quelle direction, même en diagonale : chaque case traversée est marquée."
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

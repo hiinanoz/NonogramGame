@@ -469,7 +469,6 @@
   "The cats didn't even have time to hide!": "猫たちは隠れるひまもなかった!",
   "Every cat is found. Nothing gets past you!": "猫を全部見つけた。あなたの目はごまかせない!",
   "Hide and seek is over. You win!": "かくれんぼはおしまい。あなたの勝ち!",
-  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and then Apply: I'll cross those squares out for you.": "猫を見つけた!同じ行・列・色、そしてすぐ隣にはほかの猫はいません。下の「?」をタップして「適用」を押すと、そのマスに×をつけてあげるよ。",
   "Now this color has only one free square left. Find its cat!": "この色の空きマスは1つだけになったよ。猫を見つけて!",
   "Stuck? The cat button below shows where a cat is hiding. You get 6 Cat Finders and 6 hints; watch a short video for more.": "行き詰まったら?下の猫ボタンで猫のかくれ場所がわかります。猫さがし6回とヒント6回つき。短い動画を見るともっと使えます。",
   "Solve %lld levels of %lld×%lld to unlock.": "%2$lld×%3$lldのレベルを%1$lld個クリアすると解放。",
@@ -519,7 +518,16 @@
   "Spring Garden": "春の庭",
   "Summer Beach": "夏の浜辺",
   "Autumn Forest": "秋の森",
-  "Winter Tale": "冬のおとぎ話"
+  "Winter Tale": "冬のおとぎ話",
+  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you.": "猫を見つけた!同じ行・列・色、そしてすぐ隣にはほかの猫はいません。下の「?」をタップすると、そのマスに×をつけてあげるよ。",
+  "Magic Eraser": "魔法の消しゴム",
+  "On": "オン",
+  "Off": "オフ",
+  "Assisted Drag": "アシスト",
+  "Free Drag": "フリー",
+  "Drag Mode": "ドラッグ方式",
+  "Hold a square and slide: only that row or column is marked, in a straight line.": "マスを押したままスライドすると、その行か列だけがまっすぐ塗られます。",
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "マスを押したまま、斜めも含めて好きな方向にスライド。通ったマスがすべて塗られます。"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

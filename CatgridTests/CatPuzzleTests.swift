@@ -106,4 +106,28 @@ final class CatPuzzleTests: XCTestCase {
             XCTAssertGreaterThanOrEqual(Badge.all(in: mode).count, 20, "\(mode)")
         }
     }
+
+    /// Sihirli silgi: X'i siler, kediye dokunmaz; boş kareye dokununca kapanır.
+    @MainActor
+    func testMagicEraserClearsCrossesOnly() throws {
+        let level = try XCTUnwrap(pack.levels.first)
+        let viewModel = CatGameViewModel(level: level)
+        let blank = GridPosition(row: 0, column: level.solution[0] == 0 ? 1 : 0)
+        viewModel.touchBegan(at: blank)
+        viewModel.touchEnded()
+        XCTAssertEqual(viewModel.game[blank], .cross)
+
+        viewModel.toggleEraser()
+        XCTAssertTrue(viewModel.isErasing)
+        viewModel.touchBegan(at: blank)
+        viewModel.touchEnded()
+        XCTAssertEqual(viewModel.game[blank], .blank)
+        XCTAssertTrue(viewModel.isErasing)
+
+        // Boş kareye dokunmak silgiyi kapatır ve kareyi işaretlemez
+        viewModel.touchBegan(at: blank)
+        viewModel.touchEnded()
+        XCTAssertFalse(viewModel.isErasing)
+        XCTAssertEqual(viewModel.game[blank], .blank)
+    }
 }

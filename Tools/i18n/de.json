@@ -472,7 +472,6 @@
   "The cats didn't even have time to hide!": "Die Katzen hatten nicht mal Zeit, sich zu verstecken!",
   "Every cat is found. Nothing gets past you!": "Alle Katzen gefunden. Dir entgeht nichts!",
   "Hide and seek is over. You win!": "Das Versteckspiel ist vorbei. Du gewinnst!",
-  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and then Apply: I'll cross those squares out for you.": "Du hast eine Katze gefunden! In ihrer Zeile, Spalte und Farbe und direkt neben ihr kann keine andere Katze sein. Tippe unten auf ? und dann auf Anwenden: Ich streiche diese Felder für dich durch.",
   "Now this color has only one free square left. Find its cat!": "Jetzt hat diese Farbe nur noch ein freies Feld. Finde ihre Katze!",
   "Stuck? The cat button below shows where a cat is hiding. You get 6 Cat Finders and 6 hints; watch a short video for more.": "Hängst du fest? Der Katzenknopf unten zeigt, wo sich eine Katze versteckt. Du hast 6 Katzenfinder und 6 Tipps; für mehr schau ein kurzes Video.",
   "Solve %lld levels of %lld×%lld to unlock.": "Löse %lld Levels mit %lld×%lld zum Freischalten.",
@@ -522,7 +521,16 @@
   "Spring Garden": "Frühlingsgarten",
   "Summer Beach": "Sommerstrand",
   "Autumn Forest": "Herbstwald",
-  "Winter Tale": "Wintermärchen"
+  "Winter Tale": "Wintermärchen",
+  "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you.": "Du hast eine Katze gefunden! In ihrer Zeile, Spalte und Farbe und direkt neben ihr kann keine andere Katze sein. Tippe unten auf ?, dann streiche ich diese Felder für dich durch.",
+  "Magic Eraser": "Zauberradierer",
+  "On": "An",
+  "Off": "Aus",
+  "Assisted Drag": "Geführt",
+  "Free Drag": "Frei",
+  "Drag Mode": "Ziehmodus",
+  "Hold a square and slide: only that row or column is marked, in a straight line.": "Halte ein Feld gedrückt und wische: Nur diese Zeile oder Spalte wird markiert, in einer geraden Linie.",
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Halte ein Feld gedrückt und wische in jede Richtung, auch diagonal: Jedes überstrichene Feld wird markiert."
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

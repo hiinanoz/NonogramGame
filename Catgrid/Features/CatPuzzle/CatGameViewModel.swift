@@ -68,8 +68,10 @@ final class CatGameViewModel {
     private(set) var animations: [GridPosition: CatMarkAnimation] = [:]
     /// Son yanlış kedinin bozduğu kural (kural şeridi ve tahta bunu vurgular).
     private(set) var lastConflict: CatConflict?
-    /// "?" ipucunun önizlemesi; oyuncu "Uygula"ya basınca tahtaya işlenir.
+    /// "?" ipucu: kısa bir an gösterilir, sonra tahtaya kendiliğinden işlenir.
     private(set) var pendingHint: CatHint?
+    /// Sihirli silgi: açıkken dokunulan/sürüklenen X'ler silinir; boş kareye dokununca kapanır.
+    private(set) var isErasing = false
     /// Son yanlış kedi denemesi (kısa sallanma için).
     private(set) var lastWrong: GridPosition?
     /// Parmağın altındaki kare.
@@ -86,6 +88,7 @@ final class CatGameViewModel {
     private var touchStart: GridPosition?
     private var paintCross: Bool?
     private var timerTask: Task<Void, Never>?
+    private var hintTask: Task<Void, Never>?
     private let now: () -> Date
 
     init(level: CatLevel, saved: CatSnapshot? = nil, now: @escaping () -> Date = { Date() }) {
@@ -116,10 +119,34 @@ final class CatGameViewModel {
     /// başka bir kareye geçince X boyamaya döner.
     func touchBegan(at position: GridPosition) {
         guard !isFinished, game.contains(position) else { return }
-        dismissHint()
+        // Gösterilmekte olan ipucu beklemeden işlenir
+        applyHint()
+        activeCell = position
+        if isErasing {
+            switch game[position] {
+            case .cross:
+                // Silgi: bu X silinir, sürüklenince geçilen X'ler de silinir
+                touchStart = position
+                paintCross = false
+                paint(at: position)
+            case .blank:
+                // Boş kareye dokunmak silgiyi kapatır (kare işaretlenmez)
+                touchStart = nil
+                isErasing = false
+            default:
+                // Bulunan kediler ve yanlış kediler silinmez
+                touchStart = nil
+            }
+            return
+        }
         touchStart = position
         paintCross = nil
-        activeCell = position
+    }
+
+    /// Sihirli silgi düğmesi.
+    func toggleEraser() {
+        guard !isFinished else { return }
+        isErasing.toggle()
     }
 
     func touchMoved(to position: GridPosition) {
@@ -154,37 +181,51 @@ final class CatGameViewModel {
 
     // MARK: - İpuçları
 
-    /// "?" düğmesi: bir sonraki mantık adımını önizler. Adım yoksa `false`.
+    /// "?" düğmesi: bir sonraki mantık adımını kısa bir an gösterir (ilgili kareler vurgulanır),
+    /// sonra kendiliğinden uygular: X'ler sırayla çizilir, kedi açılacaksa karesinde belirir.
+    /// Adım yoksa `false`.
     @discardableResult
-    func previewHint() -> Bool {
-        guard !isFinished, let hint = game.hint() else { return false }
+    func useHint() -> Bool {
+        guard !isFinished, pendingHint == nil, let hint = game.hint() else { return false }
+        isErasing = false
         pendingHint = hint
+        hintTask?.cancel()
+        hintTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(0.9))
+            guard !Task.isCancelled else { return }
+            self?.applyHint()
+        }
         return true
     }
 
+    /// Gösterilmekte olan ipucunu hemen işler (yoksa bir şey yapmaz).
     func applyHint() {
+        hintTask?.cancel()
+        hintTask = nil
         guard let hint = pendingHint else { return }
         pendingHint = nil
         usedHints = true
         let before = game.marks
         handle(game.apply(hint))
-        // İpucunun X'leri de çizilerek gelsin
+        // İpucunun X'leri sırayla, çizilerek gelsin
         let time = now()
+        var order = 0
         for i in before.indices where before[i] == .blank && game.marks[i] == .cross {
-            animations[GridPosition(row: i / level.size, column: i % level.size)] = CatMarkAnimation(kind: .cross, start: time)
+            animations[GridPosition(row: i / level.size, column: i % level.size)] = CatMarkAnimation(
+                kind: .cross, start: time.addingTimeInterval(Double(order) * 0.06)
+            )
+            order += 1
         }
+        if order > 0 { onEvent?(.crossed) }
         checkCompletedGroups(around: hint.cells)
-        scheduleAnimationCleanup()
-    }
-
-    func dismissHint() {
-        pendingHint = nil
+        scheduleAnimationCleanup(extra: Double(order) * 0.06)
     }
 
     /// Kedi bulucu: bir kedinin yerini gösterir ve yerleştirir.
     func revealCat() {
         guard !isFinished else { return }
-        dismissHint()
+        applyHint()
+        isErasing = false
         usedHints = true
         handle(game.revealCat())
     }
@@ -208,7 +249,9 @@ final class CatGameViewModel {
         animations = [:]
         lastConflict = nil
         completedGroups = []
+        hintTask?.cancel()
         pendingHint = nil
+        isErasing = false
         lastWrong = nil
         lastFindAt = nil
         isPaused = false
@@ -268,10 +311,10 @@ final class CatGameViewModel {
     private var cleanupTask: Task<Void, Never>?
 
     /// Biten animasyonlar silinir; tahta yeniden durgun çizime döner.
-    private func scheduleAnimationCleanup() {
+    private func scheduleAnimationCleanup(extra: TimeInterval = 0) {
         cleanupTask?.cancel()
         cleanupTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(CatMarkAnimation.duration + 0.6))
+            try? await Task.sleep(for: .seconds(CatMarkAnimation.duration + 0.6 + extra))
             guard let self, !Task.isCancelled else { return }
             let time = self.now()
             self.animations = self.animations.filter { time.timeIntervalSince($0.value.start) < CatMarkAnimation.duration + 0.5 }

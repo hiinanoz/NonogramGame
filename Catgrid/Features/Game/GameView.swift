@@ -66,6 +66,7 @@ struct GameView: View {
     @AppStorage(SettingsKeys.playMode) private var playMode = PlayMode.dopamine
     @AppStorage(SettingsKeys.largeBoardCursor) private var largeBoardCursor = true
     @AppStorage(SettingsKeys.cursorStyle) private var cursorStyle = CursorStyle.twoHands
+    @AppStorage(SettingsKeys.assistedDrag) private var assistedDrag = true
     /// Dopamin modu: satır parıltısı ve bitişte konfeti.
     @State private var lineGlow: LineGlow?
     @State private var confettiStart: Date?
@@ -238,6 +239,7 @@ struct GameView: View {
             }
             viewModel.autoCrosses = !isHardMode || isEasyLocked
             viewModel.autoFills = tutorialAutoFills
+            viewModel.assistedDrag = assistedDrag
             viewModel.start()
         }
         .onChange(of: isHardMode) { _, hard in
@@ -274,6 +276,9 @@ struct GameView: View {
         }
         .onChange(of: game.status) { _, status in
             if case .lost = status { persistProgress() }
+        }
+        .onChange(of: assistedDrag) { _, assisted in
+            viewModel.assistedDrag = assisted
         }
         .onChange(of: tutorialAutoFills) { _, fills in
             viewModel.autoFills = fills

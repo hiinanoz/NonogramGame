@@ -43,7 +43,7 @@ struct BadgesTabView: View {
                     }
                     Spacer()
                 }
-                PillPicker(selection: $mode, options: BadgeMode.allCases.map { ($0, Text($0.title)) })
+                PillPicker(selection: $mode, options: BadgeMode.allCases.map { ($0, Text($0.shortTitle)) })
                 BadgeGrid(mode: mode)
             }
             .padding(20)
@@ -69,7 +69,7 @@ struct BadgeGrid: View {
         let locked = list.filter { badges.earned[$0] == nil }
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 6) {
-                Text(mode.title)
+                Text(mode.shortTitle)
                     .font(.headline)
                     .foregroundStyle(theme.textSecondary)
                 Text(verbatim: "\(earned.count)/\(list.count)")

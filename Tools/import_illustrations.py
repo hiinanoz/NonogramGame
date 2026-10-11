@@ -20,6 +20,9 @@ DEST = ROOT / "Catgrid/Resources/Assets.xcassets/Illustrations"
 # ad: (genişlik, şeffaf mı)
 SPECS = {
     "home-hero": (1800, False),
+    "home-hero-dark": (1800, False),
+    "home-premium": (1600, False),
+    "home-premium-dark": (1600, False),
     "celebrate-hero": (1600, False),
     "cat-theme-1": (1500, False),
     "cat-theme-2": (1500, False),

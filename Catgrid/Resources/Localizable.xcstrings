@@ -21533,52 +21533,6 @@
         }
       }
     },
-    "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and then Apply: I'll cross those squares out for you.": {
-      "localizations": {
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bir kedi buldun! Onun satırında, sütununda, renginde ve hemen yanında başka kedi olamaz. Alttaki ?'ye dokun, sonra Uygula'ya bas: o kareleri senin için X'leyeyim."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "猫を見つけた!同じ行・列・色、そしてすぐ隣にはほかの猫はいません。下の「?」をタップして「適用」を押すと、そのマスに×をつけてあげるよ。"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Du hast eine Katze gefunden! In ihrer Zeile, Spalte und Farbe und direkt neben ihr kann keine andere Katze sein. Tippe unten auf ? und dann auf Anwenden: Ich streiche diese Felder für dich durch."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tu as trouvé un chat ! Aucun autre chat ne peut être sur sa ligne, sa colonne, sa couleur ni juste à côté. Touche ? en bas puis Appliquer : je barre ces cases pour toi."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Encontraste un gato! No puede haber otro en su fila, columna o color, ni justo a su lado. Toca ? abajo y luego Aplicar: tacharé esas casillas por ti."
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Você achou um gato! Nenhum outro gato pode estar na linha, coluna ou cor dele, nem logo ao lado. Toque em ? lá embaixo e depois em Aplicar: eu marco esses quadrados para você."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "고양이를 찾았어요! 같은 행, 열, 색, 그리고 바로 옆에는 다른 고양이가 없어요. 아래 ?를 누르고 적용을 누르면 그 칸에 X를 표시해 줄게요."
-          }
-        }
-      }
-    },
     "Now this color has only one free square left. Find its cat!": {
       "localizations": {
         "tr": {
@@ -23875,6 +23829,420 @@
           "stringUnit": {
             "state": "translated",
             "value": "겨울 동화"
+          }
+        }
+      }
+    },
+    "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir kedi buldun! Onun satırında, sütununda, renginde ve hemen yanında başka kedi olamaz. Alttaki ?'ye dokun, o kareleri senin için X'leyeyim."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "猫を見つけた!同じ行・列・色、そしてすぐ隣にはほかの猫はいません。下の「?」をタップすると、そのマスに×をつけてあげるよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast eine Katze gefunden! In ihrer Zeile, Spalte und Farbe und direkt neben ihr kann keine andere Katze sein. Tippe unten auf ?, dann streiche ich diese Felder für dich durch."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu as trouvé un chat ! Aucun autre chat ne peut être sur sa ligne, sa colonne, sa couleur ni juste à côté. Touche ? en bas et je barre ces cases pour toi."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Encontraste un gato! No puede haber otro en su fila, columna o color, ni justo a su lado. Toca ? abajo y tacharé esas casillas por ti."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Você achou um gato! Nenhum outro gato pode estar na linha, coluna ou cor dele, nem logo ao lado. Toque em ? lá embaixo e eu marco esses quadrados para você."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고양이를 찾았어요! 같은 행, 열, 색, 그리고 바로 옆에는 다른 고양이가 없어요. 아래 ?를 누르면 그 칸에 X를 표시해 줄게요."
+          }
+        }
+      }
+    },
+    "Magic Eraser": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sihirli Silgi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "魔法の消しゴム"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zauberradierer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gomme magique"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borrador mágico"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borracha mágica"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "마법 지우개"
+          }
+        }
+      }
+    },
+    "On": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açık"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オン"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activée"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activado"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ligada"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "켜짐"
+          }
+        }
+      }
+    },
+    "Off": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapalı"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オフ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Désactivée"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desactivado"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desligada"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "꺼짐"
+          }
+        }
+      }
+    },
+    "Assisted Drag": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yardımlı Kaydırma"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アシスト"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geführt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Glisser assisté"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deslizar asistido"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deslizar assistido"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보조 드래그"
+          }
+        }
+      }
+    },
+    "Free Drag": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serbest Kaydırma"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "フリー"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frei"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Glisser libre"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deslizar libre"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deslizar livre"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자유 드래그"
+          }
+        }
+      }
+    },
+    "Drag Mode": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydırma Türü"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ドラッグ方式"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziehmodus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode de glisser"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modo de deslizar"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modo de deslizar"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "드래그 방식"
+          }
+        }
+      }
+    },
+    "Hold a square and slide: only that row or column is marked, in a straight line.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir kareyi basılı tutup kaydır: yalnızca o satır ya da sütun, düz bir çizgide işaretlenir."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マスを押したままスライドすると、その行か列だけがまっすぐ塗られます。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte ein Feld gedrückt und wische: Nur diese Zeile oder Spalte wird markiert, in einer geraden Linie."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintiens une case et glisse : seule cette ligne ou colonne est marquée, en ligne droite."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mantén una casilla y desliza: solo se marca esa fila o columna, en línea recta."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segure um quadrado e deslize: só aquela linha ou coluna é marcada, em linha reta."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "칸을 누른 채 밀면 그 행이나 열만 직선으로 표시돼요."
+          }
+        }
+      }
+    },
+    "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir kareyi basılı tutup istediğin yöne, çapraz da olsa kaydır: geçtiğin her kare işaretlenir."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マスを押したまま、斜めも含めて好きな方向にスライド。通ったマスがすべて塗られます。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte ein Feld gedrückt und wische in jede Richtung, auch diagonal: Jedes überstrichene Feld wird markiert."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintiens une case et glisse dans n'importe quelle direction, même en diagonale : chaque case traversée est marquée."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mantén una casilla y desliza en cualquier dirección, incluso en diagonal: se marca cada casilla por la que pases."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segure um quadrado e deslize em qualquer direção, até na diagonal: cada quadrado por onde passar é marcado."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "칸을 누른 채 대각선을 포함해 어느 방향으로든 밀면 지나가는 모든 칸이 표시돼요."
           }
         }
       }
