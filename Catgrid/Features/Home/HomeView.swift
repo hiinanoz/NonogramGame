@@ -92,7 +92,7 @@ struct HomeView: View {
     /// Kart Koleksiyonu yan yana.
     private func modeCards(compact: Bool) -> some View {
         // Üç kart aynı yükseklikte: büyük kart ile alttaki iki kart hizalı dursun
-        let cardHeight: CGFloat = compact ? 132 : 158
+        let cardHeight: CGFloat = compact ? 140 : 168
         let streak = model.dailyStreak
         let collected = model.collectedBreeds.count
         let cats = model.cats
@@ -318,30 +318,30 @@ struct ModeCard<Caption: View>: View {
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: compact ? 4 : 6) {
-                // Üstte ikon ve çizim yan yana: kart, büyük kartla aynı yükseklikte kalır
-                HStack(alignment: .top, spacing: 4) {
-                    ModeIcon(style: style, size: compact ? 30 : 36)
-                    Group {
-                        // Hareketli kedi (videodan), yoksa sabit çizim
-                        if LoopingCatAnimation.isAvailable(style.animation) {
-                            LoopingCatView(name: style.animation)
-                        } else {
-                            IllustrationView(name: style.illustration)
-                        }
+                // Üstte büyük çizim kartın genişliğince; ikon sol üst köşesinde
+                Group {
+                    // Hareketli kedi (videodan), yoksa sabit çizim
+                    if LoopingCatAnimation.isAvailable(style.animation) {
+                        LoopingCatView(name: style.animation)
+                    } else {
+                        IllustrationView(name: style.illustration)
                     }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .frame(height: compact ? 44 : 58)
                 }
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .frame(height: compact ? 62 : 80)
+                .overlay(alignment: .topLeading) {
+                    ModeIcon(style: style, size: compact ? 28 : 32)
+                }
+                Spacer(minLength: 0)
                 Text(title)
-                    .font((compact ? Font.subheadline : .headline).bold())
+                    .font(compact ? Font.headline.bold() : .title3.bold())
                     .lineLimit(1)
-                    .minimumScaleFactor(0.65)
+                    .minimumScaleFactor(0.7)
                     .foregroundStyle(style.ink(theme))
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Spacer(minLength: 0)
-                HStack(alignment: .bottom, spacing: 4) {
+                HStack(alignment: .center, spacing: 4) {
                     caption()
-                        .font(.caption2.weight(.semibold))
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(style.ink(theme).opacity(0.85))
                         .lineLimit(2)
                         .minimumScaleFactor(0.75)

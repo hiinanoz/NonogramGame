@@ -1,5 +1,6 @@
 import ImageIO
 import SwiftUI
+import UIKit
 
 /// Videodan hazırlanmış, arka planı temizlenmiş kedi animasyonları (döngülü, saydam WebP).
 /// Dosyalar `Resources/Animations` altında; ad ile çağrılır.
@@ -18,7 +19,7 @@ enum LoopingCatAnimation {
     /// Videonun kare hızı.
     static let frameRate: Double = 24
     /// Kareler ekrandaki boyutun en fazla bu katı çözülür (yumuşak çizimlerde 2x yeterli,
-    /// bellek üçte bir azalır).
+    /// bellek azalır).
     static let maxPixelScale: CGFloat = 2
 
     static func url(_ name: String) -> URL? {
@@ -34,21 +35,87 @@ enum LoopingCatAnimation {
         name == sleepyCat ? .purr : (Bool.random() ? .meow : .meow2)
     }
 
-    /// Bütün kareleri bir kez, ekrandaki boyuta küçülterek çözer (arka planda); oynatırken
-    /// yalnızca hazır kare seçilir.
-    static func decodeFrames(_ name: String, maxPixelSize: Int) async -> [CGImage] {
-        guard let url = url(name) else { return [] }
+    /// Yüklenmeden önce yer ayırmak için en-boy oranı (kareler gelince düzen kaymasın).
+    static func aspectRatio(_ name: String) -> CGFloat {
+        name == peekCat ? 300.0 / 338.0 : 360.0 / 194.0
+    }
+
+    /// Tek kareyi çözer; ekrandaki boyuttan büyükse küçültür.
+    static func decodeFrame(_ source: CGImageSource, at index: Int, maxPixelSize: Int) -> CGImage? {
+        let options = [kCGImageSourceShouldCacheImmediately: true] as CFDictionary
+        guard let image = CGImageSourceCreateImageAtIndex(source, index, options) else { return nil }
+        let longest = max(image.width, image.height)
+        guard maxPixelSize > 0, longest > maxPixelSize * 23 / 20 else { return image }
+        let scale = CGFloat(maxPixelSize) / CGFloat(longest)
+        let width = max(Int(CGFloat(image.width) * scale), 1)
+        let height = max(Int(CGFloat(image.height) * scale), 1)
+        guard let context = CGContext(
+            data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else { return image }
+        context.interpolationQuality = .high
+        context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+        return context.makeImage() ?? image
+    }
+
+    /// Yalnızca ilk kare: kedi ekrana hemen gelir, hareket kareler hazır olunca başlar.
+    static func decodeFirstFrame(_ name: String, maxPixelSize: Int) async -> CGImage? {
+        guard let url = url(name) else { return nil }
         return await Task.detached(priority: .userInitiated) {
-            guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return [CGImage]() }
-            let options = [
-                kCGImageSourceCreateThumbnailFromImageAlways: true,
-                kCGImageSourceShouldCacheImmediately: true,
-                kCGImageSourceThumbnailMaxPixelSize: max(maxPixelSize, 64),
-            ] as CFDictionary
-            return (0..<CGImageSourceGetCount(source)).compactMap {
-                CGImageSourceCreateThumbnailAtIndex(source, $0, options)
-            }
+            guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+            return decodeFrame(source, at: 0, maxPixelSize: maxPixelSize)
         }.value
+    }
+}
+
+/// Çözülmüş kareler uygulama boyunca saklanır: ekrana geri dönünce yeniden çözülmez; aynı
+/// animasyonu isteyen ikinci görünüm de aynı işi bekler. Bellek uyarısında boşaltılır.
+@MainActor
+final class LoopingFrameStore {
+    static let shared = LoopingFrameStore()
+
+    private var cache: [String: [CGImage]] = [:]
+    private var tasks: [String: Task<[CGImage], Never>] = [:]
+
+    private init() {
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: .main
+        ) { _ in
+            Task { @MainActor in LoopingFrameStore.shared.cache.removeAll() }
+        }
+    }
+
+    private static func key(_ name: String, _ size: Int) -> String {
+        // Boyutlar 32 piksellik basamaklara yuvarlanır: küçük düzen farkları yeniden çözdürmesin
+        "\(name)@\((size + 31) / 32)"
+    }
+
+    func cached(_ name: String, maxPixelSize: Int) -> [CGImage]? {
+        cache[Self.key(name, maxPixelSize)]
+    }
+
+    func frames(_ name: String, maxPixelSize: Int) async -> [CGImage] {
+        let key = Self.key(name, maxPixelSize)
+        if let frames = cache[key] { return frames }
+        let task: Task<[CGImage], Never>
+        if let running = tasks[key] {
+            task = running
+        } else {
+            let size = (maxPixelSize + 31) / 32 * 32
+            let url = LoopingCatAnimation.url(name)
+            task = Task.detached(priority: .userInitiated) { () -> [CGImage] in
+                guard let url, let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return [] }
+                // Kareler sırayla çözülür (her kare bağımsız; sıralı okuma en hızlısı)
+                return (0..<CGImageSourceGetCount(source)).compactMap {
+                    LoopingCatAnimation.decodeFrame(source, at: $0, maxPixelSize: size)
+                }
+            }
+            tasks[key] = task
+        }
+        let frames = await task.value
+        tasks[key] = nil
+        if !frames.isEmpty { cache[key] = frames }
+        return frames
     }
 }
 
@@ -82,7 +149,7 @@ struct LoopingCatView: View {
     }
 
     private var aspectRatio: CGFloat {
-        guard let first = frames.first, first.height > 0 else { return 360.0 / 190.0 }
+        guard let first = frames.first, first.height > 0 else { return LoopingCatAnimation.aspectRatio(name) }
         return CGFloat(first.width) / CGFloat(first.height)
     }
 
@@ -111,10 +178,18 @@ struct LoopingCatView: View {
         .onAppear { isVisible = true }
         .onDisappear { isVisible = false }
         .task(id: pixelSize) {
-            // İlk ölçüden sonra bir kez çözülür; boyut çok büyürse (dönme vb.) yeniden
             guard pixelSize > 0 else { return }
-            if let first = frames.first, max(first.width, first.height) >= pixelSize * 9 / 10 { return }
-            frames = await LoopingCatAnimation.decodeFrames(name, maxPixelSize: pixelSize)
+            let store = LoopingFrameStore.shared
+            // Daha önce çözüldüyse hemen; değilse önce ilk kare, sonra bütün kareler
+            if let cached = store.cached(name, maxPixelSize: pixelSize) {
+                frames = cached
+                return
+            }
+            if frames.isEmpty, let first = await LoopingCatAnimation.decodeFirstFrame(name, maxPixelSize: pixelSize) {
+                frames = [first]
+            }
+            let all = await store.frames(name, maxPixelSize: pixelSize)
+            if !all.isEmpty { frames = all }
         }
         .accessibilityHidden(true)
     }
