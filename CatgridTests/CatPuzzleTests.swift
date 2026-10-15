@@ -156,4 +156,43 @@ final class CatPuzzleTests: XCTestCase {
         viewModel.touchEnded()
         XCTAssertEqual(viewModel.game[catCell], .cat)
     }
+
+    /// Kolay mod: bulunan kedinin satırı, sütunu, rengi ve sekiz komşusu X'lenir; Zor modda X konmaz.
+    @MainActor
+    func testEasyModeCrossesAroundFoundCat() throws {
+        let level = try XCTUnwrap(pack.levels.first)
+        let n = level.size
+        let catCell = level.catPosition(ofRegion: level.region(at: GridPosition(row: 0, column: level.solution[0])))
+
+        let clock = Date(timeIntervalSinceReferenceDate: 0)
+        // Hızlı çift dokunuş kedi koyar
+        func doubleTap(_ viewModel: CatGameViewModel) {
+            for _ in 0..<2 {
+                viewModel.touchBegan(at: catCell)
+                viewModel.touchEnded()
+            }
+        }
+
+        let hard = CatGameViewModel(level: level, now: { clock })
+        hard.setAutoCrosses(false)
+        doubleTap(hard)
+        XCTAssertEqual(hard.game[catCell], .cat)
+        XCTAssertFalse(hard.game.marks.contains(.cross))
+
+        let easy = CatGameViewModel(level: level, now: { clock })
+        easy.setAutoCrosses(true)
+        doubleTap(easy)
+        XCTAssertEqual(easy.game[catCell], .cat)
+        let attacked = CatRules.attacked(by: catCell.row * n + catCell.column, in: level)
+        XCTAssertFalse(attacked.isEmpty)
+        for i in attacked {
+            XCTAssertEqual(easy.game.marks[i], .cross, "kare \(i)")
+        }
+        let others = easy.game.marks.indices.filter { !attacked.contains($0) && $0 != catCell.row * n + catCell.column }
+        XCTAssertTrue(others.allSatisfy { easy.game.marks[$0] == .blank })
+
+        // Oyun ortasında Kolay'a geçmek, bulunmuş kedilerin X'lerini de koyar
+        hard.setAutoCrosses(true)
+        XCTAssertTrue(attacked.allSatisfy { hard.game.marks[$0] == .cross })
+    }
 }

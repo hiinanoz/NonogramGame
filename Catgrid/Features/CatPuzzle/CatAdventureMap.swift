@@ -21,7 +21,9 @@ struct CatHubView: View {
         let levels = cats.levels.filter { season.sizes.contains($0.size) }
         ScrollViewReader { proxy in
             ScrollView {
-                LazyVStack(spacing: 0) {
+                // Sabit yükseklikli satırlar; tembel olmayan yığın, açılışta kalınan bölüme
+                // kaydırmanın düzen hazır olmadan kaçmamasını sağlar
+                VStack(spacing: 0) {
                     ForEach(Array(levels.enumerated()), id: \.element.id) { offset, level in
                         CatMapRow(
                             level: level,
@@ -40,9 +42,14 @@ struct CatHubView: View {
             .scrollIndicators(.hidden)
             .onAppear {
                 cats.refillIfNeeded(isPremium: store.isPremium, today: model.today)
-                if let current, season.sizes.contains(current.size) {
-                    proxy.scrollTo(current.id, anchor: .center)
-                }
+            }
+            .task {
+                // Harita, kalınan bölüm ekranın ortasında olacak şekilde açılır. İlk düzen
+                // tamamlanmadan yapılan kaydırma yok sayılabildiği için bir kare sonra da tekrarlanır.
+                guard let current, season.sizes.contains(current.size) else { return }
+                proxy.scrollTo(current.id, anchor: .center)
+                try? await Task.sleep(for: .milliseconds(60))
+                proxy.scrollTo(current.id, anchor: .center)
             }
             .onChange(of: season) { _, newSeason in
                 if let current, newSeason.sizes.contains(current.size) {

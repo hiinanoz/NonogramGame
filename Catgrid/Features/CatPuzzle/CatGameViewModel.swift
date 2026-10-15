@@ -77,6 +77,9 @@ final class CatGameViewModel {
     /// Parmağın altındaki kare.
     private(set) var activeCell: GridPosition?
     private(set) var isPaused = false
+    /// Kolay mod: bulunan kedinin rengine, satırına, sütununa ve çevresindeki sekiz kareye
+    /// X'ler kendiliğinden konur. Zor modda (kapalı) bütün X'leri oyuncu koyar.
+    private(set) var autoCrosses = false
 
     var onEvent: ((CatEvent) -> Void)?
     var onSolved: ((CatPuzzleModel.Completion) -> Void)?
@@ -285,6 +288,40 @@ final class CatGameViewModel {
         start()
     }
 
+    /// Kolay/Zor geçişi. Oyun ortasında Kolay'a geçilince bulunmuş kedilerin X'leri de konur.
+    func setAutoCrosses(_ isOn: Bool) {
+        guard autoCrosses != isOn else { return }
+        autoCrosses = isOn
+        guard isOn, !isFinished else { return }
+        let found = game.marks.indices.filter { game.marks[$0] == .cat }
+        let crossed = found.flatMap { crossAttacked(by: GridPosition(row: $0 / level.size, column: $0 % level.size)) }
+        if !crossed.isEmpty {
+            onEvent?(.crossed)
+            checkCompletedGroups(around: crossed)
+        }
+    }
+
+    /// Kolay mod: kedinin artık kedi olamayacak hâle getirdiği boş karelere X koyar. X'ler
+    /// kediden dışa doğru dalga gibi, sırayla çizilerek gelir. Konan kareleri döndürür.
+    @discardableResult
+    private func crossAttacked(by cat: GridPosition) -> [GridPosition] {
+        let n = level.size
+        let time = now()
+        var crossed: [GridPosition] = []
+        var latest: TimeInterval = 0
+        for i in CatRules.attacked(by: cat.row * n + cat.column, in: level) where game.marks[i] == .blank {
+            let position = GridPosition(row: i / n, column: i % n)
+            guard game.paint(cross: true, at: position) == .crossed else { continue }
+            let distance = max(abs(position.row - cat.row), abs(position.column - cat.column))
+            let delay = 0.12 + Double(distance) * 0.05
+            animations[position] = CatMarkAnimation(kind: .cross, start: time.addingTimeInterval(delay))
+            latest = max(latest, delay)
+            crossed.append(position)
+        }
+        if !crossed.isEmpty { scheduleAnimationCleanup(extra: latest) }
+        return crossed
+    }
+
     // MARK: - Sonuçlar
 
     private func handle(_ move: CatMove, at touched: GridPosition? = nil) {
@@ -303,7 +340,8 @@ final class CatGameViewModel {
         case .found(let find):
             animate(.cat, at: find.position)
             celebrate(find)
-            checkCompletedGroups(around: [find.position])
+            let crossed = autoCrosses ? crossAttacked(by: find.position) : []
+            checkCompletedGroups(around: [find.position] + crossed)
             onEvent?(.found(combo: find.revealed ? 0 : combo))
         case .solved(let find):
             animate(.cat, at: find.position)

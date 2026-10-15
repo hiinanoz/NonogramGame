@@ -718,24 +718,9 @@ struct GameStatusBar: View {
             .foregroundStyle(isRunningOut ? theme.mistake : theme.textSecondary)
 
             // Zorluk: "Zor"da tamamlanan satırlara otomatik X konmaz
-            Button {
-                isHardMode.toggle()
-            } label: {
-                Label(isHardMode ? LocalizedStringKey("Hard") : LocalizedStringKey("Easy"), systemImage: isHardMode ? "flame.fill" : "leaf.fill")
-                    .font(.subheadline.weight(.bold))
-                    .lineLimit(1)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(Capsule().fill(isHardMode ? theme.mistake.opacity(0.15) : theme.surfaceMuted))
-                    .foregroundStyle(isHardMode ? theme.mistake : theme.accent)
-            }
-            .buttonStyle(PressableButtonStyle())
-            .disabled(isDifficultyLocked)
-            .opacity(isDifficultyLocked ? 0.55 : 1)
-            .padding(.leading, 6)
-            .accessibilityLabel(Text("Difficulty"))
-            .accessibilityValue(isHardMode ? Text("Hard") : Text("Easy"))
-            .accessibilityIdentifier("game.difficulty")
+            DifficultyToggle(isHard: $isHardMode, isLocked: isDifficultyLocked)
+                .padding(.leading, 6)
+                .accessibilityIdentifier("game.difficulty")
 
             if game.status == .playing {
                 Button(action: onPause) {
@@ -756,6 +741,33 @@ struct GameStatusBar: View {
 
     private var isRunningOut: Bool {
         (game.remainingTime ?? .infinity) <= 10
+    }
+}
+
+/// Kolay/Zor düğmesi (yaprak/alev): Nonogram ve Kedi Bulmaca'da aynı görünüm.
+@MainActor
+struct DifficultyToggle: View {
+    @Environment(\.appTheme) private var theme
+    @Binding var isHard: Bool
+    var isLocked = false
+
+    var body: some View {
+        Button {
+            isHard.toggle()
+        } label: {
+            Label(isHard ? LocalizedStringKey("Hard") : LocalizedStringKey("Easy"), systemImage: isHard ? "flame.fill" : "leaf.fill")
+                .font(.subheadline.weight(.bold))
+                .lineLimit(1)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Capsule().fill(isHard ? theme.mistake.opacity(0.15) : theme.surfaceMuted))
+                .foregroundStyle(isHard ? theme.mistake : theme.accent)
+        }
+        .buttonStyle(PressableButtonStyle())
+        .disabled(isLocked)
+        .opacity(isLocked ? 0.55 : 1)
+        .accessibilityLabel(Text("Difficulty"))
+        .accessibilityValue(isHard ? Text("Hard") : Text("Easy"))
     }
 }
 

@@ -534,7 +534,8 @@
   "Previous season": "Saison précédente",
   "Next season": "Saison suivante",
   "Back": "Retour",
-  "%lld of 3 stars": "%lld étoiles sur 3"
+  "%lld of 3 stars": "%lld étoiles sur 3",
+  "Easy: X's go around every cat you find.": "Facile : des X se placent autour de chaque chat trouvé."
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

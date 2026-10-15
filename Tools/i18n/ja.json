@@ -531,7 +531,8 @@
   "Previous season": "前のシーズン",
   "Next season": "次のシーズン",
   "Back": "戻る",
-  "%lld of 3 stars": "星3つ中%lld個"
+  "%lld of 3 stars": "星3つ中%lld個",
+  "Easy: X's go around every cat you find.": "かんたん：見つけた猫のまわりに自動で×が付きます。"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

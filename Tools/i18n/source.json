@@ -2087,6 +2087,10 @@
   "%lld of 3 stars": {
    "en": "%lld of 3 stars",
    "tr": "3 üzerinden %lld yıldız"
+  },
+  "Easy: X's go around every cat you find.": {
+   "en": "Easy: X's go around every cat you find.",
+   "tr": "Kolay: Bulduğun her kedinin çevresine X'ler kendiliğinden konur."
   }
  },
  "infoplist": {

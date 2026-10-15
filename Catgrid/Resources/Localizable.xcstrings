@@ -24430,6 +24430,52 @@
           }
         }
       }
+    },
+    "Easy: X's go around every cat you find.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kolay: Bulduğun her kedinin çevresine X'ler kendiliğinden konur."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "かんたん：見つけた猫のまわりに自動で×が付きます。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leicht: Um jede gefundene Katze werden automatisch X gesetzt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facile : des X se placent autour de chaque chat trouvé."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fácil: se ponen X alrededor de cada gato que encuentres."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fácil: X são colocados em volta de cada gato encontrado."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "쉬움: 찾은 고양이 주변에 X가 자동으로 표시돼요."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

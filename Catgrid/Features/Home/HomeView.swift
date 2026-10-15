@@ -14,6 +14,8 @@ struct HomeView: View {
     @State private var isOfferingReminder = false
     @State private var isShowingWhatsNew = false
     @State private var shownCard: CardSelection?
+    /// Durum çubuğunun yüksekliği: üstteki çizim bu kadar yukarı uzatılır.
+    @State private var topInset: CGFloat = 0
 
     var body: some View {
         // Ekrana sığan ilk düzen seçilir: önce rahat, sonra sıkı; o da sığmazsa (çok küçük
@@ -28,6 +30,7 @@ struct HomeView: View {
             // Üstteki çizim kaydırılınca da durum çubuğunun arkasına uzansın (krem bant kalmasın)
             .scrollClipDisabled()
         }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { topInset = $0 }
         .themedScreen()
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $isShowingPaywall) {
@@ -65,7 +68,7 @@ struct HomeView: View {
     /// ve en altta (abone olmayanlara) Premium şeridi.
     private func content(compact: Bool) -> some View {
         VStack(spacing: compact ? 10 : 16) {
-            HomeHero(compact: compact, openSettings: openSettings)
+            HomeHero(compact: compact, topInset: topInset, openSettings: openSettings)
             VStack(spacing: compact ? 10 : 14) {
                 modeCards(compact: compact)
                     // Kartlar çizimin solan alt kenarına biner: arada boşluk kalmaz
@@ -88,6 +91,8 @@ struct HomeView: View {
     /// Kedi Bulmaca öne çıkar: üstte tam genişlikte büyük kart, altında Günlük Bulmaca ve
     /// Kart Koleksiyonu yan yana.
     private func modeCards(compact: Bool) -> some View {
+        // Üç kart aynı yükseklikte: büyük kart ile alttaki iki kart hizalı dursun
+        let cardHeight: CGFloat = compact ? 132 : 158
         let streak = model.dailyStreak
         let collected = model.collectedBreeds.count
         let cats = model.cats
@@ -97,6 +102,7 @@ struct HomeView: View {
             } action: {
                 router.push(.catHub)
             }
+            .frame(height: cardHeight)
             .accessibilityIdentifier("home.mode.cats")
 
             HStack(spacing: 10) {
@@ -113,14 +119,14 @@ struct HomeView: View {
                 }
                 .accessibilityIdentifier("home.daily")
 
-                ModeCard(style: .collection, title: "Cat Card Collection", compact: compact) {
+                ModeCard(style: .collection, title: "Card Collection", compact: compact) {
                     Text("\(collected)/\(model.breeds.count) breeds")
                 } action: {
                     router.push(.collectionHub)
                 }
                 .accessibilityIdentifier("home.mode.collection")
             }
-            .fixedSize(horizontal: false, vertical: true)
+            .frame(height: cardHeight)
         }
     }
 
@@ -147,6 +153,8 @@ struct HomeView: View {
 struct HomeHero: View {
     @Environment(\.appTheme) private var theme
     let compact: Bool
+    /// Durum çubuğunun yüksekliği; çizim bu kadar yukarı taşar.
+    var topInset: CGFloat = 0
     let openSettings: () -> Void
 
     /// Koyu temada gece çizimi (varsa).
@@ -210,14 +218,15 @@ struct HomeHero: View {
         .padding(.bottom, hasArt ? 0 : 2)
         .background {
             if hasArt {
-                // Çizim durum çubuğunun arkasına kadar uzanır; taşan kısmı kırpılır
+                // Çizim durum çubuğunun arkasına kadar uzanır (hangi düzen seçilirse seçilsin,
+                // kaydırılabilir olanda da): alan, ölçülen durum çubuğu kadar yukarı büyütülür
                 Color.clear
+                    .padding(.top, -(topInset + 8))
                     .overlay(alignment: .bottom) {
                         IllustrationView(name: artName, contentMode: .fill)
                     }
                     .clipped()
                     .mask(LinearGradient(stops: [.init(color: .black, location: 0.8), .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom))
-                    .ignoresSafeArea(edges: .top)
             }
         }
     }
@@ -238,12 +247,15 @@ struct FeaturedModeCard<Caption: View>: View {
         Button(action: action) {
             HStack(alignment: .center, spacing: 8) {
                 VStack(alignment: .leading, spacing: compact ? 4 : 6) {
-                    ModeIcon(style: style, size: compact ? 32 : 38)
-                    Text(title)
-                        .font(.system(size: compact ? 22 : 26, weight: .heavy, design: .rounded))
-                        .foregroundStyle(style.ink(theme))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
+                    // İkon başlıkla aynı satırda: kart, alttaki kartlarla aynı yükseklikte sığar
+                    HStack(spacing: 6) {
+                        ModeIcon(style: style, size: compact ? 28 : 32)
+                        Text(title)
+                            .font(.system(size: compact ? 21 : 24, weight: .heavy, design: .rounded))
+                            .foregroundStyle(style.ink(theme))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                    }
                     subtitle
                         .font(.caption.weight(.medium))
                         .foregroundStyle(style.ink(theme).opacity(0.8))
@@ -265,12 +277,22 @@ struct FeaturedModeCard<Caption: View>: View {
                     .padding(.top, 2)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                // Katmanları gelince yumakla oynayan canlı kedi (prototip), yoksa tek parça çizim
-                CatIllustration(rig: style == .cats ? .yarnCat : nil, fallback: style.illustration, isLively: true)
-                    .frame(maxWidth: compact ? 120 : 150, maxHeight: compact ? 84 : 104)
+                // Yumakla oynayan kedi videosu (varsa), yoksa tek parça çizim; büyük ve kartın
+                // sağ alt köşesine yaslı
+                Group {
+                    if style == .cats && LoopingCatAnimation.isAvailable(LoopingCatAnimation.yarnCat) {
+                        LoopingCatView(name: LoopingCatAnimation.yarnCat)
+                    } else {
+                        CatIllustration(rig: style == .cats ? .yarnCat : nil, fallback: style.illustration, isLively: true)
+                    }
+                }
+                .frame(width: compact ? 160 : 190)
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .padding(.trailing, -8)
+                .padding(.bottom, -8)
             }
             .padding(compact ? 12 : 14)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(RoundedRectangle(cornerRadius: 24, style: .continuous).fill(style.background(theme)))
             .overlay(
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
@@ -295,18 +317,20 @@ struct ModeCard<Caption: View>: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: compact ? 6 : 8) {
-                ModeIcon(style: style, size: compact ? 32 : 40)
+            VStack(alignment: .leading, spacing: compact ? 4 : 6) {
+                // Üstte ikon ve çizim yan yana: kart, büyük kartla aynı yükseklikte kalır
+                HStack(alignment: .top, spacing: 4) {
+                    ModeIcon(style: style, size: compact ? 30 : 36)
+                    IllustrationView(name: style.illustration)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .frame(height: compact ? 44 : 58)
+                }
                 Text(title)
                     .font((compact ? Font.subheadline : .headline).bold())
-                    .multilineTextAlignment(.center)
-                    // Tek satırlık başlıkta da iki satır yer: çizimler aynı hizada dursun
-                    .lineLimit(2, reservesSpace: true)
-                    .minimumScaleFactor(0.7)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.65)
                     .foregroundStyle(style.ink(theme))
-                    .frame(maxWidth: .infinity)
-                IllustrationView(name: style.illustration)
-                    .frame(height: compact ? 46 : 64)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Spacer(minLength: 0)
                 HStack(alignment: .bottom, spacing: 4) {
                     caption()

@@ -6,6 +6,8 @@ enum SettingsKeys {
     static let haptics = "settings.haptics"
     /// "Zor": tamamlanan satırlara otomatik X konmaz.
     static let hardMode = "settings.hardMode"
+    /// Kedi Bulmaca zorluğu: Kolay'da bulunan kedinin etrafına X'ler kendiliğinden konur.
+    static let catHardMode = "settings.catHardMode"
     /// Rahat ya da Dopamin modu.
     static let playMode = "settings.playMode"
     /// 10x10'dan büyük bulmacalarda imleçle oynama.

@@ -32,6 +32,8 @@ struct CatGameView: View {
     @State private var isConfirmingRestart = false
     @State private var adOffer: CatHelper?
     @State private var noHintNote = false
+    @AppStorage(SettingsKeys.catHardMode) private var isHardMode = false
+    @State private var difficultyNote: Bool?
 
     init(level: CatLevel, saved: CatSnapshot? = nil) {
         _viewModel = State(initialValue: CatGameViewModel(level: level, saved: saved))
@@ -188,10 +190,40 @@ struct CatGameView: View {
             .animation(.spring, value: game.remainingLives)
             .accessibilityElement()
             .accessibilityLabel(Text("\(game.remainingLives) paws left"))
+            // Kolay/Zor (Nonogram'daki gibi); ilk bölümde (eğitim) gösterilmez, X'leri oyuncu koyar
+            if !isTutorial {
+                DifficultyToggle(isHard: $isHardMode)
+                    .padding(.leading, 6)
+                    .accessibilityIdentifier("cat.difficulty")
+            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
         .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(ModeStyle.cats.background(theme)))
+        .overlay(alignment: .bottom) {
+            if let hard = difficultyNote {
+                Text(hard ? LocalizedStringKey("Hard: you place every X yourself.") : LocalizedStringKey("Easy: X's go around every cat you find."))
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(theme.textPrimary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Capsule().fill(theme.surface).shadow(color: .black.opacity(0.1), radius: 6, y: 2))
+                    .offset(y: 40)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .allowsHitTesting(false)
+            }
+        }
+        .zIndex(1)
+        .onChange(of: isHardMode) { _, hard in
+            guard !isTutorial else { return }
+            viewModel.setAutoCrosses(!hard)
+            Haptics.selection()
+            withAnimation(.snappy) { difficultyNote = hard }
+            Task {
+                try? await Task.sleep(for: .seconds(2.5))
+                if difficultyNote == hard { withAnimation(.easeOut) { difficultyNote = nil } }
+            }
+        }
     }
 
     private var board: some View {
@@ -266,6 +298,8 @@ struct CatGameView: View {
 
     private func setUp() {
         cats.refillIfNeeded(isPremium: store.isPremium, today: model.today)
+        // Eğitimde X'leri oyuncu koyar (kurallar öğrenilsin)
+        viewModel.setAutoCrosses(!isHardMode && !isTutorial)
         viewModel.onEvent = { event in
             switch event {
             case .crossed: audio.play(.catX)
