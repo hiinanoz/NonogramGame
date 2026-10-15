@@ -2071,6 +2071,14 @@
   "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": {
    "en": "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!",
    "tr": "Kaptın! Bir dokunuş X koyar, X'e tekrar dokunmak onu siler, hızlı çift dokunuş kedi koyar; kaydırarak çok sayıda X koyabilirsin. Kalan kedileri bul!"
+  },
+  "Previous season": {
+   "en": "Previous season",
+   "tr": "Önceki sezon"
+  },
+  "Next season": {
+   "en": "Next season",
+   "tr": "Sonraki sezon"
   }
  },
  "infoplist": {

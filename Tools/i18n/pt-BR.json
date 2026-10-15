@@ -530,7 +530,9 @@
   "Hold a square and slide: only that row or column is marked, in a straight line.": "Segure um quadrado e deslize: só aquela linha ou coluna é marcada, em linha reta.",
   "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Segure um quadrado e deslize em qualquer direção, até na diagonal: cada quadrado por onde passar é marcado.",
   "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": "Cada cor esconde um gato. Cada linha e coluna também tem um, e os gatos nunca se tocam, nem na diagonal. Esta cor é um único quadrado, então o gato está ali. Toque duas vezes rápido para colocar o gato!",
-  "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "Você pegou o jeito! Toque uma vez para X, toque de novo num X para apagar, toque duas vezes para um gato e deslize para colocar vários X. Encontre o resto dos gatos!"
+  "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "Você pegou o jeito! Toque uma vez para X, toque de novo num X para apagar, toque duas vezes para um gato e deslize para colocar vários X. Encontre o resto dos gatos!",
+  "Previous season": "Temporada anterior",
+  "Next season": "Próxima temporada"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

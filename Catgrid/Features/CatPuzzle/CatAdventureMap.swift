@@ -1,34 +1,33 @@
 import NonogramKit
 import SwiftUI
 
-/// Kedi Bulmaca'nın giriş ekranı: bölümler bir serüven haritasında, kıvrılan bir yol üzerinde
-/// sıralanır. Çözülenler renkli, sıradaki büyük ve parlak, kilitliler soluk. Her temanın
-/// (Bahar Bahçesi, Yaz Sahili…) başında afişi durur. Altta sıradaki bölümün kartı ve "Oyna".
+/// Kedi Bulmaca'nın giriş ekranı: bir sezonun (Bahar Bahçesi, Yaz Sahili, Sonbahar Ormanı,
+/// Kış Masalı) serüven haritası. Ekran oyuncunun kaldığı sezonla açılır; üstteki oklarla diğer
+/// sezonlara geçilir. Bölümler sezonun manzarası üstünde kıvrılan bir yolda sıralanır.
+/// Altta sıradaki bölümün kartı ve "Oyna".
 @MainActor
 struct CatHubView: View {
     @Environment(AppModel.self) private var model
     @Environment(Router.self) private var router
     @Environment(StoreManager.self) private var store
     @Environment(\.appTheme) private var theme
+    /// Oyuncunun seçtiği sezon; `nil` ise kalınan bölümün sezonu.
+    @State private var selectedSeason: CatTheme?
 
     var body: some View {
         let cats = model.cats
         let current = cats.resumableLevel ?? cats.nextLevel
+        let season = selectedSeason ?? current.map { CatTheme.theme(forSize: $0.size) } ?? .spring
+        let levels = cats.levels.filter { season.sizes.contains($0.size) }
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(Array(cats.levels.enumerated()), id: \.element.id) { offset, level in
-                        let catTheme = CatTheme.theme(forSize: level.size)
-                        if offset == 0 || CatTheme.theme(forSize: cats.levels[offset - 1].size) != catTheme {
-                            CatMapThemeHeader(catTheme: catTheme, levels: cats.levels.filter { catTheme.sizes.contains($0.size) })
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                        }
+                    ForEach(Array(levels.enumerated()), id: \.element.id) { offset, level in
                         CatMapRow(
                             level: level,
                             index: offset,
-                            isFirstInTheme: offset == 0 || CatTheme.theme(forSize: cats.levels[offset - 1].size) != catTheme,
-                            isLastInTheme: offset == cats.levels.count - 1 || CatTheme.theme(forSize: cats.levels[offset + 1].size) != catTheme,
+                            isFirstInTheme: offset == 0,
+                            isLastInTheme: offset == levels.count - 1,
                             isCurrent: level.id == current?.id
                         ) {
                             router.push(.catGame(levelID: level.id))
@@ -36,47 +35,110 @@ struct CatHubView: View {
                         .id(level.id)
                     }
                 }
-                .padding(.bottom, 12)
+                .padding(.vertical, 16)
             }
+            .scrollIndicators(.hidden)
             .onAppear {
                 cats.refillIfNeeded(isPremium: store.isPremium, today: model.today)
-                if let current {
+                if let current, season.sizes.contains(current.size) {
                     proxy.scrollTo(current.id, anchor: .center)
+                }
+            }
+            .onChange(of: season) { _, newSeason in
+                if let current, newSeason.sizes.contains(current.size) {
+                    proxy.scrollTo(current.id, anchor: .center)
+                } else if let first = levels.first {
+                    proxy.scrollTo(first.id, anchor: .top)
                 }
             }
         }
         .background {
-            // Sıradaki bölümün temasının harita zemini (varsa); yoksa düz tema renkleri
-            if let current, Illustration.exists(CatTheme.theme(forSize: current.size).mapBackground) {
-                Color.clear
-                    .overlay { IllustrationView(name: CatTheme.theme(forSize: current.size).mapBackground, contentMode: .fill) }
-                    .clipped()
-                    .ignoresSafeArea()
+            // Sezonun manzarası tam ekran; yoksa sezonun renkleri
+            ZStack {
+                LinearGradient(colors: season.colors(theme), startPoint: .top, endPoint: .bottom)
+                if Illustration.exists(season.mapBackground) {
+                    Color.clear
+                        .overlay { IllustrationView(name: season.mapBackground, contentMode: .fill) }
+                        .clipped()
+                }
             }
+            .ignoresSafeArea()
+            .animation(.easeInOut(duration: 0.35), value: season)
         }
-        .safeAreaInset(edge: .top, spacing: 0) { header }
+        .safeAreaInset(edge: .top, spacing: 0) { header(season: season) }
         .safeAreaInset(edge: .bottom, spacing: 0) { footer(current: current) }
-        .themedScreen()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(theme.background.ignoresSafeArea())
         .screenTitle(BadgeMode.cats.title)
+        // Harita başlık çubuğunun arkasına kadar uzansın
+        .toolbarBackground(.hidden, for: .navigationBar)
     }
 
-    /// İlerleme ve kalan yardım hakları.
-    private var header: some View {
+    /// Sezon seçici, sezonun ilerlemesi ve kalan yardım hakları.
+    private func header(season: CatTheme) -> some View {
         let cats = model.cats
-        let tint = ModeStyle.cats.tint(theme)
-        return HStack(spacing: 10) {
-            Text(verbatim: "\(cats.solvedCount)/\(cats.levels.count)")
-                .font(.subheadline.bold().monospacedDigit())
-                .foregroundStyle(tint)
-            ProgressBar(value: cats.levels.isEmpty ? 0 : Double(cats.solvedCount) / Double(cats.levels.count), tint: tint)
-            chip(icon: "cat.fill", value: cats.findCharges, tint: theme.accent)
-                .accessibilityLabel(Text("Cat Finder: \(cats.findCharges)"))
-            chip(icon: "questionmark", value: cats.markCharges, tint: Color(red: 0.55, green: 0.42, blue: 0.82))
-                .accessibilityLabel(Text("Hints: \(cats.markCharges)"))
+        let levels = cats.levels.filter { season.sizes.contains($0.size) }
+        let solved = levels.filter { cats.isSolved($0) }.count
+        let tint = season.tint(theme)
+        let all = CatTheme.allCases
+        let index = all.firstIndex(of: season) ?? 0
+        let isUnlocked = cats.isSizeUnlocked(levels.map(\.size).min() ?? season.sizes.lowerBound)
+        return VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                seasonArrow("chevron.left", enabled: index > 0) { selectedSeason = all[index - 1] }
+                    .accessibilityLabel(Text("Previous season"))
+                VStack(spacing: 1) {
+                    HStack(spacing: 6) {
+                        Image(systemName: season.icon)
+                            .foregroundStyle(tint)
+                        Text(verbatim: "\(season.rawValue). ") + Text(season.title)
+                        if !isUnlocked {
+                            Image(systemName: "lock.fill")
+                                .font(.caption)
+                                .foregroundStyle(theme.textSecondary)
+                        }
+                    }
+                    .font(.headline)
+                    .foregroundStyle(theme.textPrimary)
+                    Text(verbatim: "\(season.sizes.lowerBound)×\(season.sizes.lowerBound) – \(season.sizes.upperBound)×\(season.sizes.upperBound)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(theme.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                seasonArrow("chevron.right", enabled: index < all.count - 1) { selectedSeason = all[index + 1] }
+                    .accessibilityLabel(Text("Next season"))
+            }
+            HStack(spacing: 10) {
+                Text(verbatim: "\(solved)/\(levels.count)")
+                    .font(.subheadline.bold().monospacedDigit())
+                    .foregroundStyle(tint)
+                ProgressBar(value: levels.isEmpty ? 0 : Double(solved) / Double(levels.count), tint: tint)
+                chip(icon: "cat.fill", value: cats.findCharges, tint: theme.accent)
+                    .accessibilityLabel(Text("Cat Finder: \(cats.findCharges)"))
+                chip(icon: "questionmark", value: cats.markCharges, tint: Color(red: 0.55, green: 0.42, blue: 0.82))
+                    .accessibilityLabel(Text("Hints: \(cats.markCharges)"))
+            }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .background(theme.background.opacity(0.94))
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(RoundedRectangle(cornerRadius: 22, style: .continuous).fill(.ultraThinMaterial))
+        .padding(.horizontal, 12)
+        .padding(.top, 4)
+    }
+
+    private func seasonArrow(_ icon: String, enabled: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            Haptics.selection()
+            withAnimation(.snappy) { action() }
+        } label: {
+            Image(systemName: icon)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(enabled ? theme.textPrimary : theme.textSecondary.opacity(0.3))
+                .frame(width: 34, height: 34)
+                .background(Circle().fill(theme.surface.opacity(enabled ? 0.9 : 0.4)))
+        }
+        .buttonStyle(PressableButtonStyle())
+        .disabled(!enabled)
     }
 
     private func chip(icon: String, value: Int, tint: Color) -> some View {
