@@ -1360,17 +1360,9 @@
    "en": "A cat here leads to a dead end: the highlighted color would soon have no room left.",
    "tr": "Buraya kedi konursa çıkmaza girilir: vurgulanan renkte kısa sürede yer kalmaz."
   },
-  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!": {
-   "en": "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!",
-   "tr": "Her renkte bir kedi saklanıyor. Her satırda ve sütunda da bir kedi var; kediler birbirine çaprazdan bile değmez. Bu renk tek bir kare, yani kedisi orada. İki kez dokun: önce X, sonra kedi!"
-  },
   "Well done! Squares where no cat can be were crossed out for you. Now this color has only one free square. Find its cat!": {
    "en": "Well done! Squares where no cat can be were crossed out for you. Now this color has only one free square. Find its cat!",
    "tr": "Aferin! Kedi olamayacak kareler senin için X'lendi. Şimdi bu renkte tek bir boş kare kaldı. Kedisini bul!"
-  },
-  "You've got it! Tap once for X, twice for a cat, and swipe to place many X's. Find the rest of the cats!": {
-   "en": "You've got it! Tap once for X, twice for a cat, and swipe to place many X's. Find the rest of the cats!",
-   "tr": "Kaptın! Bir dokunuş X, iki dokunuş kedi; kaydırarak çok sayıda X koyabilirsin. Kalan kedileri bul!"
   },
   "Warming Up": {
    "en": "Warming Up",
@@ -2071,6 +2063,14 @@
   "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": {
    "en": "Hold a square and slide in any direction, even diagonally: every square you pass is marked.",
    "tr": "Bir kareyi basılı tutup istediğin yöne, çapraz da olsa kaydır: geçtiğin her kare işaretlenir."
+  },
+  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": {
+   "en": "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!",
+   "tr": "Her renkte bir kedi saklanıyor. Her satırda ve sütunda da bir kedi var; kediler birbirine çaprazdan bile değmez. Bu renk tek bir kare, yani kedisi orada. Kediyi koymak için kareye hızlıca çift dokun!"
+  },
+  "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": {
+   "en": "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!",
+   "tr": "Kaptın! Bir dokunuş X koyar, X'e tekrar dokunmak onu siler, hızlı çift dokunuş kedi koyar; kaydırarak çok sayıda X koyabilirsin. Kalan kedileri bul!"
   }
  },
  "infoplist": {

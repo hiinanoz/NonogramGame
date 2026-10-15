@@ -350,9 +350,7 @@
   "A cat here leads to a dead end: the highlighted row would soon have no room left.": "ここに猫を置くと行き詰まります。強調された行にすぐ居場所がなくなります。",
   "A cat here leads to a dead end: the highlighted column would soon have no room left.": "ここに猫を置くと行き詰まります。強調された列にすぐ居場所がなくなります。",
   "A cat here leads to a dead end: the highlighted color would soon have no room left.": "ここに猫を置くと行き詰まります。強調された色にすぐ居場所がなくなります。",
-  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!": "どの色にも猫が1匹かくれています。行と列にも1匹ずつ。猫どうしは斜めでも接しません。この色は1マスだけなので、猫はここ。2回タップしてね:1回目は×、2回目で猫!",
   "Well done! Squares where no cat can be were crossed out for you. Now this color has only one free square. Find its cat!": "よくできました!猫がいないマスには自動で×がつきました。この色の空きマスは1つだけ。猫を見つけて!",
-  "You've got it! Tap once for X, twice for a cat, and swipe to place many X's. Find the rest of the cats!": "わかったね!1回タップで×、2回で猫。なぞるとまとめて×がつきます。残りの猫を見つけよう!",
   "Warming Up": "ウォーミングアップ",
   "Cat Scholar": "猫の学者",
   "Cat Professor": "猫の教授",
@@ -527,7 +525,9 @@
   "Free Drag": "フリー",
   "Drag Mode": "ドラッグ方式",
   "Hold a square and slide: only that row or column is marked, in a straight line.": "マスを押したままスライドすると、その行か列だけがまっすぐ塗られます。",
-  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "マスを押したまま、斜めも含めて好きな方向にスライド。通ったマスがすべて塗られます。"
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "マスを押したまま、斜めも含めて好きな方向にスライド。通ったマスがすべて塗られます。",
+  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": "どの色にも猫が1匹かくれています。行と列にも1匹ずつ。猫どうしは斜めでも接しません。この色は1マスだけなので、猫はここ。すばやくダブルタップして猫を置こう!",
+  "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "わかったね!1回タップで×、×をもう一度タップで消去、ダブルタップで猫。なぞるとまとめて×がつきます。残りの猫を見つけよう!"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

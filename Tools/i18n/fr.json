@@ -353,9 +353,7 @@
   "A cat here leads to a dead end: the highlighted row would soon have no room left.": "Un chat ici mène à une impasse : la ligne en surbrillance n'aurait bientôt plus de place.",
   "A cat here leads to a dead end: the highlighted column would soon have no room left.": "Un chat ici mène à une impasse : la colonne en surbrillance n'aurait bientôt plus de place.",
   "A cat here leads to a dead end: the highlighted color would soon have no room left.": "Un chat ici mène à une impasse : la couleur en surbrillance n'aurait bientôt plus de place.",
-  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!": "Chaque couleur cache un chat. Chaque ligne et colonne en a un aussi, et les chats ne se touchent jamais, même en diagonale. Cette couleur n'a qu'une case : son chat est là. Touche-la deux fois : une pour le X, une pour le chat !",
   "Well done! Squares where no cat can be were crossed out for you. Now this color has only one free square. Find its cat!": "Bravo ! Les cases où aucun chat ne peut être ont été barrées pour toi. Cette couleur n'a plus qu'une case libre. Trouve son chat !",
-  "You've got it! Tap once for X, twice for a cat, and swipe to place many X's. Find the rest of the cats!": "Tu as compris ! Touche une fois pour un X, deux fois pour un chat, et glisse pour placer plein de X. Trouve les autres chats !",
   "Warming Up": "Échauffement",
   "Cat Scholar": "Savant des chats",
   "Cat Professor": "Professeur des chats",
@@ -530,7 +528,9 @@
   "Free Drag": "Glisser libre",
   "Drag Mode": "Mode de glisser",
   "Hold a square and slide: only that row or column is marked, in a straight line.": "Maintiens une case et glisse : seule cette ligne ou colonne est marquée, en ligne droite.",
-  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Maintiens une case et glisse dans n'importe quelle direction, même en diagonale : chaque case traversée est marquée."
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Maintiens une case et glisse dans n'importe quelle direction, même en diagonale : chaque case traversée est marquée.",
+  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": "Chaque couleur cache un chat. Chaque ligne et colonne en a un aussi, et les chats ne se touchent jamais, même en diagonale. Cette couleur n'a qu'une case : son chat est là. Touche-la deux fois rapidement pour placer le chat !",
+  "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "Tu as compris ! Touche une fois pour un X, touche à nouveau un X pour l'effacer, touche deux fois pour un chat, et glisse pour placer plein de X. Trouve les autres chats !"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

@@ -16059,52 +16059,6 @@
         }
       }
     },
-    "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!": {
-      "localizations": {
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Her renkte bir kedi saklanıyor. Her satırda ve sütunda da bir kedi var; kediler birbirine çaprazdan bile değmez. Bu renk tek bir kare, yani kedisi orada. İki kez dokun: önce X, sonra kedi!"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "どの色にも猫が1匹かくれています。行と列にも1匹ずつ。猫どうしは斜めでも接しません。この色は1マスだけなので、猫はここ。2回タップしてね:1回目は×、2回目で猫!"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jede Farbe versteckt eine Katze. Auch jede Zeile und Spalte hat eine, und Katzen berühren sich nie, nicht einmal diagonal. Diese Farbe ist nur ein Feld, also ist ihre Katze dort. Tippe zweimal: einmal für X, einmal für die Katze!"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chaque couleur cache un chat. Chaque ligne et colonne en a un aussi, et les chats ne se touchent jamais, même en diagonale. Cette couleur n'a qu'une case : son chat est là. Touche-la deux fois : une pour le X, une pour le chat !"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cada color esconde un gato. Cada fila y columna también tiene uno, y los gatos nunca se tocan, ni en diagonal. Este color es una sola casilla, así que su gato está ahí. Tócala dos veces: una para la X y otra para el gato."
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cada cor esconde um gato. Cada linha e coluna também tem um, e os gatos nunca se tocam, nem na diagonal. Esta cor é um único quadrado, então o gato está ali. Toque duas vezes: uma para o X e outra para o gato!"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "색마다 고양이가 한 마리씩 숨어 있어요. 행과 열에도 한 마리씩이고, 고양이끼리는 대각선으로도 닿지 않아요. 이 색은 한 칸뿐이니 고양이는 여기! 두 번 눌러요: 처음엔 X, 다음엔 고양이!"
-          }
-        }
-      }
-    },
     "Well done! Squares where no cat can be were crossed out for you. Now this color has only one free square. Find its cat!": {
       "localizations": {
         "tr": {
@@ -16147,52 +16101,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "잘했어요! 고양이가 있을 수 없는 칸에는 자동으로 X가 표시됐어요. 이제 이 색에는 빈칸이 하나뿐이에요. 고양이를 찾아요!"
-          }
-        }
-      }
-    },
-    "You've got it! Tap once for X, twice for a cat, and swipe to place many X's. Find the rest of the cats!": {
-      "localizations": {
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaptın! Bir dokunuş X, iki dokunuş kedi; kaydırarak çok sayıda X koyabilirsin. Kalan kedileri bul!"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "わかったね!1回タップで×、2回で猫。なぞるとまとめて×がつきます。残りの猫を見つけよう!"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Du hast es raus! Einmal tippen für X, zweimal für eine Katze, und wische für viele X. Finde die restlichen Katzen!"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tu as compris ! Touche une fois pour un X, deux fois pour un chat, et glisse pour placer plein de X. Trouve les autres chats !"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Lo tienes! Toca una vez para una X, dos para un gato, y desliza para poner muchas X. ¡Encuentra el resto de gatos!"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pegou o jeito! Toque uma vez para X, duas para um gato, e deslize para marcar vários X. Ache o resto dos gatos!"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이제 알겠죠! 한 번 누르면 X, 두 번 누르면 고양이, 밀면 X를 여러 개 놓아요. 나머지 고양이를 찾아요!"
           }
         }
       }
@@ -24243,6 +24151,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "칸을 누른 채 대각선을 포함해 어느 방향으로든 밀면 지나가는 모든 칸이 표시돼요."
+          }
+        }
+      }
+    },
+    "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her renkte bir kedi saklanıyor. Her satırda ve sütunda da bir kedi var; kediler birbirine çaprazdan bile değmez. Bu renk tek bir kare, yani kedisi orada. Kediyi koymak için kareye hızlıca çift dokun!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "どの色にも猫が1匹かくれています。行と列にも1匹ずつ。猫どうしは斜めでも接しません。この色は1マスだけなので、猫はここ。すばやくダブルタップして猫を置こう!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jede Farbe versteckt eine Katze. Auch jede Zeile und Spalte hat eine, und Katzen berühren sich nie, nicht einmal diagonal. Diese Farbe ist nur ein Feld, also ist ihre Katze dort. Tippe schnell doppelt darauf, um die Katze zu setzen!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque couleur cache un chat. Chaque ligne et colonne en a un aussi, et les chats ne se touchent jamais, même en diagonale. Cette couleur n'a qu'une case : son chat est là. Touche-la deux fois rapidement pour placer le chat !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cada color esconde un gato. Cada fila y columna también tiene uno, y los gatos nunca se tocan, ni en diagonal. Este color es una sola casilla, así que su gato está ahí. ¡Toca dos veces rápido para poner el gato!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cada cor esconde um gato. Cada linha e coluna também tem um, e os gatos nunca se tocam, nem na diagonal. Esta cor é um único quadrado, então o gato está ali. Toque duas vezes rápido para colocar o gato!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "색마다 고양이가 한 마리씩 숨어 있어요. 행과 열에도 한 마리씩 있고, 고양이끼리는 대각선으로도 닿지 않아요. 이 색은 한 칸뿐이니 고양이는 여기에 있어요. 빠르게 두 번 탭해서 고양이를 놓으세요!"
+          }
+        }
+      }
+    },
+    "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaptın! Bir dokunuş X koyar, X'e tekrar dokunmak onu siler, hızlı çift dokunuş kedi koyar; kaydırarak çok sayıda X koyabilirsin. Kalan kedileri bul!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "わかったね!1回タップで×、×をもう一度タップで消去、ダブルタップで猫。なぞるとまとめて×がつきます。残りの猫を見つけよう!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast es! Einmal tippen für X, ein X erneut antippen zum Löschen, doppelt tippen für eine Katze, und wischen setzt viele X. Finde die restlichen Katzen!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu as compris ! Touche une fois pour un X, touche à nouveau un X pour l'effacer, touche deux fois pour un chat, et glisse pour placer plein de X. Trouve les autres chats !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Lo tienes! Toca una vez para una X, vuelve a tocar una X para borrarla, toca dos veces para un gato y desliza para poner muchas X. ¡Encuentra el resto de los gatos!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Você pegou o jeito! Toque uma vez para X, toque de novo num X para apagar, toque duas vezes para um gato e deslize para colocar vários X. Encontre o resto dos gatos!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잘했어요! 한 번 탭하면 X, X를 다시 탭하면 지워지고, 두 번 탭하면 고양이예요. 밀면 X를 여러 개 놓을 수 있어요. 나머지 고양이를 찾아보세요!"
           }
         }
       }

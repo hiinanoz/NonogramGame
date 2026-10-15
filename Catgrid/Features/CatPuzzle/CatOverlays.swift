@@ -23,7 +23,7 @@ enum CatTutorialStep: Equatable {
     var message: LocalizedStringResource {
         switch self {
         case .first:
-            "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!"
+            "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!"
         case .useHint:
             "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you."
         case .second:
@@ -31,7 +31,7 @@ enum CatTutorialStep: Equatable {
         case .finder:
             "Stuck? The cat button below shows where a cat is hiding. You get 6 Cat Finders and 6 hints; watch a short video for more."
         case .freePlay:
-            "You've got it! Tap once for X, twice for a cat, and swipe to place many X's. Find the rest of the cats!"
+            "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!"
         }
     }
 }

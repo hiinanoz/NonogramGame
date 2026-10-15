@@ -198,66 +198,6 @@ struct AllDoneCard: View {
 
 // MARK: - Kedi Bulmaca
 
-@MainActor
-struct CatHubView: View {
-    @Environment(AppModel.self) private var model
-    @Environment(Router.self) private var router
-    @Environment(StoreManager.self) private var store
-
-    var body: some View {
-        let cats = model.cats
-        let mode = BadgeMode.cats
-        let badgeCount = Badge.all(in: mode).filter { model.badges.isEarned($0) }.count
-        ScrollView {
-            VStack(spacing: 16) {
-                HubHero(
-                    title: mode.title,
-                    subtitle: Text("\(cats.solvedCount) of \(cats.levels.count) levels solved"),
-                    progress: cats.levels.isEmpty ? 0 : Double(cats.solvedCount) / Double(cats.levels.count),
-                    style: .cats
-                ) {
-                    if Illustration.exists(ModeStyle.cats.illustration) {
-                        IllustrationView(name: ModeStyle.cats.illustration)
-                    } else {
-                        CatGridArt()
-                    }
-                }
-
-                if let level = cats.resumableLevel {
-                    ContinueCard(
-                        title: "Continue where you left off",
-                        detail: Text("Level \(cats.number(of: level)) · \(level.size)×\(level.size)"),
-                        isResuming: cats.hasSavedGame(level),
-                        iconWidth: 96,
-                        icon: { CatThemeThumbnail(catTheme: CatTheme.theme(forSize: level.size)) },
-                        action: { router.push(.catGame(levelID: level.id)) }
-                    )
-                } else {
-                    AllDoneCard(message: "More cats are on their way.")
-                }
-
-                HelperChargesCard(find: cats.findCharges, mark: cats.markCharges, isPremium: store.isPremium)
-
-                HubRow(icon: "square.grid.3x3.fill", title: "All Levels") { router.push(.catLevels) }
-                    .accessibilityIdentifier("cat.hub.levels")
-                HubRow(icon: "chart.bar.fill", title: "Statistics") { router.push(.catStats) }
-                HubRow(
-                    icon: "medal.fill",
-                    title: "My Badges",
-                    detail: Text(verbatim: "\(badgeCount)/\(Badge.all(in: mode).count)"),
-                    tint: Gold.deep
-                ) { router.push(.badges(mode)) }
-            }
-            .padding(20)
-        }
-        .themedScreen()
-        .screenTitle(mode.title)
-        .onAppear {
-            cats.refillIfNeeded(isPremium: store.isPremium, today: model.today)
-        }
-    }
-}
-
 /// Kalan ipucu hakları.
 @MainActor
 struct HelperChargesCard: View {

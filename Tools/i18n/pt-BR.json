@@ -353,9 +353,7 @@
   "A cat here leads to a dead end: the highlighted row would soon have no room left.": "Um gato aqui leva a um beco sem saída: a linha destacada logo ficaria sem lugar.",
   "A cat here leads to a dead end: the highlighted column would soon have no room left.": "Um gato aqui leva a um beco sem saída: a coluna destacada logo ficaria sem lugar.",
   "A cat here leads to a dead end: the highlighted color would soon have no room left.": "Um gato aqui leva a um beco sem saída: a cor destacada logo ficaria sem lugar.",
-  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!": "Cada cor esconde um gato. Cada linha e coluna também tem um, e os gatos nunca se tocam, nem na diagonal. Esta cor é um único quadrado, então o gato está ali. Toque duas vezes: uma para o X e outra para o gato!",
   "Well done! Squares where no cat can be were crossed out for you. Now this color has only one free square. Find its cat!": "Muito bem! Os quadrados onde não pode haver gato foram marcados para você. Agora esta cor só tem um quadrado livre. Ache o gato dela!",
-  "You've got it! Tap once for X, twice for a cat, and swipe to place many X's. Find the rest of the cats!": "Pegou o jeito! Toque uma vez para X, duas para um gato, e deslize para marcar vários X. Ache o resto dos gatos!",
   "Warming Up": "Aquecimento",
   "Cat Scholar": "Estudioso de gatos",
   "Cat Professor": "Professor de gatos",
@@ -530,7 +528,9 @@
   "Free Drag": "Deslizar livre",
   "Drag Mode": "Modo de deslizar",
   "Hold a square and slide: only that row or column is marked, in a straight line.": "Segure um quadrado e deslize: só aquela linha ou coluna é marcada, em linha reta.",
-  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Segure um quadrado e deslize em qualquer direção, até na diagonal: cada quadrado por onde passar é marcado."
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Segure um quadrado e deslize em qualquer direção, até na diagonal: cada quadrado por onde passar é marcado.",
+  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": "Cada cor esconde um gato. Cada linha e coluna também tem um, e os gatos nunca se tocam, nem na diagonal. Esta cor é um único quadrado, então o gato está ali. Toque duas vezes rápido para colocar o gato!",
+  "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "Você pegou o jeito! Toque uma vez para X, toque de novo num X para apagar, toque duas vezes para um gato e deslize para colocar vários X. Encontre o resto dos gatos!"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

@@ -353,9 +353,7 @@
   "A cat here leads to a dead end: the highlighted row would soon have no room left.": "Eine Katze hier führt in eine Sackgasse: In der markierten Zeile wäre bald kein Platz mehr.",
   "A cat here leads to a dead end: the highlighted column would soon have no room left.": "Eine Katze hier führt in eine Sackgasse: In der markierten Spalte wäre bald kein Platz mehr.",
   "A cat here leads to a dead end: the highlighted color would soon have no room left.": "Eine Katze hier führt in eine Sackgasse: In der markierten Farbe wäre bald kein Platz mehr.",
-  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!": "Jede Farbe versteckt eine Katze. Auch jede Zeile und Spalte hat eine, und Katzen berühren sich nie, nicht einmal diagonal. Diese Farbe ist nur ein Feld, also ist ihre Katze dort. Tippe zweimal: einmal für X, einmal für die Katze!",
   "Well done! Squares where no cat can be were crossed out for you. Now this color has only one free square. Find its cat!": "Gut gemacht! Felder, auf denen keine Katze sein kann, wurden für dich durchgestrichen. Diese Farbe hat jetzt nur noch ein freies Feld. Finde ihre Katze!",
-  "You've got it! Tap once for X, twice for a cat, and swipe to place many X's. Find the rest of the cats!": "Du hast es raus! Einmal tippen für X, zweimal für eine Katze, und wische für viele X. Finde die restlichen Katzen!",
   "Warming Up": "Aufwärmen",
   "Cat Scholar": "Katzengelehrte",
   "Cat Professor": "Katzenprofessor",
@@ -530,7 +528,9 @@
   "Free Drag": "Frei",
   "Drag Mode": "Ziehmodus",
   "Hold a square and slide: only that row or column is marked, in a straight line.": "Halte ein Feld gedrückt und wische: Nur diese Zeile oder Spalte wird markiert, in einer geraden Linie.",
-  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Halte ein Feld gedrückt und wische in jede Richtung, auch diagonal: Jedes überstrichene Feld wird markiert."
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "Halte ein Feld gedrückt und wische in jede Richtung, auch diagonal: Jedes überstrichene Feld wird markiert.",
+  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": "Jede Farbe versteckt eine Katze. Auch jede Zeile und Spalte hat eine, und Katzen berühren sich nie, nicht einmal diagonal. Diese Farbe ist nur ein Feld, also ist ihre Katze dort. Tippe schnell doppelt darauf, um die Katze zu setzen!",
+  "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "Du hast es! Einmal tippen für X, ein X erneut antippen zum Löschen, doppelt tippen für eine Katze, und wischen setzt viele X. Finde die restlichen Katzen!"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

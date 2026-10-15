@@ -130,4 +130,30 @@ final class CatPuzzleTests: XCTestCase {
         XCTAssertFalse(viewModel.isErasing)
         XCTAssertEqual(viewModel.game[blank], .blank)
     }
+
+    /// Tek dokunuş X, X'e tekrar dokunuş siler; hızlı çift dokunuş kedi koyar.
+    @MainActor
+    func testTapCrossesTapAgainClearsDoubleTapPlacesCat() throws {
+        let level = try XCTUnwrap(pack.levels.first)
+        var clock = Date(timeIntervalSinceReferenceDate: 0)
+        let viewModel = CatGameViewModel(level: level, now: { clock })
+        let catCell = level.catPosition(ofRegion: level.region(at: GridPosition(row: 0, column: level.solution[0])))
+        let other = GridPosition(row: catCell.row, column: catCell.column == 0 ? 1 : 0)
+
+        viewModel.touchBegan(at: other)
+        viewModel.touchEnded()
+        XCTAssertEqual(viewModel.game[other], .cross)
+        clock += 1
+        viewModel.touchBegan(at: other)
+        viewModel.touchEnded()
+        XCTAssertEqual(viewModel.game[other], .blank)
+
+        clock += 1
+        viewModel.touchBegan(at: catCell)
+        viewModel.touchEnded()
+        clock += 0.2
+        viewModel.touchBegan(at: catCell)
+        viewModel.touchEnded()
+        XCTAssertEqual(viewModel.game[catCell], .cat)
+    }
 }

@@ -83,39 +83,43 @@ struct HomeView: View {
         .padding(.bottom, compact ? 6 : 12)
     }
 
+    /// Kedi Bulmaca öne çıkar: üstte tam genişlikte büyük kart, altında Günlük Bulmaca ve
+    /// Kart Koleksiyonu yan yana.
     private func modeCards(compact: Bool) -> some View {
         let streak = model.dailyStreak
         let collected = model.collectedBreeds.count
         let cats = model.cats
-        return HStack(spacing: 10) {
-            ModeCard(style: .daily, title: "Daily Puzzle", compact: compact) {
-                if model.isTodaysPuzzleSolved {
-                    Text("Solved! A new one tomorrow.")
-                } else if streak > 0 {
-                    Text("\(streak)-day streak")
-                } else {
-                    Text("Today's nonogram")
-                }
-            } action: {
-                router.push(.daily)
-            }
-            .accessibilityIdentifier("home.daily")
-
-            ModeCard(style: .collection, title: "Cat Card Collection", compact: compact) {
-                Text("\(collected)/\(model.breeds.count) breeds")
-            } action: {
-                router.push(.collectionHub)
-            }
-            .accessibilityIdentifier("home.mode.collection")
-
-            ModeCard(style: .cats, title: "Cat Puzzle", compact: compact) {
+        return VStack(spacing: 10) {
+            FeaturedModeCard(style: .cats, title: "Cat Puzzle", subtitle: Text("One cat per color, row and column"), compact: compact) {
                 Text("Level \(min(cats.solvedCount + 1, max(cats.levels.count, 1)))")
             } action: {
                 router.push(.catHub)
             }
             .accessibilityIdentifier("home.mode.cats")
+
+            HStack(spacing: 10) {
+                ModeCard(style: .daily, title: "Daily Puzzle", compact: compact) {
+                    if model.isTodaysPuzzleSolved {
+                        Text("Solved! A new one tomorrow.")
+                    } else if streak > 0 {
+                        Text("\(streak)-day streak")
+                    } else {
+                        Text("Today's nonogram")
+                    }
+                } action: {
+                    router.push(.daily)
+                }
+                .accessibilityIdentifier("home.daily")
+
+                ModeCard(style: .collection, title: "Cat Card Collection", compact: compact) {
+                    Text("\(collected)/\(model.breeds.count) breeds")
+                } action: {
+                    router.push(.collectionHub)
+                }
+                .accessibilityIdentifier("home.mode.collection")
+            }
+            .fixedSize(horizontal: false, vertical: true)
         }
-        .fixedSize(horizontal: false, vertical: true)
     }
 
     /// Daha önce oynamış oyuncu (güncelleme yapan): çözülmüş bulmaca ya da atlanmış eğitim.
@@ -196,7 +200,7 @@ struct HomeHero: View {
             }
             if hasArt {
                 // Uyuyan kedilere yer: sabit yükseklik (boş alanı esneyip doldurmasın)
-                Color.clear.frame(height: compact ? 84 : 116)
+                Color.clear.frame(height: compact ? 70 : 100)
             }
         }
         .padding(.horizontal, 16)
@@ -214,6 +218,65 @@ struct HomeHero: View {
                     .ignoresSafeArea(edges: .top)
             }
         }
+    }
+}
+
+/// Ana sayfanın büyük kartı (Kedi Bulmaca): solda başlık, açıklama ve durum, sağda büyük çizim.
+@MainActor
+struct FeaturedModeCard<Caption: View>: View {
+    @Environment(\.appTheme) private var theme
+    let style: ModeStyle
+    let title: LocalizedStringKey
+    let subtitle: Text
+    var compact = false
+    @ViewBuilder let caption: () -> Caption
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(alignment: .center, spacing: 8) {
+                VStack(alignment: .leading, spacing: compact ? 4 : 6) {
+                    ModeIcon(style: style, size: compact ? 32 : 38)
+                    Text(title)
+                        .font(.system(size: compact ? 22 : 26, weight: .heavy, design: .rounded))
+                        .foregroundStyle(style.ink(theme))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    subtitle
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(style.ink(theme).opacity(0.8))
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
+                    HStack(spacing: 6) {
+                        caption()
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Capsule().fill(style.tint(theme)))
+                        Image(systemName: "arrow.right")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 26, height: 26)
+                            .background(Circle().fill(style.tint(theme)))
+                    }
+                    .padding(.top, 2)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                // Katmanları gelince yumakla oynayan canlı kedi (prototip), yoksa tek parça çizim
+                CatIllustration(rig: style == .cats ? .yarnCat : nil, fallback: style.illustration, isLively: true)
+                    .frame(maxWidth: compact ? 130 : 160, maxHeight: compact ? 96 : 118)
+            }
+            .padding(compact ? 12 : 14)
+            .frame(maxWidth: .infinity)
+            .background(RoundedRectangle(cornerRadius: 24, style: .continuous).fill(style.background(theme)))
+            .overlay(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .strokeBorder(.white.opacity(theme.isDark ? 0.06 : 0.7), lineWidth: 1)
+            )
+            .shadow(color: style.tint(theme).opacity(theme.isDark ? 0 : 0.2), radius: 10, y: 5)
+        }
+        .buttonStyle(PressableButtonStyle())
     }
 }
 
@@ -241,7 +304,7 @@ struct ModeCard<Caption: View>: View {
                     .foregroundStyle(style.ink(theme))
                     .frame(maxWidth: .infinity)
                 IllustrationView(name: style.illustration)
-                    .frame(height: compact ? 62 : 96)
+                    .frame(height: compact ? 50 : 72)
                 Spacer(minLength: 0)
                 HStack(alignment: .bottom, spacing: 4) {
                     caption()

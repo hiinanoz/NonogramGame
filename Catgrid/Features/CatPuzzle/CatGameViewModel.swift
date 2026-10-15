@@ -152,6 +152,7 @@ final class CatGameViewModel {
     func touchMoved(to position: GridPosition) {
         guard !isFinished, let start = touchStart, game.contains(position), position != activeCell else { return }
         activeCell = position
+        lastTap = nil
         if paintCross == nil {
             // İlk karenin durumu ne yapılacağını belirler: boşsa X koy, X'liyse sil
             switch game[start] {
@@ -164,6 +165,11 @@ final class CatGameViewModel {
         paint(at: position)
     }
 
+    /// İki dokunuş arasında çift dokunuş sayılan en uzun süre.
+    static let doubleTapWindow: TimeInterval = 0.35
+    private var lastTap: (position: GridPosition, time: Date)?
+
+    /// Tek dokunuş: boş kareye X, X'e dokununca silinir. Aynı kareye hızlı çift dokunuş: kedi.
     func touchEnded() {
         defer {
             touchStart = nil
@@ -171,7 +177,18 @@ final class CatGameViewModel {
             activeCell = nil
         }
         guard let start = touchStart, paintCross == nil, !isFinished else { return }
-        handle(game.tap(at: start), at: start)
+        let time = now()
+        if let last = lastTap, last.position == start, time.timeIntervalSince(last.time) <= Self.doubleTapWindow {
+            lastTap = nil
+            handle(game.placeCat(at: start), at: start)
+            return
+        }
+        lastTap = (start, time)
+        switch game[start] {
+        case .blank: handle(game.paint(cross: true, at: start), at: start)
+        case .cross: handle(game.paint(cross: false, at: start), at: start)
+        default: break
+        }
     }
 
     private func paint(at position: GridPosition) {
@@ -190,6 +207,11 @@ final class CatGameViewModel {
         isErasing = false
         pendingHint = hint
         hintTask?.cancel()
+        // Konacak X kalmadıysa ipucu kediyi koymaz, yalnızca karesini gösterir (oyuncu çift dokunur)
+        if hint.pointsAtCat {
+            usedHints = true
+            return true
+        }
         hintTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(0.9))
             guard !Task.isCancelled else { return }
@@ -203,6 +225,11 @@ final class CatGameViewModel {
         hintTask?.cancel()
         hintTask = nil
         guard let hint = pendingHint else { return }
+        guard !hint.pointsAtCat else {
+            // Kedinin yerini gösteren ipucu: yalnızca kapanır
+            pendingHint = nil
+            return
+        }
         pendingHint = nil
         usedHints = true
         let before = game.marks
@@ -437,5 +464,13 @@ final class CatGameViewModel {
     func resume() {
         isPaused = false
         start()
+    }
+}
+
+extension CatHint {
+    /// Tek yer ipucu: kedinin karesini gösterir (X koymaz).
+    var pointsAtCat: Bool {
+        if case .onlySpot = kind { return true }
+        return false
     }
 }

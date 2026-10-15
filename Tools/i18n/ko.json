@@ -350,9 +350,7 @@
   "A cat here leads to a dead end: the highlighted row would soon have no room left.": "여기에 고양이를 두면 막혀요. 강조된 행에 곧 자리가 없어져요.",
   "A cat here leads to a dead end: the highlighted column would soon have no room left.": "여기에 고양이를 두면 막혀요. 강조된 열에 곧 자리가 없어져요.",
   "A cat here leads to a dead end: the highlighted color would soon have no room left.": "여기에 고양이를 두면 막혀요. 강조된 색에 곧 자리가 없어져요.",
-  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Tap it twice: once for X, once for the cat!": "색마다 고양이가 한 마리씩 숨어 있어요. 행과 열에도 한 마리씩이고, 고양이끼리는 대각선으로도 닿지 않아요. 이 색은 한 칸뿐이니 고양이는 여기! 두 번 눌러요: 처음엔 X, 다음엔 고양이!",
   "Well done! Squares where no cat can be were crossed out for you. Now this color has only one free square. Find its cat!": "잘했어요! 고양이가 있을 수 없는 칸에는 자동으로 X가 표시됐어요. 이제 이 색에는 빈칸이 하나뿐이에요. 고양이를 찾아요!",
-  "You've got it! Tap once for X, twice for a cat, and swipe to place many X's. Find the rest of the cats!": "이제 알겠죠! 한 번 누르면 X, 두 번 누르면 고양이, 밀면 X를 여러 개 놓아요. 나머지 고양이를 찾아요!",
   "Warming Up": "몸풀기",
   "Cat Scholar": "고양이 학자",
   "Cat Professor": "고양이 교수",
@@ -527,7 +525,9 @@
   "Free Drag": "자유 드래그",
   "Drag Mode": "드래그 방식",
   "Hold a square and slide: only that row or column is marked, in a straight line.": "칸을 누른 채 밀면 그 행이나 열만 직선으로 표시돼요.",
-  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "칸을 누른 채 대각선을 포함해 어느 방향으로든 밀면 지나가는 모든 칸이 표시돼요."
+  "Hold a square and slide in any direction, even diagonally: every square you pass is marked.": "칸을 누른 채 대각선을 포함해 어느 방향으로든 밀면 지나가는 모든 칸이 표시돼요.",
+  "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": "색마다 고양이가 한 마리씩 숨어 있어요. 행과 열에도 한 마리씩 있고, 고양이끼리는 대각선으로도 닿지 않아요. 이 색은 한 칸뿐이니 고양이는 여기에 있어요. 빠르게 두 번 탭해서 고양이를 놓으세요!",
+  "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "잘했어요! 한 번 탭하면 X, X를 다시 탭하면 지워지고, 두 번 탭하면 고양이예요. 밀면 X를 여러 개 놓을 수 있어요. 나머지 고양이를 찾아보세요!"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",
