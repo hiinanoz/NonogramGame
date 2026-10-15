@@ -2,11 +2,20 @@ Kareleri doldur, sayıları takip et ve sevimli bir piksel kedinin ortaya çık�
 
 Catgrid Collection, kedi severler için hazırlanmış rahatlatıcı bir nonogram (resimli mantık bulmacası) oyunudur. Her bulmaca yalnızca mantıkla çözülebilir; tahmin yapmana hiç gerek yok.
 
-TANIŞACAĞIN 25 KEDİ TÜRÜ
+TANIŞACAĞIN 26 KEDİ TÜRÜ
 Siyam ve İran kedisinden Maine Coon, Van kedisi ve Japon Bobtail'e kadar. Her türde kolay 5×5 ızgaralardan zorlu 12×12 bulmacalara uzanan 16 bölüm var.
 
 TÜR KARTLARINI TOPLA
 Bir türü bitir, kökeni, ömrü, tüy yapısı, karakter puanları ve ilginç bilgisiyle koleksiyon kartını kazan. Kartı çevir, tür hakkında daha fazlasını oku.
+
+YENİ: KEDİ BULMACA
+Her renge, her satıra ve her sütuna bir kedi yerleştir; kediler birbirine değmesin. Bahar bahçesinden kış masalına dört mevsimlik serüven haritasında 335 bölüm. Kolay modda bulduğun her kedinin çevresine X'ler kendiliğinden konur, Zor modda hepsi sende.
+
+GÜNLÜK BULMACA
+Her gün yeni bir uzman nonogram. Serini sürdür, kaçırdığın günleri tamamla, haftalık rozetler kazan.
+
+PAYLAŞ VE YARIŞ
+Çözdüğün bulmacaları arkadaşlarınla paylaş, Game Center sıralamalarında yüksel.
 
 DAKİKALAR İÇİNDE ÖĞREN
 Yavru Okulu tüm teknikleri 11 kısa derste adım adım öğretir.
@@ -22,7 +31,7 @@ Sakinleştirici müzik ve ses efektleri, açık ve koyu modlu dört renk paleti,
 
 CATGRID PREMIUM (İSTEĞE BAĞLI ABONELİK)
 • Reklamsız oyun
-• Her tür için 9 Altın Bulmaca, toplam 225
+• Her tür için 9 Altın Bulmaca, toplam 234
 • Koleksiyonun için parıltılı Altın Kartlar
 
 Premium, aylık ya da yıllık otomatik yenilenen abonelik olarak sunulur. Ödeme, satın alma onaylandığında Apple Hesabından alınır. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmezse otomatik olarak yenilenir. Aboneliğini App Store hesap ayarlarından yönetebilir ya da iptal edebilirsin.

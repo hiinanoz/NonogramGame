@@ -1,0 +1,25 @@
+name: Game Center kur
+
+# Elle başlatılır: GitHub → Actions → "Game Center kur" → Run workflow.
+# Uygulamanın Game Center kaydını, üç sıralama listesini ve 8 dildeki adlarını oluşturur;
+# düzenlenebilir sürümde Game Center'ı açar. Tekrar çalıştırmak güvenlidir.
+on:
+  workflow_dispatch:
+    inputs:
+      report_only:
+        description: "Yalnızca durumu raporla (hiçbir şey değiştirme)"
+        type: boolean
+        default: false
+
+jobs:
+  gamecenter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet pyjwt cryptography
+      - run: python3 Tools/asc_gamecenter.py ${{ inputs.report_only && '--report' || '' }}

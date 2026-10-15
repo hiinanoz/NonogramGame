@@ -134,9 +134,26 @@ struct CatResultOverlay: View {
             .padding(24)
             .frame(maxWidth: 440)
         }
+        // Sonucu paylaş: bölümün renkli tahtası, numarası ve puanı
+        .overlay(alignment: .topTrailing) {
+            ShareResultButton(
+                headline: Text(BadgeMode.cats.title) + Text(verbatim: " · ") + Text("Level \(levelNumber)")
+                    + Text(verbatim: " · ★ ") + Text(completion.score, format: .number),
+                style: .dark
+            ) {
+                CatLevelPreview(level: completion.level)
+            }
+            .padding(.trailing, 18)
+            .padding(.top, 8)
+        }
         .onAppear {
             withAnimation(.spring(response: 0.45, dampingFraction: 0.55)) { appeared = true }
         }
+    }
+
+    /// Bu bölümün numarası (bölümler `cat-001` biçiminde).
+    private var levelNumber: Int {
+        Int(completion.level.id.split(separator: "-").last ?? "") ?? 0
     }
 
     /// Bir sonraki bölümün numarası (bölümler `cat-001` biçiminde).

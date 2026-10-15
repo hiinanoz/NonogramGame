@@ -2,11 +2,20 @@ Preencha a grade, siga os números e veja um gatinho fofo em pixel art aparecer!
 
 Catgrid Collection é um nonograma (griddlers, hanjie) aconchegante feito para quem ama gatos. Todos os quebra-cabeças podem ser resolvidos só com lógica, então você nunca precisa chutar.
 
-25 RAÇAS DE GATOS PARA CONHECER
+26 RAÇAS DE GATOS PARA CONHECER
 Do Siamês e do Persa ao Maine Coon, ao Van Turco e ao Bobtail Japonês. Cada raça tem 16 quebra-cabeças, que vão de grades fáceis de 5×5 a desafios difíceis de 12×12.
 
 COLECIONE CARTAS DE RAÇAS
 Conclua uma raça para ganhar a carta colecionável dela, com origem, expectativa de vida, pelagem, atributos de personalidade e uma curiosidade. Vire a carta para saber mais sobre a raça.
+
+NOVO: QUEBRA-GATO
+Coloque um gato em cada cor, linha e coluna, sem que dois gatos se toquem. 335 fases em quatro mapas de aventura das estações, do jardim de primavera ao conto de inverno. No modo fácil, as casas ao redor de cada gato encontrado são marcadas para você; no difícil, é tudo com você.
+
+DESAFIO DIÁRIO
+Um novo nonograma de nível especialista todo dia. Mantenha sua sequência, recupere os dias perdidos e ganhe medalhas semanais.
+
+COMPARTILHE E COMPITA
+Compartilhe seus desafios resolvidos com os amigos e suba nos rankings do Game Center.
 
 APRENDA EM MINUTOS
 A Escola de Gatinhos ensina cada técnica passo a passo em 11 lições curtinhas.
@@ -22,7 +31,7 @@ Música e efeitos sonoros relaxantes, quatro paletas de cores com modo claro e e
 
 CATGRID PREMIUM (ASSINATURA OPCIONAL)
 • Sem anúncios
-• 9 Quebra-cabeças Dourados para cada raça, 225 no total
+• 9 Quebra-cabeças Dourados para cada raça, 234 no total
 • Cartas Douradas brilhantes para a sua coleção
 
 O Premium é oferecido como assinatura mensal ou anual com renovação automática. O pagamento é cobrado na sua Conta Apple quando você confirma a compra. A assinatura é renovada automaticamente, a menos que seja cancelada pelo menos 24 horas antes do fim do período atual. Você pode gerenciar ou cancelar a assinatura nos ajustes da sua conta da App Store.

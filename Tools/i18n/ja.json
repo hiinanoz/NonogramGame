@@ -532,7 +532,10 @@
   "Next season": "次のシーズン",
   "Back": "戻る",
   "%lld of 3 stars": "星3つ中%lld個",
-  "Easy: X's go around every cat you find.": "かんたん：見つけた猫のまわりに自動で×が付きます。"
+  "Easy: X's go around every cat you find.": "かんたん：見つけた猫のまわりに自動で×が付きます。",
+  "Share": "共有",
+  "Game Center Leaderboards": "Game Center ランキング",
+  "I solved this puzzle in Catgrid Collection! Can you? 🐾": "Catgrid Collectionでこのパズルを解いたよ！きみも解けるかな？🐾"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

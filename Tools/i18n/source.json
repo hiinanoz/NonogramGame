@@ -2091,6 +2091,18 @@
   "Easy: X's go around every cat you find.": {
    "en": "Easy: X's go around every cat you find.",
    "tr": "Kolay: Bulduğun her kedinin çevresine X'ler kendiliğinden konur."
+  },
+  "Share": {
+   "en": "Share",
+   "tr": "Paylaş"
+  },
+  "Game Center Leaderboards": {
+   "en": "Game Center Leaderboards",
+   "tr": "Game Center Sıralamaları"
+  },
+  "I solved this puzzle in Catgrid Collection! Can you? 🐾": {
+   "en": "I solved this puzzle in Catgrid Collection! Can you? 🐾",
+   "tr": "Bu bulmacayı Catgrid Collection'da çözdüm! Sen de çözebilir misin? 🐾"
   }
  },
  "infoplist": {

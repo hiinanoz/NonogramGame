@@ -535,7 +535,10 @@
   "Next season": "Saison suivante",
   "Back": "Retour",
   "%lld of 3 stars": "%lld étoiles sur 3",
-  "Easy: X's go around every cat you find.": "Facile : des X se placent autour de chaque chat trouvé."
+  "Easy: X's go around every cat you find.": "Facile : des X se placent autour de chaque chat trouvé.",
+  "Share": "Partager",
+  "Game Center Leaderboards": "Classements Game Center",
+  "I solved this puzzle in Catgrid Collection! Can you? 🐾": "J'ai résolu cette grille dans Catgrid Collection ! Et toi ? 🐾"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

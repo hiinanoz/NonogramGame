@@ -158,7 +158,17 @@ final class AppModel {
     /// Mod dışı bir olaydan (Kedi Bulmaca) sonra yeni kazanılan rozetler.
     @discardableResult
     func refreshBadges() -> [Badge] {
-        badges.update(with: badgeProgress)
+        defer { reportToGameCenter() }
+        return badges.update(with: badgeProgress)
+    }
+
+    /// Game Center sıralama listelerine güncel değerler (giriş yapılmamışsa bir şey olmaz).
+    func reportToGameCenter() {
+        GameCenterService.shared.submit([
+            .dailyStreak: dailyStreak,
+            .nonogramsSolved: progress.stats.solvedCount,
+            .catLevelsSolved: cats.levels.filter { cats.isSolved($0) }.count,
+        ])
     }
 
     @discardableResult
@@ -169,6 +179,7 @@ final class AppModel {
         badges.recordSolve(mistakes: completion.mistakes)
         var result = progress.recordCompletion(completion, stars: stars)
         result.newBadges = badges.update(with: badgeProgress)
+        reportToGameCenter()
         return result
     }
 

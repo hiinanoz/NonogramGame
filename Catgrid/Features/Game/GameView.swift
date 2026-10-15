@@ -581,7 +581,8 @@ struct GameView: View {
             mistakes: result?.mistakes ?? game.mistakes,
             stars: result?.stars,
             starNote: result.flatMap { speedStarNote($0) },
-            rewards: rewards
+            rewards: rewards,
+            shareHeadline: isDaily ? Text("Daily Puzzle") : Text(verbatim: viewModel.puzzle.title.resolved)
         ) {
             if isCardPending {
                 // Kart penceresi açılana/kapanana kadar geçiş düğmeleri yok

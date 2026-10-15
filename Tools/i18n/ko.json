@@ -532,7 +532,10 @@
   "Next season": "다음 시즌",
   "Back": "뒤로",
   "%lld of 3 stars": "별 3개 중 %lld개",
-  "Easy: X's go around every cat you find.": "쉬움: 찾은 고양이 주변에 X가 자동으로 표시돼요."
+  "Easy: X's go around every cat you find.": "쉬움: 찾은 고양이 주변에 X가 자동으로 표시돼요.",
+  "Share": "공유",
+  "Game Center Leaderboards": "Game Center 순위표",
+  "I solved this puzzle in Catgrid Collection! Can you? 🐾": "Catgrid Collection에서 이 퍼즐을 풀었어요! 당신도 풀 수 있나요? 🐾"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

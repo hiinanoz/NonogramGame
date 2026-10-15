@@ -171,7 +171,9 @@ struct LoopingCatView: View {
         .overlay { heartsLayer }
         .contentShape(Rectangle())
         .simultaneousGesture(strokeGesture)
-        .simultaneousGesture(TapGesture().onEnded { if tapToPet { pet(at: nil) } })
+        // Dokunarak sevmek yalnızca düğme dışındaki kedilerde: düğmenin içinde dokunuşu yutup
+        // kartın açılmasını engellerdi
+        .modifier(TapToPet(isEnabled: tapToPet) { pet(at: nil) })
         .onGeometryChange(for: Int.self) { proxy in
             Int(max(proxy.size.width, proxy.size.height) * min(displayScale, LoopingCatAnimation.maxPixelScale))
         } action: { pixelSize = $0 }
@@ -241,6 +243,19 @@ struct LoopingCatView: View {
             }
         }
         .allowsHitTesting(false)
+    }
+}
+
+private struct TapToPet: ViewModifier {
+    let isEnabled: Bool
+    let action: () -> Void
+
+    func body(content: Content) -> some View {
+        if isEnabled {
+            content.onTapGesture(perform: action)
+        } else {
+            content
+        }
     }
 }
 

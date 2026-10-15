@@ -2,11 +2,20 @@ Rellena la cuadrícula, sigue los números y ¡mira cómo aparece un adorable ga
 
 Catgrid Collection es un acogedor juego de nonogramas (también llamados griddlers o hanjie) pensado para los amantes de los gatos. Todos los puzles se pueden resolver solo con lógica, así que nunca tendrás que adivinar.
 
-25 RAZAS DE GATOS POR CONOCER
+26 RAZAS DE GATOS POR CONOCER
 Desde el siamés y el persa hasta el Maine Coon, el Van turco y el Bobtail japonés. Cada raza tiene 16 puzles que van desde sencillas cuadrículas de 5×5 hasta desafiantes retos de 12×12.
 
 COLECCIONA CARTAS DE RAZAS
 Completa una raza para ganar su carta coleccionable con su origen, esperanza de vida, pelaje, estadísticas de personalidad y una curiosidad. Dale la vuelta a la carta para saber más sobre la raza.
+
+NUEVO: PUZLE GATUNO
+Coloca un gato en cada color, fila y columna, sin que dos gatos se toquen. 335 niveles en cuatro mapas de aventura de temporada, del jardín primaveral al cuento de invierno. En el modo fácil se tachan solas las casillas alrededor de cada gato que encuentres; en el difícil, todo depende de ti.
+
+PUZLE DIARIO
+Un nuevo nonograma experto cada día. Mantén tu racha, recupera los días perdidos y gana insignias semanales.
+
+COMPARTE Y COMPITE
+Comparte tus puzles resueltos con tus amigos y sube en las clasificaciones de Game Center.
 
 APRENDE EN MINUTOS
 La Escuela de gatitos te enseña todas las técnicas paso a paso en 11 lecciones cortas.
@@ -22,7 +31,7 @@ Música relajante y efectos de sonido, cuatro paletas de colores con modo claro 
 
 CATGRID PREMIUM (SUSCRIPCIÓN OPCIONAL)
 • Sin anuncios
-• 9 Puzles dorados para cada raza, 225 en total
+• 9 Puzles dorados para cada raza, 234 en total
 • Brillantes Cartas doradas para tu colección
 
 Premium se ofrece como suscripción mensual o anual con renovación automática. El pago se cargará a tu cuenta de Apple al confirmar la compra. La suscripción se renueva automáticamente a menos que la canceles al menos 24 horas antes de que termine el periodo actual. Puedes gestionarla o cancelarla en los ajustes de tu cuenta del App Store.

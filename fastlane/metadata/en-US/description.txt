@@ -2,11 +2,20 @@ Fill the grid, follow the numbers and watch a cute pixel cat appear!
 
 Catgrid Collection is a cozy nonogram (griddlers, hanjie) game made for cat lovers. Every puzzle can be solved with pure logic, so you never have to guess.
 
-25 CAT BREEDS TO MEET
+26 CAT BREEDS TO MEET
 From the Siamese and Persian to the Maine Coon, Turkish Van and Japanese Bobtail. Each breed has 16 puzzles that grow from easy 5×5 grids to tricky 12×12 challenges.
 
 COLLECT BREED CARDS
 Finish a breed to win its collectible card with origin, lifespan, coat, personality stats and a fun fact. Flip the card to read more about the breed.
+
+NEW: CAT PUZZLE
+Place one cat in every color, row and column, and no two cats may touch. 335 handcrafted levels across four seasonal adventure maps, from spring gardens to winter tales. Easy mode crosses out the cells around every cat you find; Hard mode leaves it all to you.
+
+DAILY PUZZLE
+A fresh expert nonogram every day. Keep your streak, catch up on missed days and earn weekly badges.
+
+SHARE AND COMPETE
+Share your solved puzzles with friends and climb the Game Center leaderboards.
 
 LEARN IN MINUTES
 Kitten School teaches every technique step by step in 11 short lessons.
@@ -22,7 +31,7 @@ Calming music and sound effects, four color palettes with light and dark mode, h
 
 CATGRID PREMIUM (OPTIONAL SUBSCRIPTION)
 • No ads
-• 9 Golden Puzzles for every breed, 225 in total
+• 9 Golden Puzzles for every breed, 234 in total
 • Shiny Golden Cards for your collection
 
 Premium is offered as a monthly or yearly auto-renewing subscription. Payment is charged to your Apple Account when you confirm the purchase. The subscription renews automatically unless it is cancelled at least 24 hours before the end of the current period. You can manage or cancel it in your App Store account settings.

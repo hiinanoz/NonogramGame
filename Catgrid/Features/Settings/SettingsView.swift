@@ -294,6 +294,10 @@ struct SettingsView: View {
                             if let url = AppLinks.writeReview { openURL(url) } else { requestReview() }
                         }
                         Divider()
+                        linkRow("Game Center Leaderboards", icon: "trophy.fill") {
+                            GameCenterService.shared.showLeaderboards()
+                        }
+                        Divider()
                         linkRow("Support", icon: "questionmark.circle.fill") { openURL(AppLinks.support) }
                         Divider()
                         linkRow("Privacy Policy", icon: "hand.raised.fill") { openURL(AppLinks.privacyPolicy) }

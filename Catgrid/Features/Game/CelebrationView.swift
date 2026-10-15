@@ -25,6 +25,8 @@ struct CelebrationView<Actions: View>: View {
     var stars: Int?
     var starNote: Text?
     var rewards: [CelebrationReward] = []
+    /// Sağ üstte paylaş düğmesi (çözülen resim ve bu satırla bir kart görseli).
+    var shareHeadline: Text?
     @ViewBuilder let actions: () -> Actions
     @State private var appeared = false
 
@@ -90,6 +92,15 @@ struct CelebrationView<Actions: View>: View {
                 .frame(maxWidth: 480)
                 .frame(maxWidth: .infinity)
                 .background(theme.background.opacity(0.96).ignoresSafeArea(edges: .bottom))
+            }
+        }
+        .overlay(alignment: .topTrailing) {
+            if let shareHeadline {
+                ShareResultButton(headline: shareHeadline) {
+                    ArtworkThumbnail(artwork: artwork)
+                }
+                .padding(.trailing, 16)
+                .padding(.top, 8)
             }
         }
         .onAppear {

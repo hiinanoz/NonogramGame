@@ -37,6 +37,7 @@ targets:
         excludes:
           - Resources/Catgrid.storekit   # yalnızca Xcode'da yerel satın alma testi için
           - Resources/PrivacyInfo.xcprivacy
+          - Resources/Catgrid.entitlements
       # Apple'ın zorunlu gizlilik bildirimi; kaynak olarak pakete girmeli
       - path: Catgrid/Resources/PrivacyInfo.xcprivacy
         buildPhase: resources
@@ -51,6 +52,11 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    # Game Center (sıralama listeleri)
+    entitlements:
+      path: Catgrid/Resources/Catgrid.entitlements
+      properties:
+        com.apple.developer.game-center: true
     info:
       path: Catgrid/Resources/Info.plist
       properties:

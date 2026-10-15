@@ -1,1 +1,1 @@
-resim bulmaca,griddlers,mantık,zeka,bulmaca,kedi,yavru,piksel,sayı boyama,nonogramlar,ızgara,beyin
+zeka oyunu,resim bulmaca,griddlers,mantık,yavru,piksel,sayı boyama,günlük,kart,beyin

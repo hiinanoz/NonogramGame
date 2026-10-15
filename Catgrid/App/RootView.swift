@@ -50,7 +50,12 @@ struct RootView: View {
             audio.setPlaylist(mode.playlist)
         }
         // Onay formu, izleme izni ve reklam SDK'sı; ekran çizildikten sonra
-        .task { await ads.start() }
+        .task {
+            await ads.start()
+            // Game Center girişi, onay ve izleme pencereleri kapandıktan sonra (üst üste binmesin)
+            try? await Task.sleep(for: .seconds(1.5))
+            GameCenterService.shared.start { model.reportToGameCenter() }
+        }
         .task { await store.start() }
         // Birkaç reklamdan sonra Premium tanıtımı
         .sheet(isPresented: $ads.isPremiumPromoPresented) {
