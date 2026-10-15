@@ -15,31 +15,27 @@ struct HomeView: View {
     @State private var isShowingWhatsNew = false
     @State private var shownCard: CardSelection?
     /// Durum çubuğunun yüksekliği: üstteki çizim bu kadar yukarı uzatılır.
-    @State private var topInset: CGFloat = 0
+    @State private var topInset: CGFloat = HomeView.windowTopInset
 
     var body: some View {
-        // Ekrana sığan ilk düzen seçilir: önce rahat, sonra sıkı; o da sığmazsa (çok küçük
-        // ekran ya da büyük yazı boyutu) kaydırılabilir.
-        // Sıkı düzen: kartlar ve üst çizim biraz daha kısa, Premium oyuncuların en alttaki
-        // süs sahnesi gizli. Böylece çoğu iPhone'da ana sayfa kaydırmadan tek ekrana sığar.
+        // Ekrana sığan ilk düzen seçilir: önce rahat, sonra sıkı, sonra daha da sıkı (kartlar ve
+        // üst çizim biraz daha kısa); o da sığmazsa (çok küçük ekran ya da büyük yazı) kaydırılabilir.
         ViewThatFits(in: .vertical) {
             content(compact: false)
             content(compact: true)
             content(compact: true, tight: true)
             ScrollView {
                 content(compact: true, tight: true)
-                    // Kaydırılabilir düzen durum çubuğunun altından başlar; üst çizim onun
-                    // arkasına uzanır (krem bant kalmaz)
-                    .padding(.top, topInset)
             }
             .scrollBounceBehavior(.basedOnSize)
-            .scrollClipDisabled()
-            .ignoresSafeArea(edges: .top)
         }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { measured in
-            // Ölçüm 0 gelirse (bazı düzenlerde) pencerenin güvenli alanı kullanılır
+            // Ölçüm 0 gelirse pencerenin güvenli alanı kullanılır
             topInset = max(measured, Self.windowTopInset)
         }
+        // Sayfa ekranın en üstünden başlar: üst çizim durum çubuğunun arkasına uzanır, logo ve
+        // ayarlar durum çubuğunun hemen altında; böylece içerik tek ekrana sığar
+        .ignoresSafeArea(edges: .top)
         .themedScreen()
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $isShowingPaywall) {
@@ -94,7 +90,7 @@ struct HomeView: View {
                 HomeCollectionPreview(tileWidth: tight ? 66 : (compact ? 72 : 84)) { shownCard = $0 }
                 if !store.isPremium {
                     PremiumBanner { isShowingPaywall = true }
-                } else if !tight {
+                } else {
                     // Premium oyunculara şerit yerine kedili bir sahne (çizim varsa)
                     PremiumHomeArt()
                 }
@@ -185,67 +181,74 @@ struct HomeHero: View {
 
     var body: some View {
         VStack(spacing: compact ? 4 : 8) {
-            HStack {
-                Image("AppLogo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: compact ? 38 : 44, height: compact ? 38 : 44)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 2))
-                    .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
-                    .accessibilityHidden(true)
-                Spacer()
-                Button(action: openSettings) {
-                    Image(systemName: "gearshape.fill")
-                        .font(.title3)
-                        .foregroundStyle(theme.textSecondary)
+            // Logo solda, ayarlar sağda, oyunun adı ortada: hepsi aynı sırada, durum çubuğunun altında
+            ZStack(alignment: .top) {
+                titleStack
+                    .padding(.horizontal, compact ? 40 : 46)
+                HStack(alignment: .top) {
+                    Image("AppLogo")
+                        .resizable()
+                        .scaledToFit()
                         .frame(width: compact ? 38 : 44, height: compact ? 38 : 44)
-                        .background(Circle().fill(theme.surface.opacity(0.92)))
-                        .shadow(color: theme.cardShadow, radius: 4, y: 2)
-                }
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel(Text("Settings"))
-                .accessibilityIdentifier("home.settings")
-            }
-            VStack(spacing: 2) {
-                Text(verbatim: "Catgrid Collection")
-                    .font(.system(size: compact ? 26 : 32, weight: .heavy, design: .rounded))
-                    .foregroundStyle(theme.textPrimary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                Text("Nonogram · Cat Puzzle · Cards")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(theme.textSecondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, hasArt ? 6 : 0)
-            .background {
-                // Çizimin üstünde okunabilsin
-                if hasArt {
-                    Capsule().fill(theme.background.opacity(0.75)).blur(radius: 8)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 2))
+                        .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+                        .accessibilityHidden(true)
+                    Spacer()
+                    Button(action: openSettings) {
+                        Image(systemName: "gearshape.fill")
+                            .font(.title3)
+                            .foregroundStyle(theme.textSecondary)
+                            .frame(width: compact ? 38 : 44, height: compact ? 38 : 44)
+                            .background(Circle().fill(theme.surface.opacity(0.92)))
+                            .shadow(color: theme.cardShadow, radius: 4, y: 2)
+                    }
+                    .buttonStyle(PressableButtonStyle())
+                    .accessibilityLabel(Text("Settings"))
+                    .accessibilityIdentifier("home.settings")
                 }
             }
             if hasArt {
                 // Uyuyan kedilere yer: sabit yükseklik (boş alanı esneyip doldurmasın)
-                Color.clear.frame(height: tight ? 40 : (compact ? 64 : 88))
+                Color.clear.frame(height: tight ? 40 : (compact ? 56 : 84))
             }
         }
         .padding(.horizontal, 16)
-        .padding(.top, 4)
+        // Sayfa ekranın en üstünden başlar: içerik durum çubuğunun altına iner
+        .padding(.top, topInset + 4)
         .padding(.bottom, hasArt ? 0 : 2)
         .background {
             if hasArt {
-                // Çizim durum çubuğunun arkasına kadar uzanır (hangi düzen seçilirse seçilsin,
-                // kaydırılabilir olanda da): alan, ölçülen durum çubuğu kadar yukarı büyütülür
+                // Çizim ekranın en üstünden (durum çubuğunun arkasından) başlar
                 Color.clear
-                    .padding(.top, -(topInset + 8))
                     .overlay(alignment: .bottom) {
                         IllustrationView(name: artName, contentMode: .fill)
                     }
                     .clipped()
                     .mask(LinearGradient(stops: [.init(color: .black, location: 0.8), .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom))
+            }
+        }
+    }
+
+    private var titleStack: some View {
+        VStack(spacing: 2) {
+            Text(verbatim: "Catgrid Collection")
+                .font(.system(size: compact ? 26 : 32, weight: .heavy, design: .rounded))
+                .foregroundStyle(theme.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Text("Nonogram · Cat Puzzle · Cards")
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(theme.textSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, hasArt ? 4 : 0)
+        .background {
+            // Çizimin üstünde okunabilsin
+            if hasArt {
+                Capsule().fill(theme.background.opacity(0.75)).blur(radius: 8)
             }
         }
     }
