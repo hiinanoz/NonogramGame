@@ -45,6 +45,15 @@ struct CatHubView: View {
                 }
             }
         }
+        .background {
+            // Sıradaki bölümün temasının harita zemini (varsa); yoksa düz tema renkleri
+            if let current, Illustration.exists(CatTheme.theme(forSize: current.size).mapBackground) {
+                Color.clear
+                    .overlay { IllustrationView(name: CatTheme.theme(forSize: current.size).mapBackground, contentMode: .fill) }
+                    .clipped()
+                    .ignoresSafeArea()
+            }
+        }
         .safeAreaInset(edge: .top, spacing: 0) { header }
         .safeAreaInset(edge: .bottom, spacing: 0) { footer(current: current) }
         .themedScreen()
@@ -266,7 +275,13 @@ struct CatMapRow: View {
                         path.addQuadCurve(to: bottom, control: CGPoint(x: x, y: h * 0.8))
                     }
                 }
-                .stroke(catTheme.tint(theme).opacity(theme.isDark ? 0.35 : 0.28), style: StrokeStyle(lineWidth: 14, lineCap: .round))
+                // Zemin görselinin üstünde kum rengi taş yol, düz zeminde temanın rengi
+                .stroke(
+                    Illustration.exists(catTheme.mapBackground)
+                        ? Color(hex: "#F4E4C6").opacity(0.95)
+                        : catTheme.tint(theme).opacity(theme.isDark ? 0.35 : 0.28),
+                    style: StrokeStyle(lineWidth: Illustration.exists(catTheme.mapBackground) ? 18 : 14, lineCap: .round)
+                )
                 .overlay {
                     Path { path in
                         let top = CGPoint(x: (Self.x(index - 1) + Self.x(index)) / 2 * width, y: 0)
@@ -283,9 +298,11 @@ struct CatMapRow: View {
             }
         }
         .frame(height: Self.height)
-        .background(
-            LinearGradient(colors: catTheme.colors(theme).map { $0.opacity(0.45) }, startPoint: .leading, endPoint: .trailing)
-        )
+        .background {
+            if !Illustration.exists(catTheme.mapBackground) {
+                LinearGradient(colors: catTheme.colors(theme).map { $0.opacity(0.45) }, startPoint: .leading, endPoint: .trailing)
+            }
+        }
     }
 }
 
@@ -407,4 +424,9 @@ struct CatLevelPreview: View {
         .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(.white.opacity(0.7), lineWidth: 2))
         .accessibilityHidden(true)
     }
+}
+
+extension CatTheme {
+    /// Serüven haritasının dikey zemin görseli (Assets'te varsa).
+    var mapBackground: String { "cat-map-\(rawValue)" }
 }
