@@ -20,17 +20,26 @@ struct HomeView: View {
     var body: some View {
         // Ekrana sığan ilk düzen seçilir: önce rahat, sonra sıkı; o da sığmazsa (çok küçük
         // ekran ya da büyük yazı boyutu) kaydırılabilir.
+        // Sıkı düzen: kartlar ve üst çizim biraz daha kısa, Premium oyuncuların en alttaki
+        // süs sahnesi gizli. Böylece çoğu iPhone'da ana sayfa kaydırmadan tek ekrana sığar.
         ViewThatFits(in: .vertical) {
             content(compact: false)
             content(compact: true)
+            content(compact: true, tight: true)
             ScrollView {
-                content(compact: true)
+                content(compact: true, tight: true)
+                    // Kaydırılabilir düzen durum çubuğunun altından başlar; üst çizim onun
+                    // arkasına uzanır (krem bant kalmaz)
+                    .padding(.top, topInset)
             }
             .scrollBounceBehavior(.basedOnSize)
-            // Üstteki çizim kaydırılınca da durum çubuğunun arkasına uzansın (krem bant kalmasın)
             .scrollClipDisabled()
+            .ignoresSafeArea(edges: .top)
         }
-        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { topInset = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { measured in
+            // Ölçüm 0 gelirse (bazı düzenlerde) pencerenin güvenli alanı kullanılır
+            topInset = max(measured, Self.windowTopInset)
+        }
         .themedScreen()
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $isShowingPaywall) {
@@ -64,20 +73,28 @@ struct HomeView: View {
         }
     }
 
+    private static var windowTopInset: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow }?
+            .safeAreaInsets.top ?? 0
+    }
+
     /// Üstte karşılama alanı, altında üç oyun modu, kısa istatistikler, koleksiyon önizlemesi
     /// ve en altta (abone olmayanlara) Premium şeridi.
-    private func content(compact: Bool) -> some View {
+    private func content(compact: Bool, tight: Bool = false) -> some View {
         VStack(spacing: compact ? 10 : 16) {
-            HomeHero(compact: compact, topInset: topInset, openSettings: openSettings)
-            VStack(spacing: compact ? 10 : 14) {
-                modeCards(compact: compact)
+            HomeHero(compact: compact, tight: tight, topInset: topInset, openSettings: openSettings)
+            VStack(spacing: tight ? 8 : (compact ? 10 : 14)) {
+                modeCards(compact: compact, tight: tight)
                     // Kartlar çizimin solan alt kenarına biner: arada boşluk kalmaz
                     .padding(.top, compact ? -16 : -26)
                 HomeStatsStrip()
-                HomeCollectionPreview(tileWidth: compact ? 72 : 84) { shownCard = $0 }
+                HomeCollectionPreview(tileWidth: tight ? 66 : (compact ? 72 : 84)) { shownCard = $0 }
                 if !store.isPremium {
                     PremiumBanner { isShowingPaywall = true }
-                } else {
+                } else if !tight {
                     // Premium oyunculara şerit yerine kedili bir sahne (çizim varsa)
                     PremiumHomeArt()
                 }
@@ -90,9 +107,9 @@ struct HomeView: View {
 
     /// Kedi Bulmaca öne çıkar: üstte tam genişlikte büyük kart, altında Günlük Bulmaca ve
     /// Kart Koleksiyonu yan yana.
-    private func modeCards(compact: Bool) -> some View {
+    private func modeCards(compact: Bool, tight: Bool = false) -> some View {
         // Üç kart aynı yükseklikte: büyük kart ile alttaki iki kart hizalı dursun
-        let cardHeight: CGFloat = compact ? 140 : 168
+        let cardHeight: CGFloat = tight ? 124 : (compact ? 140 : 168)
         let streak = model.dailyStreak
         let collected = model.collectedBreeds.count
         let cats = model.cats
@@ -106,7 +123,7 @@ struct HomeView: View {
             .accessibilityIdentifier("home.mode.cats")
 
             HStack(spacing: 10) {
-                ModeCard(style: .daily, title: "Daily Puzzle", compact: compact) {
+                ModeCard(style: .daily, title: "Daily Puzzle", compact: compact, tight: tight) {
                     if model.isTodaysPuzzleSolved {
                         Text("Solved! A new one tomorrow.")
                     } else if streak > 0 {
@@ -119,7 +136,7 @@ struct HomeView: View {
                 }
                 .accessibilityIdentifier("home.daily")
 
-                ModeCard(style: .collection, title: "Card Collection", compact: compact) {
+                ModeCard(style: .collection, title: "Card Collection", compact: compact, tight: tight) {
                     Text("\(collected)/\(model.breeds.count) breeds")
                 } action: {
                     router.push(.collectionHub)
@@ -153,6 +170,8 @@ struct HomeView: View {
 struct HomeHero: View {
     @Environment(\.appTheme) private var theme
     let compact: Bool
+    /// Sıkı düzen: uyuyan kedilere ayrılan alan daha alçak.
+    var tight = false
     /// Durum çubuğunun yüksekliği; çizim bu kadar yukarı taşar.
     var topInset: CGFloat = 0
     let openSettings: () -> Void
@@ -210,7 +229,7 @@ struct HomeHero: View {
             }
             if hasArt {
                 // Uyuyan kedilere yer: sabit yükseklik (boş alanı esneyip doldurmasın)
-                Color.clear.frame(height: compact ? 64 : 88)
+                Color.clear.frame(height: tight ? 40 : (compact ? 64 : 88))
             }
         }
         .padding(.horizontal, 16)
@@ -312,6 +331,8 @@ struct ModeCard<Caption: View>: View {
     let style: ModeStyle
     let title: LocalizedStringKey
     var compact = false
+    /// Sıkı düzen: çizim biraz daha alçak.
+    var tight = false
     @ViewBuilder let caption: () -> Caption
     let action: () -> Void
 
@@ -328,7 +349,7 @@ struct ModeCard<Caption: View>: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
-                .frame(height: compact ? 62 : 80)
+                .frame(height: tight ? 50 : (compact ? 62 : 80))
                 .overlay(alignment: .topLeading) {
                     ModeIcon(style: style, size: compact ? 28 : 32)
                 }
