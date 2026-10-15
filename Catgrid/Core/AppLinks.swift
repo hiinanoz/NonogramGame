@@ -10,7 +10,7 @@ enum AppLinks {
     static let termsOfUse = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
     /// App Store Connect'teki uygulama kimliği (Apple ID, yalnızca rakamlar). Doldurulunca
     /// "Değerlendir" doğrudan yorum sayfasını açar; boşken iOS'un değerlendirme penceresi kullanılır.
-    static let appStoreID = ""
+    static let appStoreID = "6819357571"
     static var writeReview: URL? {
         appStoreID.isEmpty ? nil : URL(string: "https://apps.apple.com/app/id\(appStoreID)?action=write-review")
     }
