@@ -25,6 +25,8 @@ struct HomeView: View {
                 content(compact: true)
             }
             .scrollBounceBehavior(.basedOnSize)
+            // Üstteki çizim kaydırılınca da durum çubuğunun arkasına uzansın (krem bant kalmasın)
+            .scrollClipDisabled()
         }
         .themedScreen()
         .toolbar(.hidden, for: .navigationBar)
@@ -69,7 +71,7 @@ struct HomeView: View {
                     // Kartlar çizimin solan alt kenarına biner: arada boşluk kalmaz
                     .padding(.top, compact ? -16 : -26)
                 HomeStatsStrip()
-                HomeCollectionPreview(tileWidth: compact ? 78 : 92) { shownCard = $0 }
+                HomeCollectionPreview(tileWidth: compact ? 72 : 84) { shownCard = $0 }
                 if !store.isPremium {
                     PremiumBanner { isShowingPaywall = true }
                 } else {
@@ -200,7 +202,7 @@ struct HomeHero: View {
             }
             if hasArt {
                 // Uyuyan kedilere yer: sabit yükseklik (boş alanı esneyip doldurmasın)
-                Color.clear.frame(height: compact ? 70 : 100)
+                Color.clear.frame(height: compact ? 64 : 88)
             }
         }
         .padding(.horizontal, 16)
@@ -265,7 +267,7 @@ struct FeaturedModeCard<Caption: View>: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 // Katmanları gelince yumakla oynayan canlı kedi (prototip), yoksa tek parça çizim
                 CatIllustration(rig: style == .cats ? .yarnCat : nil, fallback: style.illustration, isLively: true)
-                    .frame(maxWidth: compact ? 130 : 160, maxHeight: compact ? 96 : 118)
+                    .frame(maxWidth: compact ? 120 : 150, maxHeight: compact ? 84 : 104)
             }
             .padding(compact ? 12 : 14)
             .frame(maxWidth: .infinity)
@@ -304,7 +306,7 @@ struct ModeCard<Caption: View>: View {
                     .foregroundStyle(style.ink(theme))
                     .frame(maxWidth: .infinity)
                 IllustrationView(name: style.illustration)
-                    .frame(height: compact ? 50 : 72)
+                    .frame(height: compact ? 46 : 64)
                 Spacer(minLength: 0)
                 HStack(alignment: .bottom, spacing: 4) {
                     caption()

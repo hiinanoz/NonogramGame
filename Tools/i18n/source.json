@@ -2079,6 +2079,14 @@
   "Next season": {
    "en": "Next season",
    "tr": "Sonraki sezon"
+  },
+  "Back": {
+   "en": "Back",
+   "tr": "Geri"
+  },
+  "%lld of 3 stars": {
+   "en": "%lld of 3 stars",
+   "tr": "3 üzerinden %lld yıldız"
   }
  },
  "infoplist": {

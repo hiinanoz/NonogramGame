@@ -529,7 +529,9 @@
   "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": "색마다 고양이가 한 마리씩 숨어 있어요. 행과 열에도 한 마리씩 있고, 고양이끼리는 대각선으로도 닿지 않아요. 이 색은 한 칸뿐이니 고양이는 여기에 있어요. 빠르게 두 번 탭해서 고양이를 놓으세요!",
   "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "잘했어요! 한 번 탭하면 X, X를 다시 탭하면 지워지고, 두 번 탭하면 고양이예요. 밀면 X를 여러 개 놓을 수 있어요. 나머지 고양이를 찾아보세요!",
   "Previous season": "이전 시즌",
-  "Next season": "다음 시즌"
+  "Next season": "다음 시즌",
+  "Back": "뒤로",
+  "%lld of 3 stars": "별 3개 중 %lld개"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

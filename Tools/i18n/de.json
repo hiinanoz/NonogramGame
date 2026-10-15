@@ -532,7 +532,9 @@
   "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": "Jede Farbe versteckt eine Katze. Auch jede Zeile und Spalte hat eine, und Katzen berühren sich nie, nicht einmal diagonal. Diese Farbe ist nur ein Feld, also ist ihre Katze dort. Tippe schnell doppelt darauf, um die Katze zu setzen!",
   "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "Du hast es! Einmal tippen für X, ein X erneut antippen zum Löschen, doppelt tippen für eine Katze, und wischen setzt viele X. Finde die restlichen Katzen!",
   "Previous season": "Vorherige Saison",
-  "Next season": "Nächste Saison"
+  "Next season": "Nächste Saison",
+  "Back": "Zurück",
+  "%lld of 3 stars": "%lld von 3 Sternen"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

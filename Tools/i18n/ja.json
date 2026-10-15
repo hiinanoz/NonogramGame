@@ -529,7 +529,9 @@
   "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!": "どの色にも猫が1匹かくれています。行と列にも1匹ずつ。猫どうしは斜めでも接しません。この色は1マスだけなので、猫はここ。すばやくダブルタップして猫を置こう!",
   "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!": "わかったね!1回タップで×、×をもう一度タップで消去、ダブルタップで猫。なぞるとまとめて×がつきます。残りの猫を見つけよう!",
   "Previous season": "前のシーズン",
-  "Next season": "次のシーズン"
+  "Next season": "次のシーズン",
+  "Back": "戻る",
+  "%lld of 3 stars": "星3つ中%lld個"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

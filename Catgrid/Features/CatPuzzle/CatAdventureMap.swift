@@ -69,9 +69,35 @@ struct CatHubView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) { footer(current: current) }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(theme.background.ignoresSafeArea())
-        .screenTitle(BadgeMode.cats.title)
-        // Harita başlık çubuğunun arkasına kadar uzansın
+        // Harita başlık çubuğunun arkasına kadar uzanır; geri tuşu ve başlık görselin
+        // üstünde okunabilsin diye beyaz kapsül içinde
         .toolbarBackground(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    router.pop()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(theme.textPrimary)
+                        .frame(width: 38, height: 38)
+                        .background(Circle().fill(.white.opacity(0.92)))
+                        .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
+                }
+                .accessibilityLabel(Text("Back"))
+                .accessibilityIdentifier("cat.hub.back")
+            }
+            ToolbarItem(placement: .principal) {
+                Text(BadgeMode.cats.title)
+                    .font(.headline)
+                    .foregroundStyle(theme.textPrimary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .background(Capsule().fill(.white.opacity(0.92)))
+                    .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+            }
+        }
     }
 
     /// Sezon seçici, sezonun ilerlemesi ve kalan yardım hakları.
@@ -297,11 +323,11 @@ struct CatMapThemeHeader: View {
     }
 }
 
-/// Haritada tek bölüm: yolun bir parçası ve bölüm düğmesi. Düğmeler sağa sola kıvrılan bir
-/// çizgide durur; yol her satırda bir önceki ve sonraki düğmeye bağlanır.
+/// Haritada tek bölüm: bölüm düğmesi ve bir sonraki düğmeye uzanan taş yol. Düğmeler sağa
+/// sola kıvrılan bir çizgide durur; yol iki düğme arasında yumuşak bir S eğrisiyle akar ve
+/// satırın dışına taşarak sonraki satırın düğmesinin altına girer (kesintisiz görünür).
 @MainActor
 struct CatMapRow: View {
-    @Environment(AppModel.self) private var model
     @Environment(\.appTheme) private var theme
     let level: CatLevel
     let index: Int
@@ -310,65 +336,70 @@ struct CatMapRow: View {
     let isCurrent: Bool
     let action: () -> Void
 
-    static let height: CGFloat = 96
+    static let height: CGFloat = 104
 
     /// Düğmenin yatay konumu (genişliğin oranı): yumuşak bir dalga.
     static func x(_ index: Int) -> CGFloat {
-        0.5 + 0.28 * sin(Double(index) * 0.9)
+        0.5 + 0.27 * sin(Double(index) * 0.85)
     }
 
     var body: some View {
-        let catTheme = CatTheme.theme(forSize: level.size)
         GeometryReader { proxy in
             let width = proxy.size.width
             let h = Self.height
-            let x = Self.x(index) * width
+            let start = CGPoint(x: Self.x(index) * width, y: h / 2)
+            let end = CGPoint(x: Self.x(index + 1) * width, y: h / 2 + h)
             ZStack(alignment: .topLeading) {
-                // Yol: önceki düğmeyle arası (üst yarı) ve sonrakiyle arası (alt yarı)
-                Path { path in
-                    let top = CGPoint(x: (Self.x(index - 1) + Self.x(index)) / 2 * width, y: 0)
-                    let mid = CGPoint(x: x, y: h / 2)
-                    let bottom = CGPoint(x: (Self.x(index) + Self.x(index + 1)) / 2 * width, y: h)
-                    path.move(to: isFirstInTheme ? mid : top)
-                    if !isFirstInTheme {
-                        path.addQuadCurve(to: mid, control: CGPoint(x: x, y: h * 0.2))
-                    }
-                    if !isLastInTheme {
-                        path.addQuadCurve(to: bottom, control: CGPoint(x: x, y: h * 0.8))
-                    }
-                }
-                // Zemin görselinin üstünde kum rengi taş yol, düz zeminde temanın rengi
-                .stroke(
-                    Illustration.exists(catTheme.mapBackground)
-                        ? Color(hex: "#F4E4C6").opacity(0.95)
-                        : catTheme.tint(theme).opacity(theme.isDark ? 0.35 : 0.28),
-                    style: StrokeStyle(lineWidth: Illustration.exists(catTheme.mapBackground) ? 18 : 14, lineCap: .round)
-                )
-                .overlay {
-                    Path { path in
-                        let top = CGPoint(x: (Self.x(index - 1) + Self.x(index)) / 2 * width, y: 0)
-                        let mid = CGPoint(x: x, y: h / 2)
-                        let bottom = CGPoint(x: (Self.x(index) + Self.x(index + 1)) / 2 * width, y: h)
-                        path.move(to: isFirstInTheme ? mid : top)
-                        if !isFirstInTheme { path.addQuadCurve(to: mid, control: CGPoint(x: x, y: h * 0.2)) }
-                        if !isLastInTheme { path.addQuadCurve(to: bottom, control: CGPoint(x: x, y: h * 0.8)) }
-                    }
-                    .stroke(.white.opacity(theme.isDark ? 0.15 : 0.8), style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [2, 9]))
+                if !isLastInTheme {
+                    CatMapPath(start: start, end: end)
                 }
                 CatMapNode(level: level, isCurrent: isCurrent, action: action)
-                    .position(x: x, y: h / 2)
+                    .position(start)
             }
         }
         .frame(height: Self.height)
-        .background {
-            if !Illustration.exists(catTheme.mapBackground) {
-                LinearGradient(colors: catTheme.colors(theme).map { $0.opacity(0.45) }, startPoint: .leading, endPoint: .trailing)
-            }
-        }
     }
 }
 
-/// Bölüm düğmesi: çözülen renkli ve taçlı (hatasızsa), sıradaki büyük ve parlak, kilitli soluk.
+/// İki düğme arasındaki taş yol: koyu kenar, açık kum dolgu ve ortada basamak taşları.
+struct CatMapPath: View {
+    let start: CGPoint
+    let end: CGPoint
+
+    private var path: Path {
+        Path { path in
+            let dy = end.y - start.y
+            path.move(to: start)
+            path.addCurve(
+                to: end,
+                control1: CGPoint(x: start.x, y: start.y + dy * 0.55),
+                control2: CGPoint(x: end.x, y: end.y - dy * 0.55)
+            )
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            path.stroke(Color(hex: "#C9AE84").opacity(0.55), style: StrokeStyle(lineWidth: 32, lineCap: .round))
+            path.stroke(Color(hex: "#F6E8CC"), style: StrokeStyle(lineWidth: 25, lineCap: .round))
+            path.stroke(Color(hex: "#E2CDA4"), style: StrokeStyle(lineWidth: 9, lineCap: .round, dash: [1, 16]))
+        }
+        .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
+extension CatLevelResult {
+    /// 3 üzerinden yıldız: hatasız ve ipucusuz 3, en fazla bir hata 2, gerisi 1.
+    var stars: Int {
+        if flawless { return 3 }
+        return fewestMistakes <= 1 ? 2 : 1
+    }
+}
+
+/// Bölüm düğmesi: içinde bölüm numarası. Çözülenler sezon renginde ve üstünde 3 üzerinden
+/// yıldızlar; sıradaki büyük, beyaz ve nabız gibi atan halkalı; kilitliler soluk ve kilitli.
 @MainActor
 struct CatMapNode: View {
     @Environment(AppModel.self) private var model
@@ -385,83 +416,87 @@ struct CatMapNode: View {
         let isUnlocked = cats.isUnlocked(level)
         let result = cats.results[level.id]
         let tint = CatTheme.theme(forSize: level.size).tint(theme)
-        let size: CGFloat = isCurrent ? 70 : 56
+        let size: CGFloat = isCurrent ? 66 : 54
         Button(action: action) {
-            ZStack(alignment: .bottom) {
+            VStack(spacing: 2) {
+                if let result {
+                    stars(result.stars)
+                }
                 ZStack {
                     Circle()
-                        .fill(isUnlocked ? theme.surface : theme.surfaceMuted)
-                    portrait
-                        .clipShape(Circle())
-                        .padding(4)
-                        .saturation(isUnlocked ? 1 : 0)
-                        .opacity(isUnlocked ? 1 : 0.45)
+                        .fill(fill(isUnlocked: isUnlocked, isSolved: result != nil, tint: tint))
                     Circle()
-                        .strokeBorder(isCurrent ? tint : (result != nil ? tint.opacity(0.6) : theme.separator), lineWidth: isCurrent ? 4 : 2.5)
+                        .strokeBorder(.white.opacity(isUnlocked ? 0.95 : 0.6), lineWidth: isCurrent ? 4 : 3)
+                    if isUnlocked {
+                        Text(verbatim: "\(number)")
+                            .font(.system(size: isCurrent ? 24 : 19, weight: .heavy, design: .rounded).monospacedDigit())
+                            .foregroundStyle(result != nil ? .white : tint)
+                            .minimumScaleFactor(0.6)
+                            .padding(6)
+                    } else {
+                        VStack(spacing: 0) {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 13, weight: .bold))
+                            Text(verbatim: "\(number)")
+                                .font(.system(size: 12, weight: .bold, design: .rounded).monospacedDigit())
+                        }
+                        .foregroundStyle(Color(hex: "#7D7488"))
+                    }
                 }
                 .frame(width: size, height: size)
                 .background {
                     if isCurrent {
                         Circle()
-                            .fill(tint.opacity(0.35))
-                            .scaleEffect(glow ? 1.35 : 1.1)
-                            .opacity(glow ? 0 : 0.8)
+                            .fill(.white.opacity(0.7))
+                            .scaleEffect(glow ? 1.45 : 1.08)
+                            .opacity(glow ? 0 : 0.9)
                     }
                 }
-                .overlay(alignment: .topTrailing) {
-                    if !isUnlocked {
-                        Image(systemName: "lock.fill")
-                            .font(.system(size: 10, weight: .bold))
+                .overlay(alignment: .top) {
+                    if isCurrent {
+                        // "Buradasın" patisi
+                        Image(systemName: "pawprint.fill")
+                            .font(.system(size: 14, weight: .bold))
                             .foregroundStyle(.white)
-                            .padding(5)
-                            .background(Circle().fill(theme.textSecondary))
-                    } else if result?.flawless == true {
-                        Image(systemName: "crown.fill")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(Gold.deep)
-                            .padding(4)
-                            .background(Circle().fill(Gold.light))
-                    } else if result != nil {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 10, weight: .heavy))
-                            .foregroundStyle(.white)
-                            .padding(5)
+                            .padding(6)
                             .background(Circle().fill(tint))
+                            .overlay(Circle().strokeBorder(.white, lineWidth: 2))
+                            .offset(y: -22)
                     }
                 }
-                Text(verbatim: "\(number)")
-                    .font(.caption.bold().monospacedDigit())
-                    .foregroundStyle(isCurrent ? .white : theme.textPrimary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(Capsule().fill(isCurrent ? tint : theme.surface))
-                    .shadow(color: theme.cardShadow, radius: 2, y: 1)
-                    .offset(y: 12)
+                .shadow(color: .black.opacity(0.22), radius: 5, y: 3)
             }
-            .shadow(color: theme.cardShadow, radius: 6, y: 3)
         }
         .buttonStyle(PressableButtonStyle())
         .disabled(!isUnlocked)
         .accessibilityLabel(Text("Level \(number)"))
-        .accessibilityValue(result != nil ? Text("Solved") : (isUnlocked ? Text(verbatim: "") : Text("Locked")))
+        .accessibilityValue(result.map { Text("\($0.stars) of 3 stars") } ?? (isUnlocked ? Text(verbatim: "") : Text("Locked")))
         .onAppear {
             guard isCurrent, !reduceMotion else { return }
             withAnimation(.easeOut(duration: 1.8).repeatForever(autoreverses: false)) { glow = true }
         }
     }
 
-    /// Bölümün ilk kedisinin portresi; yoksa kedi simgesi.
-    @ViewBuilder
-    private var portrait: some View {
-        if let breed = level.breeds.first, let photo = BreedPhoto.portrait(breed) {
-            Image(uiImage: photo)
-                .resizable()
-                .scaledToFill()
-        } else {
-            Image(systemName: "cat.fill")
-                .font(.title2)
-                .foregroundStyle(CatTheme.theme(forSize: level.size).tint(theme))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+    private func fill(isUnlocked: Bool, isSolved: Bool, tint: Color) -> AnyShapeStyle {
+        if isSolved {
+            return AnyShapeStyle(LinearGradient(colors: [tint.opacity(0.85), tint], startPoint: .top, endPoint: .bottom))
+        }
+        if isUnlocked {
+            return AnyShapeStyle(Color.white)
+        }
+        return AnyShapeStyle(Color(hex: "#E9E4EE").opacity(0.92))
+    }
+
+    /// Düğmenin üstünde 3 yıldız (kazanılanlar altın).
+    private func stars(_ count: Int) -> some View {
+        HStack(spacing: 1) {
+            ForEach(0..<3, id: \.self) { index in
+                Image(systemName: "star.fill")
+                    .font(.system(size: index == 1 ? 14 : 11, weight: .bold))
+                    .foregroundStyle(index < count ? Gold.bright : Color.white.opacity(0.75))
+                    .shadow(color: .black.opacity(0.25), radius: 1, y: 1)
+                    .offset(y: index == 1 ? -2 : 0)
+            }
         }
     }
 }
