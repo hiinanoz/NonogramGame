@@ -51,6 +51,15 @@ enum ModeStyle: CaseIterable {
         }
     }
 
+    /// Modun hareketli kedisi (videodan; yoksa sabit çizim gösterilir).
+    var animation: String {
+        switch self {
+        case .daily: LoopingCatAnimation.dailyCat
+        case .collection: LoopingCatAnimation.cardsCat
+        case .cats: LoopingCatAnimation.yarnCat
+        }
+    }
+
     /// Kullanıcının göndereceği çizim (Assets'te yoksa gösterilmez).
     var illustration: String {
         switch self {

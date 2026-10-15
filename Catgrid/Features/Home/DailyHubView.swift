@@ -229,7 +229,19 @@ struct DailyHubView: View {
                     }
                 }
                 Spacer(minLength: 0)
-                if isSolved {
+                if LoopingCatAnimation.isAvailable(LoopingCatAnimation.sleepyCat) {
+                    // Uyuyan kedi (sevince mırlar); çözülmüşse köşesinde onay rozeti
+                    LoopingCatView(name: LoopingCatAnimation.sleepyCat, tapToPet: true)
+                        .frame(maxWidth: 124, maxHeight: 76)
+                        .overlay(alignment: .topTrailing) {
+                            if isSolved {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(theme.success)
+                                    .background(Circle().fill(theme.surface).padding(2))
+                            }
+                        }
+                } else if isSolved {
                     Image(systemName: "checkmark.seal.fill")
                         .font(.title2)
                         .foregroundStyle(theme.success)

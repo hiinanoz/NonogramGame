@@ -11,6 +11,8 @@ struct HubHero<Art: View>: View {
     let subtitle: Text
     let progress: Double
     let style: ModeStyle
+    /// Çizimin alanı (yatay hareketli kediler için daha geniş).
+    var artSize = CGSize(width: 92, height: 92)
     @ViewBuilder let art: () -> Art
 
     var body: some View {
@@ -27,7 +29,7 @@ struct HubHero<Art: View>: View {
                 }
                 Spacer(minLength: 8)
                 art()
-                    .frame(width: 92, height: 92)
+                    .frame(width: artSize.width, height: artSize.height)
             }
             ProgressBar(value: min(max(progress, 0), 1), tint: style.tint(theme))
         }
@@ -133,9 +135,12 @@ struct CollectionHubView: View {
                     title: mode.title,
                     subtitle: Text("\(model.collectedBreeds.count) of \(model.breeds.count) breeds collected"),
                     progress: model.breeds.isEmpty ? 0 : Double(model.collectedBreeds.count) / Double(model.breeds.count),
-                    style: .collection
+                    style: .collection,
+                    artSize: LoopingCatAnimation.isAvailable(LoopingCatAnimation.cardsCat) ? CGSize(width: 160, height: 92) : CGSize(width: 92, height: 92)
                 ) {
-                    if Illustration.exists(ModeStyle.collection.illustration) {
+                    if LoopingCatAnimation.isAvailable(LoopingCatAnimation.cardsCat) {
+                        LoopingCatView(name: LoopingCatAnimation.cardsCat, tapToPet: true)
+                    } else if Illustration.exists(ModeStyle.collection.illustration) {
                         IllustrationView(name: ModeStyle.collection.illustration)
                     } else if let chapter = model.collectedBreeds.last ?? model.breeds.first {
                         ChapterBadge(chapter: chapter, size: 92)

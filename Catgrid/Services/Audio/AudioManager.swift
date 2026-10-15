@@ -25,6 +25,10 @@ enum SoundEffect: String, CaseIterable {
     case catHint = "cat_hint"
     case catCombo = "cat_combo"
     case catWin = "cat_win"
+    // Animasyonlu kedileri sevince: uyuyan kedi mırlar, diğerleri miyavlar
+    case purr
+    case meow
+    case meow2
 }
 
 /// Bir müzik parçası. `gain`: parçalar arası ses farkını dengeler (ses ayarıyla çarpılır).

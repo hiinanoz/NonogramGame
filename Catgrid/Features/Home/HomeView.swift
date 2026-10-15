@@ -280,8 +280,8 @@ struct FeaturedModeCard<Caption: View>: View {
                 // Yumakla oynayan kedi videosu (varsa), yoksa tek parça çizim; büyük ve kartın
                 // sağ alt köşesine yaslı
                 Group {
-                    if style == .cats && LoopingCatAnimation.isAvailable(LoopingCatAnimation.yarnCat) {
-                        LoopingCatView(name: LoopingCatAnimation.yarnCat)
+                    if LoopingCatAnimation.isAvailable(style.animation) {
+                        LoopingCatView(name: style.animation)
                     } else {
                         CatIllustration(rig: style == .cats ? .yarnCat : nil, fallback: style.illustration, isLively: true)
                     }
@@ -321,9 +321,16 @@ struct ModeCard<Caption: View>: View {
                 // Üstte ikon ve çizim yan yana: kart, büyük kartla aynı yükseklikte kalır
                 HStack(alignment: .top, spacing: 4) {
                     ModeIcon(style: style, size: compact ? 30 : 36)
-                    IllustrationView(name: style.illustration)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .frame(height: compact ? 44 : 58)
+                    Group {
+                        // Hareketli kedi (videodan), yoksa sabit çizim
+                        if LoopingCatAnimation.isAvailable(style.animation) {
+                            LoopingCatView(name: style.animation)
+                        } else {
+                            IllustrationView(name: style.illustration)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .frame(height: compact ? 44 : 58)
                 }
                 Text(title)
                     .font((compact ? Font.subheadline : .headline).bold())

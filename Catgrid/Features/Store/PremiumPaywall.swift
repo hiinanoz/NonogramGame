@@ -107,6 +107,40 @@ struct PremiumBanner: View {
 
     private var ink: Color { theme.isDark ? Gold.light : Gold.ink }
 
+    private var hasPeekCat: Bool { LoopingCatAnimation.isAvailable(LoopingCatAnimation.peekCat) }
+
+    /// Kenardan bakan kedinin boyu ve şeridin üstüne taşan kısmı.
+    private static let peekHeight: CGFloat = 80
+    private static let peekRise: CGFloat = 26
+    /// Videodaki duvar kenarı karenin genişliğinin %92'sinde; patiler kenarın dışına taşar.
+    private static let peekEdge: CGFloat = 0.92
+    private static var peekWidth: CGFloat { peekHeight * 300 / 338 * peekEdge }
+
+    /// Şeridin sağ kenarının arkasından bakan kedi: gövdesi kenarda kesilir, patileri kenara
+    /// tutunur; başı şeridin üstüne taşar. Alt köşede şeridin yuvarlak köşesiyle kırpılır.
+    private var peekCat: some View {
+        let overhang: CGFloat = 12
+        return ZStack(alignment: .bottomTrailing) {
+            Color.clear
+            LoopingCatView(name: LoopingCatAnimation.peekCat)
+                .frame(height: Self.peekHeight)
+                .padding(.trailing, overhang - Self.peekHeight * 300 / 338 * (1 - Self.peekEdge))
+        }
+        .padding(.top, -Self.peekRise)
+        .padding(.trailing, -overhang)
+        // Görünür alan: şeridin kendisi (yuvarlak köşeli) ve üstüyle sağındaki taşma payı;
+        // yalnızca en alttaki birkaç noktada şeridin yuvarlak köşesiyle kırpılır
+        .mask {
+            ZStack {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .padding(.top, Self.peekRise)
+                    .padding(.trailing, overhang)
+                Rectangle()
+                    .padding(.bottom, 8)
+            }
+        }
+    }
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
@@ -126,22 +160,27 @@ struct PremiumBanner: View {
                 }
                 .foregroundStyle(ink)
                 Spacer(minLength: 4)
-                IllustrationView(name: "premium-cat")
-                    .frame(maxHeight: 44)
-                Image(systemName: "chevron.right")
-                    .font(.footnote.bold())
-                    .foregroundStyle(ink.opacity(0.6))
+                if !hasPeekCat {
+                    IllustrationView(name: "premium-cat")
+                        .frame(maxHeight: 44)
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.bold())
+                        .foregroundStyle(ink.opacity(0.6))
+                }
             }
-            .padding(.horizontal, 14)
+            .padding(.leading, 14)
+            .padding(.trailing, hasPeekCat ? Self.peekWidth + 2 : 14)
             .padding(.vertical, 10)
             .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(champagne))
             .overlay(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .strokeBorder(Gold.mid.opacity(0.45), lineWidth: 1)
             )
+            .overlay { if hasPeekCat { peekCat } }
             .shadow(color: Gold.deep.opacity(theme.isDark ? 0 : 0.12), radius: 8, y: 3)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier("home.premiumBanner")
     }
 }
+
