@@ -535,7 +535,8 @@
   "Easy: X's go around every cat you find.": "かんたん：見つけた猫のまわりに自動で×が付きます。",
   "Share": "共有",
   "Game Center Leaderboards": "Game Center ランキング",
-  "I solved this puzzle in Catgrid Collection! Can you? 🐾": "Catgrid Collectionでこのパズルを解いたよ！きみも解けるかな？🐾"
+  "I solved this puzzle in Catgrid Collection! Can you? 🐾": "Catgrid Collectionでこのパズルを解いたよ！きみも解けるかな？🐾",
+  "I collected the %@ card in Catgrid Collection! 🐾": "Catgrid Collectionで%@のカードをゲットしたよ！🐾"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

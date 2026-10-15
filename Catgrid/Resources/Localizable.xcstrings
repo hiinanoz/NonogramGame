@@ -24614,6 +24614,52 @@
           }
         }
       }
+    },
+    "I collected the %@ card in Catgrid Collection! 🐾": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catgrid Collection'da %@ kartını topladım! 🐾"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catgrid Collectionで%@のカードをゲットしたよ！🐾"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ich habe in Catgrid Collection die %@-Karte gesammelt! 🐾"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "J'ai obtenu la carte %@ dans Catgrid Collection ! 🐾"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Conseguí la carta de %@ en Catgrid Collection! 🐾"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ganhei a carta %@ no Catgrid Collection! 🐾"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catgrid Collection에서 %@ 카드를 모았어요! 🐾"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -2103,6 +2103,10 @@
   "I solved this puzzle in Catgrid Collection! Can you? 🐾": {
    "en": "I solved this puzzle in Catgrid Collection! Can you? 🐾",
    "tr": "Bu bulmacayı Catgrid Collection'da çözdüm! Sen de çözebilir misin? 🐾"
+  },
+  "I collected the %@ card in Catgrid Collection! 🐾": {
+   "en": "I collected the %@ card in Catgrid Collection! 🐾",
+   "tr": "Catgrid Collection'da %@ kartını topladım! 🐾"
   }
  },
  "infoplist": {

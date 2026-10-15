@@ -538,7 +538,8 @@
   "Easy: X's go around every cat you find.": "Fácil: se ponen X alrededor de cada gato que encuentres.",
   "Share": "Compartir",
   "Game Center Leaderboards": "Clasificaciones de Game Center",
-  "I solved this puzzle in Catgrid Collection! Can you? 🐾": "¡Resolví este puzle en Catgrid Collection! ¿Te atreves? 🐾"
+  "I solved this puzzle in Catgrid Collection! Can you? 🐾": "¡Resolví este puzle en Catgrid Collection! ¿Te atreves? 🐾",
+  "I collected the %@ card in Catgrid Collection! 🐾": "¡Conseguí la carta de %@ en Catgrid Collection! 🐾"
  },
  "infoplist": {
   "CFBundleDisplayName": "Catgrid",

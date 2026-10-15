@@ -9,6 +9,10 @@ struct ShareResultButton<Art: View>: View {
     /// Kartın altındaki sonuç satırı (ör. "4 yıldız · 2:15").
     let headline: Text
     var style: Style = .light
+    /// Paylaşım metni; boşsa "Bu bulmacayı çözdüm…" daveti.
+    var message: String?
+    /// `true`: çizim olduğu gibi (ör. koleksiyon kartı), çerçevesiz ve geniş yerleşir.
+    var isFullArt = false
     @ViewBuilder let art: () -> Art
 
     @State private var image: Image?
@@ -20,8 +24,9 @@ struct ShareResultButton<Art: View>: View {
         case dark
     }
 
-    private var message: String {
-        String(localized: "I solved this puzzle in Catgrid Collection! Can you? 🐾") + "\n" + AppLinks.marketing.absoluteString
+    private var shareText: String {
+        (message ?? String(localized: "I solved this puzzle in Catgrid Collection! Can you? 🐾"))
+            + "\n" + AppLinks.marketing.absoluteString
     }
 
     var body: some View {
@@ -29,7 +34,7 @@ struct ShareResultButton<Art: View>: View {
             if let image {
                 ShareLink(
                     item: image,
-                    message: Text(verbatim: message),
+                    message: Text(verbatim: shareText),
                     preview: SharePreview(Text(verbatim: "Catgrid Collection"), image: image)
                 ) {
                     label
@@ -55,7 +60,7 @@ struct ShareResultButton<Art: View>: View {
     /// Paylaşılacak kart bir kez çizilir (1080 piksel kare).
     private func render() {
         guard image == nil else { return }
-        let card = ShareCard(headline: headline, art: art)
+        let card = ShareCard(headline: headline, isFullArt: isFullArt, art: art)
             .environment(\.appTheme, theme)
             .environment(\.locale, locale)
         let renderer = ImageRenderer(content: card)
@@ -69,9 +74,44 @@ struct ShareResultButton<Art: View>: View {
 /// Paylaşılan görsel: krem zemin, ortada bulmaca, altta oyunun adı ve sonuç.
 private struct ShareCard<Art: View>: View {
     let headline: Text
+    var isFullArt = false
     let art: () -> Art
 
     var body: some View {
+        if isFullArt {
+            fullArt
+        } else {
+            framed
+        }
+    }
+
+    /// Koleksiyon kartı: kart olduğu gibi, altında oyunun logosu ve adı.
+    private var fullArt: some View {
+        VStack(spacing: 14) {
+            art()
+                .frame(width: 320)
+            HStack(spacing: 8) {
+                Image("AppLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 30, height: 30)
+                    .clipShape(Circle())
+                Text(verbatim: "Catgrid Collection")
+                    .font(.system(size: 20, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(hex: "#3B2A24"))
+            }
+            headline
+                .font(.system(size: 14, weight: .semibold, design: .rounded))
+                .foregroundStyle(Color(hex: "#8A6F62"))
+        }
+        .padding(22)
+        .frame(width: 364)
+        .background(
+            LinearGradient(colors: [Color(hex: "#FFF6EA"), Color(hex: "#FBE3CF")], startPoint: .top, endPoint: .bottom)
+        )
+    }
+
+    private var framed: some View {
         VStack(spacing: 14) {
             HStack(spacing: 8) {
                 Image("AppLogo")

@@ -162,6 +162,20 @@ struct CardDetailSheet: View {
             .padding(24)
             .frame(maxWidth: .infinity)
         }
+        // Kartı paylaş: kartın görseli, altında oyunun adı
+        .overlay(alignment: .topTrailing) {
+            if let card = chapter.card, hasArrived || !isNewCard {
+                ShareResultButton(
+                    headline: Text("Nonogram · Cat Puzzle · Cards"),
+                    message: String(localized: "I collected the \(chapter.title.resolved) card in Catgrid Collection! 🐾"),
+                    isFullArt: true
+                ) {
+                    BreedCardView(chapter: chapter, card: card, isGolden: isGolden)
+                }
+                .padding(.trailing, 16)
+                .padding(.top, 16)
+            }
+        }
         .background(theme.background.ignoresSafeArea())
         .appChrome()
         .presentationDragIndicator(isNewCard ? .hidden : .visible)
