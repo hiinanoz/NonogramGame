@@ -19,7 +19,7 @@ PAGES = {
         "headings": {"en": "Privacy Policy", "tr": "Gizlilik Politikası", "ja": "プライバシーポリシー",
                      "de": "Datenschutzerklärung", "fr": "Politique de confidentialité",
                      "es": "Política de privacidad", "pt-BR": "Política de Privacidade", "ko": "개인정보 처리방침"},
-        "updated": "October 5, 2026",
+        "updated": "October 16, 2026",
     },
     "support": {
         "title": "Catgrid Support",

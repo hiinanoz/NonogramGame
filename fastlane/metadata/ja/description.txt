@@ -38,3 +38,4 @@ Premiumは、月額または年額の自動更新サブスクリプションと�
 
 利用規約: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 プライバシーポリシー: https://hii.othinks.com/catgrid/privacy
+サポート: https://hii.othinks.com/catgrid/support

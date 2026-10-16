@@ -76,5 +76,4 @@ final class AdCoordinator {
         await service.presentPrivacyOptions()
     }
 
-    var diagnostics: String { service.diagnostics }
 }

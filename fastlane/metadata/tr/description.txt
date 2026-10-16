@@ -38,3 +38,4 @@ Premium, aylık ya da yıllık otomatik yenilenen abonelik olarak sunulur. Ödem
 
 Kullanım Koşulları: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 Gizlilik Politikası: https://hii.othinks.com/catgrid/privacy
+Destek: https://hii.othinks.com/catgrid/support

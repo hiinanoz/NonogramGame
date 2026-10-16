@@ -133,17 +133,6 @@ final class GoogleAdService: NSObject, AdService {
         }
     }
 
-    var diagnostics: String {
-        let consent = UMPConsentInformation.sharedInstance
-        return """
-        Start: \(startStatus)
-        Consent: \(consent.consentStatus.rawValue), can request ads: \(consent.canRequestAds)
-        Tracking: \(ATTrackingManager.trackingAuthorizationStatus.rawValue)
-        Interstitial: \(interstitialStatus)
-        Rewarded: \(rewardedStatus)
-        """
-    }
-
     // MARK: - Gösterme
 
     func showInterstitial() async -> Bool {
