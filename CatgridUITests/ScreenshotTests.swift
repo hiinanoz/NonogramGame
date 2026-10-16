@@ -71,9 +71,16 @@ final class ScreenshotTests: XCTestCase {
         goBack(app)
 
         // 6. Kart koleksiyonu
+        // Geri dönüş animasyonu bitmeden dokunulursa kaçabilir: ekran açılana kadar yeniden dene
         let collection = app.buttons["home.collection"]
         XCTAssertTrue(collection.waitForExistence(timeout: 20))
-        collection.tap()
+        settle(1)
+        let card = app.buttons["collection.card.siamese"]
+        for _ in 0..<3 where !card.exists {
+            if collection.exists { collection.tap() }
+            _ = card.waitForExistence(timeout: 8)
+        }
+        XCTAssertTrue(card.exists, "Koleksiyon ekranı açılmadı")
         settle(1.5)
         capture("06_collection")
     }
