@@ -4,7 +4,7 @@ import NonogramKit
 
 /// App Store ekran görüntüleri için örnek ilerleme (yalnızca Debug, `-screenshots` ile açılınca).
 ///
-/// Eğitim ve ilk 4 tür bitmiş (kartları koleksiyonda), ilk türün Altın Kartı kazanılmış,
+/// Eğitim ve ilk 4 tür bitmiş (kartları koleksiyonda), (Premium içeriği gösterilmez: Altın Kart yok),
 /// 5. türün zor bölümü yarıya kadar çözülmüş olarak açılır. Veriler bellekte tutulur,
 /// gerçek ilerlemeye dokunulmaz.
 enum DemoContent {
@@ -22,7 +22,6 @@ enum DemoContent {
         }
         catalog.chapters.first { $0.kind == .tutorial }?.puzzles.forEach(complete)
         breeds.prefix(4).forEach { $0.puzzles.forEach(complete) }
-        breeds.first?.premiumPuzzles.forEach(complete)
 
         guard breeds.count > 4 else { return }
         let current = breeds[4]
