@@ -1,4 +1,4 @@
-Kareleri doldur, sayıları takip et ve sevimli bir piksel kedinin ortaya çıkışını izle!
+Kareleri doldur, sayıları takip et ve gizli kedi resminin ortaya çıkışını izle!
 
 Catgrid Collection, kedi severler için hazırlanmış rahatlatıcı bir nonogram (resimli mantık bulmacası) oyunudur. Her bulmaca yalnızca mantıkla çözülebilir; tahmin yapmana hiç gerek yok.
 

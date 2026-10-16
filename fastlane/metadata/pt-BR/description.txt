@@ -1,4 +1,4 @@
-Preencha a grade, siga os números e veja um gatinho fofo em pixel art aparecer!
+Preencha a grade, siga os números e veja a imagem escondida de um gatinho aparecer!
 
 Catgrid Collection é um nonograma (griddlers, hanjie) aconchegante feito para quem ama gatos. Todos os quebra-cabeças podem ser resolvidos só com lógica, então você nunca precisa chutar.
 

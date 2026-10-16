@@ -1,4 +1,4 @@
-Remplis la grille, suis les nombres et regarde un adorable chat en pixel art apparaître !
+Remplis la grille, suis les nombres et regarde une image de chat cachée apparaître !
 
 Catgrid Collection est un jeu de nonogrammes (aussi appelés logigrammes ou hanjie) tout doux, pensé pour les amoureux des chats. Chaque grille se résout par la logique pure : tu n'as jamais besoin de deviner.
 

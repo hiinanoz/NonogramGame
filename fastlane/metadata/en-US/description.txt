@@ -1,4 +1,4 @@
-Fill the grid, follow the numbers and watch a cute pixel cat appear!
+Fill the grid, follow the numbers and watch a hidden cat picture appear!
 
 Catgrid Collection is a cozy nonogram (griddlers, hanjie) game made for cat lovers. Every puzzle can be solved with pure logic, so you never have to guess.
 
