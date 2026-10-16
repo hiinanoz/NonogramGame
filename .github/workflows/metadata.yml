@@ -47,7 +47,7 @@ jobs:
             --api_key_path ~/asc_key.json \
             --app_identifier com.catgridcollection.nonogram \
             --platform ios \
-            --app_version 1.0.0 \
+            --app_version 1.1.0 \
             --metadata_path fastlane/metadata \
             --screenshots_path fastlane/screenshots \
             --skip_binary_upload true \

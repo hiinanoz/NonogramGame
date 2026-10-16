@@ -1,10 +1,26 @@
 Thank you for reviewing Catgrid Collection: Nonogram.
 
-- No account or login is needed. All progress is stored on the device.
-- Muffin's School (the first chapter) teaches the rules in 12 short lessons with Muffin, a teacher cat. It can be skipped with "Skip tutorial". No ads are shown during the tutorial.
-- Cat breeds unlock in order: the first breed opens after Muffin's School (or right away if it is skipped), and each next breed opens once half of the previous breed's puzzles are solved. The Premium screen can be opened from the home screen at any time, without playing.
-- Ads (Google AdMob) appear only between puzzles, after every 2 solved puzzles with at least 90 seconds between ads; never during play. Rewarded ads are optional (extra paw / extra time after losing).
-- In the EEA/UK the Google consent form appears on first launch, followed by the App Tracking Transparency prompt.
-- Catgrid Premium (auto-renewable, monthly or yearly) removes ads and unlocks 9 Golden Puzzles per breed plus Golden Cards. Open it from the home screen banner ("Go Premium"), from Settings → Premium, or from the "Golden Puzzles" teaser at the bottom of a breed's level screen. As a free sample, the 9 Golden Puzzles of British Shorthair unlock for everyone once that breed is finished. Restore Purchases and Manage Subscription are in Settings → Premium.
-- The Golden Card shown in the screenshots is earned by solving a breed's 9 Golden Puzzles (Premium, or the free British Shorthair sample); the screenshot captions say "with Premium".
-- Privacy Policy, Terms of Use (Apple standard EULA) and Support links are in Settings → About and on the subscription screen.
+ABOUT THE PREVIOUS REJECTION (Guideline 5.6)
+The app has no hidden, remote-controlled or review-only features. It has no server, no remote configuration and no feature flags: every puzzle, card and mode is bundled in the binary and works offline, identically for every user, region and date. Some content unlocks only by playing (described below). The steps below reach every feature in a few minutes, without purchasing.
+
+HOW TO REACH EVERY FEATURE
+- No account or login. Progress is stored on the device.
+- Home screen shows the three game modes: Cat Puzzle (large card), Daily Puzzle and Card Collection.
+1. Cat Puzzle: tap the Cat Puzzle card. A seasonal adventure map opens; tap Play. Rule: place one cat in every color, row and column; cats may not touch. Tap a cell to mark X, double-tap to place a cat. Level 1 is a short guided tutorial. The Easy/Hard switch (top right of the game) controls automatic X's. 335 levels, unlocked in order.
+2. Daily Puzzle: tap Daily Puzzle, then Play. One new nonogram per day; the last 10 days can also be played from the calendar.
+3. Card Collection (nonograms): tap Card Collection, then Continue. Muffin's School teaches nonograms; it can be skipped with "Skip tutorial". Cat breeds unlock in order: each next breed opens once half of the previous breed's puzzles are solved. Finishing all puzzles of a breed awards its collectible card (shown in Collection and on the home screen).
+4. Sharing: after solving a puzzle, or when viewing a card, tap the share button (top right).
+5. Game Center: the Game Center sign-in appears after launch; leaderboards are in Settings → Game Center Leaderboards.
+6. Animated cats on the home screen can be petted by stroking them (purr/meow sound).
+
+SCREENSHOTS
+Screenshots show the real app with sample progress (some levels and breeds already played). The same screens are reached by playing as described above. No Premium-only content is shown in the screenshots.
+
+CATGRID PREMIUM (OPTIONAL SUBSCRIPTION)
+Auto-renewable, monthly or yearly. Removes ads and unlocks 9 Golden Puzzles per breed plus Golden Cards. Open it from the home screen banner, from Settings → Premium, or from the "Golden Puzzles" teaser at the bottom of a breed's level screen. Restore Purchases and Manage Subscription are in Settings → Premium. As a free sample, the Golden Puzzles of British Shorthair unlock for everyone once that breed is finished.
+
+ADS
+Google AdMob. Interstitials appear only between puzzles (after every 2 solved puzzles, at least 90 seconds apart), never during play, never in tutorials. Rewarded ads are optional (extra paw or extra time after losing). In the EEA/UK the Google consent form appears on first launch, followed by the App Tracking Transparency prompt.
+
+LINKS
+Privacy Policy, Terms of Use (Apple standard EULA) and Support are in Settings → About and on the subscription screen.

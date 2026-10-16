@@ -113,7 +113,7 @@ jobs:
                     open(os.path.expanduser("~/asc_key.json"), "w"))
           PY
           fastlane deliver --api_key_path ~/asc_key.json --app_identifier com.catgridcollection.nonogram \
-            --platform ios --app_version 1.0.0 --screenshots_path fastlane/screenshots \
+            --platform ios --app_version 1.1.0 --screenshots_path fastlane/screenshots \
             --skip_binary_upload true --skip_metadata true --skip_screenshots false --overwrite_screenshots true \
             --run_precheck_before_submit false --submit_for_review false --force true
           rm -f ~/asc_key.json

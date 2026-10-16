@@ -34,6 +34,47 @@ enum DemoContent {
             game.mark(.filled, at: position)
         }
         model.progress.saveGame(game.snapshot)
+
+        seedDaily(model, now: now)
+        seedCats(model)
+    }
+
+    /// Son 6 günün günlük bulmacası çözülmüş (seri); bugünkü oynanmayı bekliyor.
+    @MainActor
+    private static func seedDaily(_ model: AppModel, now: Date) {
+        for daysAgo in 1...6 {
+            let day = DayKey(now.addingTimeInterval(-86_400 * Double(daysAgo)))
+            guard model.puzzle(withID: day.puzzleID) != nil else { continue }
+            model.record(PuzzleCompletion(puzzleID: day.puzzleID, completedAt: now, elapsed: 240, mistakes: daysAgo % 3 == 0 ? 1 : 0))
+        }
+    }
+
+    /// Kedi Bulmaca: ilk bölümler 1-3 yıldızla bitmiş, sıradaki bölüm yarıya kadar çözülmüş.
+    @MainActor
+    private static func seedCats(_ model: AppModel) {
+        let cats = model.cats
+        let levels = cats.levels
+        guard levels.count > 24 else { return }
+        for (index, level) in levels.prefix(23).enumerated() {
+            let mistakes = index % 4 == 1 ? 1 : (index % 7 == 3 ? 2 : 0)
+            cats.record(CatPuzzleModel.Completion(
+                level: level, score: 900 + index * 35, mistakes: mistakes, usedHints: false,
+                elapsed: 70 + Double(index) * 4, bestCombo: 3, perfectlyMarked: 2
+            ))
+        }
+        // Oynanan bölüm: kedilerin yarısı bulunmuş, çevrelerine X'ler konmuş
+        let current = levels[23]
+        var game = CatGame(level: current)
+        let n = current.size
+        for region in 0..<(n / 2) {
+            let cat = current.catPosition(ofRegion: region)
+            game.placeCat(at: cat)
+            for index in CatRules.attacked(by: cat.row * n + cat.column, in: current) {
+                game.paint(cross: true, at: GridPosition(row: index / n, column: index % n))
+            }
+        }
+        cats.save(game.snapshot, for: current)
+        model.refreshBadges()
     }
 }
 #endif

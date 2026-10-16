@@ -3,7 +3,7 @@ import XCTest
 /// App Store ekran görüntüleri. Yalnızca "Ekran görüntüleri" iş akışında çalışır
 /// (`CATGRID_SCREENSHOTS=1`); normal CI'da atlanır.
 ///
-/// Uygulama `-screenshots` ile örnek ilerlemeyle açılır, 5 ekran sırayla gezilir ve her biri
+/// Uygulama `-screenshots` ile örnek ilerlemeyle açılır, 6 ekran sırayla gezilir ve her biri
 /// test sonucuna `<dil>_<sıra>_<ad>` adlı ek olarak kaydedilir.
 final class ScreenshotTests: XCTestCase {
     override func setUp() {
@@ -22,17 +22,34 @@ final class ScreenshotTests: XCTestCase {
         app.launchArguments += ["-AppleLanguages", "(\(language))", "-AppleLocale", locale, "-screenshots", "-disableAds"]
         app.launch()
 
-        // 1. Ana sayfa: günlük bulmaca, modlar, koleksiyon rafı
-        let mode = app.buttons["home.mode.collection"]
-        XCTAssertTrue(mode.waitForExistence(timeout: 20))
-        settle()
+        // 1. Ana sayfa: üç mod, hareketli kediler, koleksiyon rafı
+        let cats = app.buttons["home.mode.cats"]
+        XCTAssertTrue(cats.waitForExistence(timeout: 20))
+        settle(3)
         capture("01_home")
-        mode.tap()
+
+        // 2. Kedi Bulmaca serüven haritası (kalınan bölüm ortada)
+        cats.tap()
+        let play = app.buttons["hub.continue"]
+        XCTAssertTrue(play.waitForExistence(timeout: 20))
+        settle(2)
+        capture("02_cat_map")
+
+        // 3. Kedi Bulmaca oyunu: kedilerin yarısı bulunmuş
+        play.tap()
+        let catBoard = app.descendants(matching: .any)["cat.board"]
+        _ = catBoard.waitForExistence(timeout: 20)
+        settle(2)
+        capture("03_cat_game")
+        goBack(app)
+        goBack(app)
+
+        // 4. Nonogram: yarısı çözülmüş bölüm
+        let collectionMode = app.buttons["home.mode.collection"]
+        XCTAssertTrue(collectionMode.waitForExistence(timeout: 20))
+        collectionMode.tap()
         let start = app.buttons["hub.continue"]
         XCTAssertTrue(start.waitForExistence(timeout: 20))
-
-        // 2. Oyun: yarısı çözülmüş zor bölüm, yardımcı kedi
-        // İlk açılışta soğuk simülatör yavaş olabilir: bekle, dokunuş kaçtıysa bir kez daha dokun
         start.tap()
         let board = app.descendants(matching: .any)["game.board"]
         if !board.waitForExistence(timeout: 20), start.exists {
@@ -40,35 +57,25 @@ final class ScreenshotTests: XCTestCase {
         }
         XCTAssertTrue(board.waitForExistence(timeout: 30))
         settle(2.5)
-        capture("02_game")
-        goBack(app)
-
-        // 3. Bir türün bölümleri: çözülen bulmacaların resimleri
-        let levels = app.buttons["hub.levels"]
-        XCTAssertTrue(levels.waitForExistence(timeout: 20))
-        levels.tap()
-        let chapter = app.buttons["chapter.siamese"]
-        XCTAssertTrue(chapter.waitForExistence(timeout: 20))
-        chapter.tap()
-        settle()
-        capture("03_chapter")
-        goBack(app)
+        capture("04_nonogram")
         goBack(app)
         goBack(app)
 
-        // 4. Kart koleksiyonu
+        // 5. Günlük bulmaca: takvim ve seri
+        let daily = app.buttons["home.daily"]
+        XCTAssertTrue(daily.waitForExistence(timeout: 20))
+        daily.tap()
+        _ = app.buttons["daily.play"].waitForExistence(timeout: 20)
+        settle(2)
+        capture("05_daily")
+        goBack(app)
+
+        // 6. Kart koleksiyonu
         let collection = app.buttons["home.collection"]
         XCTAssertTrue(collection.waitForExistence(timeout: 20))
         collection.tap()
-        settle()
-        capture("04_collection")
-
-        // 5. Altın Kart
-        let golden = app.buttons["collection.card.siamese#golden"]
-        XCTAssertTrue(golden.waitForExistence(timeout: 20))
-        golden.tap()
-        settle(2)
-        capture("05_golden_card")
+        settle(1.5)
+        capture("06_collection")
     }
 
     private func capture(_ name: String) {
