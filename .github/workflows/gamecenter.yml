@@ -2,7 +2,7 @@ name: Game Center kur
 
 # Elle başlatılır: GitHub → Actions → "Game Center kur" → Run workflow.
 # Uygulamanın Game Center kaydını, üç sıralama listesini ve 8 dildeki adlarını oluşturur;
-# düzenlenebilir sürümde Game Center'ı açar. Tekrar çalıştırmak güvenlidir.
+# düzenlenebilir sürümde (1.1.0) Game Center'ı açar. Tekrar çalıştırmak güvenlidir.
 # Ayrıca bu araç ya da iş akışı değişip geliştirme dalına gönderilince kendiliğinden çalışır.
 on:
   push:
