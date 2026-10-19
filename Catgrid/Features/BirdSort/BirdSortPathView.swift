@@ -39,22 +39,30 @@ struct BirdSortPathView: View {
                                               tint: island.tint) {
                                 router.push(.birdGame(level: number))
                             }
-                            .position(point)
+                            // Kimlik düğmenin kendisinde: kaydırma bölüme ortalanır (konumlanmış
+                            // kabın tamamına değil)
                             .id(number)
+                            .position(point)
                         }
                     }
                     .frame(width: width, height: tileHeight * CGFloat(tileCount))
                 }
                 .scrollBounceBehavior(.basedOnSize)
-                .onAppear {
-                    let target = min(max(birds.currentLevel, range.lowerBound), range.upperBound)
+                // Kaydırma hesaplanana kadar alttan (1. bölüm) başlar
+                .defaultScrollAnchor(.bottom)
+                .task {
+                    // Kaldığı bölüm; ada bittiyse ya da henüz gelinmediyse ilk bölüm
+                    let current = birds.currentLevel
+                    let target = range.contains(current) ? current : range.lowerBound
+                    try? await Task.sleep(for: .milliseconds(30))
                     reader.scrollTo(target, anchor: .center)
                 }
             }
         }
-        .ignoresSafeArea(edges: .bottom)
-        .background(Color(hex: "#7FC9E6").ignoresSafeArea())
-        .toolbarBackground(.hidden, for: .navigationBar)
+        // Harita üst menünün altından başlar (tam sayfa değil)
+        .background(theme.background.ignoresSafeArea())
+        .toolbarBackground(theme.background, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {

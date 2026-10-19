@@ -26,17 +26,26 @@ final class BirdSortTests: XCTestCase {
     func testDifficultyRamp() {
         let first = BirdSortCatalog.level(1)
         XCTAssertEqual(first.capacity, 4)
-        XCTAssertEqual(first.branchesPerSide, 5)
+        XCTAssertEqual(first.branchCount, 7)
         XCTAssertEqual(first.speciesCount, 10)
         let last = BirdSortCatalog.level(BirdSortCatalog.levelCount)
         XCTAssertEqual(last.capacity, 6)
         XCTAssertEqual(last.branchesPerSide, 9)
+        XCTAssertEqual(BirdSortCatalog.level(75).branchesPerSide, 5, "ilk adanın sonunda iki yanda 5 dal")
+        var previousIsland = 0
+        var maxSoFar = 0
+        for number in 1...BirdSortCatalog.levelCount {
+            let level = BirdSortCatalog.level(number)
+            if level.island != previousIsland { previousIsland = level.island }
+            XCTAssertGreaterThanOrEqual(level.branchCount, maxSoFar - 1, "dal sayısı azalmaz (nefes bölümleri hariç)")
+            maxSoFar = max(maxSoFar, level.branchCount)
+        }
         XCTAssertEqual(last.speciesCount, 15)
         for number in 1...BirdSortCatalog.levelCount {
             let level = BirdSortCatalog.level(number)
             XCTAssertTrue((4...6).contains(level.capacity))
-            XCTAssertTrue((5...9).contains(level.branchesPerSide))
-            XCTAssertLessThan(level.sets, level.branchCount)
+            XCTAssertTrue((4...9).contains(level.branchesPerSide))
+            XCTAssertEqual(level.sets, level.branchCount - 2)
             XCTAssertEqual(level.speciesCount, 10 + level.island)
         }
     }
@@ -57,6 +66,7 @@ final class BirdSortTests: XCTestCase {
             XCTAssertEqual(board.branches.count, level.branchCount)
             XCTAssertEqual(board.birdCount, level.sets * level.capacity, "\(number)")
             XCTAssertTrue(board.branches.allSatisfy { $0.count <= level.capacity })
+            XCTAssertEqual(board.branches.filter(\.isEmpty).count, 1, "\(number): tek boş dal")
             XCTAssertTrue(board.branches.flatMap { $0 }.allSatisfy { (0..<level.speciesCount).contains($0) })
             if board.branches.allSatisfy({ Set($0).count <= 1 }) { fallbacks += 1 }
             XCTAssertNotNil(BirdSortSolver.solve(board), "\(number) çözülebilir")

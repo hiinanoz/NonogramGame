@@ -10,16 +10,19 @@ public struct BirdSortLevel: Hashable, Sendable {
     public let number: Int
     public let island: Int
     public let capacity: Int
-    /// Her yandaki dal sayısı (sol ve sağ eşit).
-    public let branchesPerSide: Int
+    /// Toplam dal sayısı (iki sütuna sırayla dağılır).
+    public let branchCount: Int
     /// Kaç takım kuş (her takım `capacity` aynı tür kuş).
     public let sets: Int
     /// Bu adada kullanılabilen kuş türleri.
     public let speciesCount: Int
 
     public var id: String { "bird-\(number)" }
-    public var branchCount: Int { branchesPerSide * 2 }
+    /// Bir sütundaki en fazla dal (sol sütun sağdan bir fazla olabilir).
+    public var branchesPerSide: Int { (branchCount + 1) / 2 }
     public var localNumber: Int { (number - 1) % BirdSortCatalog.levelsPerIsland + 1 }
+    /// Başlangıçta boş dal: en fazla bir tane.
+    public var emptyBranches: Int { 1 }
 }
 
 public enum BirdSortCatalog {
@@ -29,44 +32,31 @@ public enum BirdSortCatalog {
     /// İlk adadaki tür sayısı; her adada bir tür eklenir.
     public static let firstIslandSpecies = 10
 
+    /// Dal sayısı ilerledikçe artar: ilk bölüm 7 dalla başlar, ilk adanın sonunda iki yanda 5'er
+    /// (10), son adada iki yanda 9'ar (18) dala çıkar. Dalda 4 kuştan başlar, 6'ya kadar çıkar.
+    /// Başta tek dal boştur; kuşlar geri kalan dallara dağılır (biri yarım doludur).
     public static func level(_ number: Int) -> BirdSortLevel {
         let number = min(max(number, 1), levelCount)
         let island = (number - 1) / levelsPerIsland
         let local = (number - 1) % levelsPerIsland
-        let half = local >= 38
+        let progress = Double(local) / Double(levelsPerIsland - 1)
         let capacity: Int
-        let sides: ClosedRange<Int>
+        let branches: ClosedRange<Int>
         switch island {
-        case 0: capacity = 4; sides = 5...7
-        case 1: capacity = half ? 5 : 4; sides = half ? 5...6 : 6...7
-        case 2: capacity = 5; sides = 6...8
-        case 3: capacity = half ? 6 : 5; sides = half ? 6...7 : 7...8
-        case 4: capacity = 6; sides = 7...9
-        default: capacity = 6; sides = 8...9
+        case 0: capacity = 4; branches = 7...10
+        case 1: capacity = local < 38 ? 4 : 5; branches = 10...12
+        case 2: capacity = 5; branches = 12...14
+        case 3: capacity = local < 38 ? 5 : 6; branches = 14...15
+        case 4: capacity = 6; branches = 15...17
+        default: capacity = 6; branches = 17...18
         }
-        // Yarım adalarda ilerleme o yarının içinde ölçülür
-        let span: Double
-        let position: Double
-        if island == 1 || island == 3 {
-            span = half ? Double(levelsPerIsland - 39) : 37
-            position = half ? Double(local - 38) : Double(local)
-        } else {
-            span = Double(levelsPerIsland - 1)
-            position = Double(local)
-        }
-        let progress = span > 0 ? position / span : 0
-        let perSide = min(sides.upperBound, sides.lowerBound + Int(Double(sides.count) * progress))
-        let branches = perSide * 2
-        // Boş dal sayısı: çoğunlukla 2; her 5. bölümde ve adanın ilk bölümlerinde 3 (nefes)
-        var empty = 2
-        if local < 3 || (local + 1) % 5 == 0 { empty = 3 }
-        var sets = branches - empty
-        if island == 0 && local < 10 {
-            // İlk bölümler: az takım, öğretici
-            sets = min(sets, 3 + local / 2)
-        }
+        // Adanın ilk yarısında dal sayısı çabuk artar, sonra sabitlenir; her 5. bölüm bir dal az (nefes)
+        let eased = min(1, progress * 1.6)
+        var count = branches.lowerBound + Int((Double(branches.count - 1) * eased).rounded())
+        if (local + 1) % 5 == 0 { count = max(branches.lowerBound, count - 1) }
+        let sets = count - 2
         let species = firstIslandSpecies + island
-        return BirdSortLevel(number: number, island: island, capacity: capacity, branchesPerSide: perSide,
+        return BirdSortLevel(number: number, island: island, capacity: capacity, branchCount: count,
                              sets: sets, speciesCount: species)
     }
 
@@ -91,7 +81,7 @@ public enum BirdSortCatalog {
         if let best { return (best.board, best.par) }
         // Güvenli yedek: kuşlar tek tür dallarda (her zaman çözülür)
         let board = BirdSortBoard(branches: (0..<level.branchCount).map { i in
-            i < level.sets ? Array(repeating: i % level.speciesCount, count: level.capacity - 1) : []
+            i < level.sets ? Array(repeating: i % level.speciesCount, count: level.capacity) : []
         }, capacity: level.capacity)
         return (board, level.sets)
     }
@@ -106,9 +96,8 @@ public enum BirdSortCatalog {
             birds.append(contentsOf: repeatElement(palette[set % palette.count], count: level.capacity))
         }
         birds.shuffle(using: &random)
-        let spare = level.branchCount - level.sets
-        // Dolu dal sayısı: takım sayısı ya da bir fazlası (kuşlar daha dağınık)
-        let filled = min(level.branchCount - 1, level.sets + (spare > 2 && random.next() % 2 == 0 ? 1 : 0))
+        // Tek dal boş; kuşlar kalan dallara dağılır (takımlardan bir dal fazla: biri yarım dolar)
+        let filled = level.branchCount - level.emptyBranches
         var counts = Array(repeating: 0, count: filled)
         var remaining = birds.count
         // Önce her dala en az bir kuş, sonra rastgele dağıt
