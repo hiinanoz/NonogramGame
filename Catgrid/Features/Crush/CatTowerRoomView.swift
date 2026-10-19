@@ -125,7 +125,11 @@ struct CatTowerRoom: View {
 
     private func accessoryLayer(size: CGSize) -> some View {
         let item: CGFloat = size.height * 0.24
-        let entries = plan.accessories.sorted { $0.key.rawValue < $1.key.rawValue }
+        // Karlı Pati Kuleleri'nde iki yan da cam (gece): duvar süsü asılacak yer yok
+        let skipWall = hasWallArt && tower.key == "snow"
+        let entries = plan.accessories
+            .filter { !(skipWall && $0.key == .wall) }
+            .sorted { $0.key.rawValue < $1.key.rawValue }
         return ZStack(alignment: .topLeading) {
             ForEach(Array(entries.enumerated()), id: \.offset) { _, entry in
                 accessory(entry.value, size: item, onShelf: entry.key == .wall)
