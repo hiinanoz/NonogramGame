@@ -4,13 +4,28 @@ import SwiftUI
 // Kedi Kulesi dış görünümü: taş duvar, balkon, merdiven, fener, çatı, kule dibi ve gökyüzü.
 // Renkler ve manzara binaya göre (CatTowerTheme), gündüz/gece uygulamanın temasına göre değişir.
 
-/// Taş duvar: binanın taş rengi, tuğla derzleri ve yuvarlaklık gölgesi.
+/// Taş duvar: binanın taş rengi, tuğla derzleri ve yuvarlaklık gölgesi. Binanın cephe görseli
+/// (tower-<anahtar>-facade, gece: -facade-night) varsa her katta o kullanılır.
 struct CatTowerWall: View {
     @Environment(\.appTheme) private var theme
     let number: Int
     let tower: CatTowerTheme
 
     var body: some View {
+        let night: UIImage? = theme.isDark ? tower.asset("facade", variant: "night") : nil
+        if let facade = night ?? tower.asset("facade") {
+            Image(uiImage: facade)
+                .resizable()
+                .scaledToFill()
+                .overlay(Color(hex: "#1E1A33").opacity(theme.isDark && night == nil ? 0.42 : 0))
+                .clipped()
+        } else {
+            drawn
+        }
+    }
+
+    @ViewBuilder
+    private var drawn: some View {
         let top: Color = tower.stone.top
         let bottom: Color = tower.stone.bottom
         let joint: Color = tower.stone.joint.opacity(0.7)
@@ -139,57 +154,266 @@ struct CatTowerLantern: View {
     }
 }
 
-/// Konik kiremit çatı ve rüzgâr gülü (karlı binada kar örtüsü).
+/// Binaya özgü çatı (görsel yoksa kodla çizilir):
+/// Yumak Apartmanı: konik kiremit çatı, tepede yumak. Ay Işığı Konağı: mansart çatı, kubbe ve hilal.
+/// Deniz Tatili Rezidansı: teras, çizgili şemsiye ve flama. Karlı Pati Kuleleri: karlı düz çatı, anten.
 struct CatTowerRoof: View {
+    @Environment(\.appTheme) private var theme
     let tower: CatTowerTheme
 
     var body: some View {
-        if let image = tower.asset("roof") {
+        if let image = (theme.isDark ? tower.asset("roof", variant: "night") : nil) ?? tower.asset("roof") {
             Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: .infinity, alignment: .bottom)
         } else {
             let colors: [Color] = tower.roof
-            let isSnow = tower.scenery == .snow
+            let key: String = tower.key
             Canvas { context, size in
-                let w: CGFloat = size.width
-                let h: CGFloat = size.height
-                let base: CGFloat = h * 0.92
-                let apex = CGPoint(x: w / 2, y: h * 0.18)
-                var roof = Path()
-                roof.move(to: apex)
-                roof.addLine(to: CGPoint(x: w - 10, y: base))
-                roof.addQuadCurve(to: CGPoint(x: 10, y: base), control: CGPoint(x: w / 2, y: base + h * 0.1))
-                roof.closeSubpath()
-                context.fill(roof, with: .linearGradient(Gradient(colors: colors), startPoint: apex, endPoint: CGPoint(x: w / 2, y: base)))
-                var clipped = context
-                clipped.clip(to: roof)
-                var y: CGFloat = apex.y + 12
-                while y < base + 10 {
-                    var line = Path()
-                    line.move(to: CGPoint(x: 0, y: y))
-                    line.addQuadCurve(to: CGPoint(x: w, y: y), control: CGPoint(x: w / 2, y: y + 10))
-                    clipped.stroke(line, with: .color(.black.opacity(0.12)), lineWidth: 1.5)
-                    y += 13
+                switch key {
+                case "moon": CatTowerRoofArt.drawMansion(context, size: size, colors: colors)
+                case "seaside": CatTowerRoofArt.drawTerrace(context, size: size, colors: colors)
+                case "snow": CatTowerRoofArt.drawSnowyTop(context, size: size, colors: colors)
+                default: CatTowerRoofArt.drawCone(context, size: size, colors: colors)
                 }
-                if isSnow {
-                    var cap = Path()
-                    cap.move(to: apex)
-                    cap.addLine(to: CGPoint(x: w / 2 + w * 0.12, y: apex.y + h * 0.2))
-                    cap.addQuadCurve(to: CGPoint(x: w / 2 - w * 0.12, y: apex.y + h * 0.2), control: CGPoint(x: w / 2, y: apex.y + h * 0.28))
-                    cap.closeSubpath()
-                    clipped.fill(cap, with: .color(.white))
-                }
-                var pole = Path()
-                pole.move(to: apex)
-                pole.addLine(to: CGPoint(x: apex.x, y: apex.y - h * 0.14))
-                context.stroke(pole, with: .color(Color(hex: "#5B4A3E")), lineWidth: 2)
-                var arrow = Path()
-                arrow.move(to: CGPoint(x: apex.x - 14, y: apex.y - h * 0.1))
-                arrow.addLine(to: CGPoint(x: apex.x + 14, y: apex.y - h * 0.1))
-                arrow.addLine(to: CGPoint(x: apex.x + 8, y: apex.y - h * 0.13))
-                context.stroke(arrow, with: .color(Color(hex: "#5B4A3E")), lineWidth: 2)
             }
             .allowsHitTesting(false)
         }
+    }
+}
+
+/// Çatı çizimleri (Canvas içinde çağrılır).
+private enum CatTowerRoofArt {
+    static let ink = Color(hex: "#5B4A3E")
+
+    /// Kiremit sıraları (verilen şeklin içine kırpılır).
+    private static func tiles(_ context: GraphicsContext, in shape: Path, from top: CGFloat, to bottom: CGFloat, width: CGFloat) {
+        var clipped = context
+        clipped.clip(to: shape)
+        var y: CGFloat = top + 12
+        while y < bottom + 10 {
+            var line = Path()
+            line.move(to: CGPoint(x: 0, y: y))
+            line.addQuadCurve(to: CGPoint(x: width, y: y), control: CGPoint(x: width / 2, y: y + 10))
+            clipped.stroke(line, with: .color(.black.opacity(0.12)), lineWidth: 1.5)
+            y += 13
+        }
+    }
+
+    static func drawCone(_ context: GraphicsContext, size: CGSize, colors: [Color]) {
+        let w: CGFloat = size.width
+        let h: CGFloat = size.height
+        let base: CGFloat = h * 0.92
+        let apex = CGPoint(x: w / 2, y: h * 0.2)
+        var roof = Path()
+        roof.move(to: apex)
+        roof.addLine(to: CGPoint(x: w - 10, y: base))
+        roof.addQuadCurve(to: CGPoint(x: 10, y: base), control: CGPoint(x: w / 2, y: base + h * 0.1))
+        roof.closeSubpath()
+        context.fill(roof, with: .linearGradient(Gradient(colors: colors), startPoint: apex, endPoint: CGPoint(x: w / 2, y: base)))
+        tiles(context, in: roof, from: apex.y, to: base, width: w)
+        // Çatı penceresi
+        let dormer = CGRect(x: w / 2 - 14, y: h * 0.56, width: 28, height: 26)
+        var dormerPath = Path(roundedRect: dormer, cornerRadius: 12)
+        dormerPath.addRect(CGRect(x: dormer.minX, y: dormer.midY, width: dormer.width, height: dormer.height / 2))
+        context.fill(dormerPath, with: .color(Color(hex: "#FFF4E2")))
+        context.stroke(dormerPath, with: .color(ink.opacity(0.6)), lineWidth: 2)
+        context.fill(Path(roundedRect: dormer.insetBy(dx: 6, dy: 6), cornerRadius: 6), with: .color(Color(hex: "#9ED2E6")))
+        // Tepede yumak ve şiş
+        var pole = Path()
+        pole.move(to: apex)
+        pole.addLine(to: CGPoint(x: apex.x, y: apex.y - h * 0.06))
+        context.stroke(pole, with: .color(ink), lineWidth: 2)
+        let r: CGFloat = min(14, h * 0.08)
+        let ball = CGRect(x: apex.x - r, y: apex.y - h * 0.06 - r * 2, width: r * 2, height: r * 2)
+        context.fill(Path(ellipseIn: ball), with: .color(Color(hex: "#F28AA8")))
+        for i in 0..<3 {
+            var strand = Path()
+            let dy: CGFloat = CGFloat(i - 1) * r * 0.5
+            strand.move(to: CGPoint(x: ball.minX + 2, y: ball.midY + dy))
+            strand.addQuadCurve(to: CGPoint(x: ball.maxX - 2, y: ball.midY + dy), control: CGPoint(x: ball.midX, y: ball.midY + dy - r * 0.6))
+            context.stroke(strand, with: .color(Color(hex: "#C95F82")), lineWidth: 1.2)
+        }
+        var needle = Path()
+        needle.move(to: CGPoint(x: ball.minX - 4, y: ball.minY))
+        needle.addLine(to: CGPoint(x: ball.maxX + 4, y: ball.maxY - 2))
+        context.stroke(needle, with: .color(Color(hex: "#C9A36B")), lineWidth: 2)
+    }
+
+    static func drawMansion(_ context: GraphicsContext, size: CGSize, colors: [Color]) {
+        let w: CGFloat = size.width
+        let h: CGFloat = size.height
+        let base: CGFloat = h * 0.92
+        let top: CGFloat = h * 0.58
+        // Mansart: eğimli alt kat, düz üst
+        var mansard = Path()
+        mansard.move(to: CGPoint(x: 10, y: base))
+        mansard.addLine(to: CGPoint(x: w * 0.12, y: top))
+        mansard.addLine(to: CGPoint(x: w * 0.88, y: top))
+        mansard.addLine(to: CGPoint(x: w - 10, y: base))
+        mansard.closeSubpath()
+        context.fill(mansard, with: .linearGradient(Gradient(colors: colors), startPoint: CGPoint(x: w / 2, y: top), endPoint: CGPoint(x: w / 2, y: base)))
+        tiles(context, in: mansard, from: top, to: base, width: w)
+        // Korniş
+        context.fill(Path(roundedRect: CGRect(x: w * 0.1, y: top - 5, width: w * 0.8, height: 7), cornerRadius: 3), with: .color(Color(hex: "#F3E7D6")))
+        // Yuvarlak çatı pencereleri
+        for fx in [0.28, 0.72] as [CGFloat] {
+            let c = CGRect(x: w * fx - 12, y: (top + base) / 2 - 12, width: 24, height: 24)
+            context.fill(Path(ellipseIn: c), with: .color(Color(hex: "#FFE9A8")))
+            context.stroke(Path(ellipseIn: c), with: .color(Color(hex: "#F3E7D6")), lineWidth: 3)
+        }
+        // Kubbe
+        let domeWidth: CGFloat = w * 0.34
+        let domeRect = CGRect(x: (w - domeWidth) / 2, y: h * 0.26, width: domeWidth, height: (top - h * 0.26) * 2)
+        var dome = Path()
+        dome.addArc(center: CGPoint(x: domeRect.midX, y: top), radius: domeWidth / 2, startAngle: .degrees(180), endAngle: .degrees(0), clockwise: false)
+        dome.closeSubpath()
+        var squash = CGAffineTransform(translationX: 0, y: top)
+        squash = squash.scaledBy(x: 1, y: (top - h * 0.26) / (domeWidth / 2))
+        squash = squash.translatedBy(x: 0, y: -top)
+        let domePath = dome.applying(squash)
+        context.fill(domePath, with: .linearGradient(Gradient(colors: [colors.first ?? .purple, colors.last ?? .purple]),
+                                                     startPoint: CGPoint(x: domeRect.minX, y: h * 0.26), endPoint: CGPoint(x: domeRect.maxX, y: top)))
+        // Kubbe kaburgaları
+        var ribs = context
+        ribs.clip(to: domePath)
+        for i in 1..<4 {
+            var rib = Path()
+            let x: CGFloat = domeRect.minX + domeWidth * CGFloat(i) / 4
+            rib.move(to: CGPoint(x: domeRect.midX, y: h * 0.26))
+            rib.addQuadCurve(to: CGPoint(x: x, y: top), control: CGPoint(x: x, y: h * 0.32))
+            ribs.stroke(rib, with: .color(.white.opacity(0.25)), lineWidth: 1.5)
+        }
+        // Hilal
+        let moonR: CGFloat = min(13, h * 0.08)
+        let moonCenter = CGPoint(x: w / 2, y: h * 0.26 - moonR - 6)
+        var pole = Path()
+        pole.move(to: CGPoint(x: w / 2, y: h * 0.26))
+        pole.addLine(to: CGPoint(x: w / 2, y: moonCenter.y + moonR))
+        context.stroke(pole, with: .color(Color(hex: "#C9A36B")), lineWidth: 2)
+        var crescent = Path(ellipseIn: CGRect(x: moonCenter.x - moonR, y: moonCenter.y - moonR, width: moonR * 2, height: moonR * 2))
+        crescent = crescent.subtracting(Path(ellipseIn: CGRect(x: moonCenter.x - moonR * 0.45, y: moonCenter.y - moonR * 1.15, width: moonR * 2, height: moonR * 2)))
+        context.fill(crescent, with: .color(Color(hex: "#F5D77A")))
+    }
+
+    static func drawTerrace(_ context: GraphicsContext, size: CGSize, colors: [Color]) {
+        let w: CGFloat = size.width
+        let h: CGFloat = size.height
+        let base: CGFloat = h * 0.92
+        let deck: CGFloat = h * 0.78
+        // Teras zemini ve korkuluk
+        context.fill(Path(roundedRect: CGRect(x: 8, y: deck, width: w - 16, height: base - deck + 4), cornerRadius: 4),
+                     with: .color(Color(hex: "#F7EBDD")))
+        context.fill(Path(CGRect(x: 8, y: deck, width: w - 16, height: 5)), with: .color(colors.last ?? .teal))
+        var rail = Path()
+        rail.move(to: CGPoint(x: 12, y: h * 0.66))
+        rail.addLine(to: CGPoint(x: w - 12, y: h * 0.66))
+        var x: CGFloat = 16
+        while x < w - 12 {
+            rail.move(to: CGPoint(x: x, y: h * 0.66))
+            rail.addLine(to: CGPoint(x: x, y: deck))
+            x += 14
+        }
+        context.stroke(rail, with: .color(.white), lineWidth: 2.5)
+        context.stroke(rail, with: .color(colors.last?.opacity(0.35) ?? .teal), lineWidth: 0.8)
+        // Çizgili plaj şemsiyesi
+        let center = CGPoint(x: w * 0.36, y: h * 0.3)
+        let radius: CGFloat = min(w * 0.2, h * 0.32)
+        var pole = Path()
+        pole.move(to: center)
+        pole.addLine(to: CGPoint(x: center.x + 6, y: deck))
+        context.stroke(pole, with: .color(ink), lineWidth: 2)
+        let stripes: [Color] = [colors.first ?? .teal, .white]
+        for i in 0..<6 {
+            var slice = Path()
+            let start: Double = 180 + Double(i) * 30
+            slice.move(to: center)
+            slice.addArc(center: center, radius: radius, startAngle: .degrees(start), endAngle: .degrees(start + 30), clockwise: false)
+            slice.closeSubpath()
+            context.fill(slice, with: .color(stripes[i % 2]))
+        }
+        var rim = Path()
+        rim.addArc(center: center, radius: radius, startAngle: .degrees(180), endAngle: .degrees(360), clockwise: false)
+        context.stroke(rim, with: .color(colors.last ?? .teal), lineWidth: 1.5)
+        // Şezlong
+        var lounger = Path()
+        lounger.move(to: CGPoint(x: w * 0.56, y: deck - 4))
+        lounger.addLine(to: CGPoint(x: w * 0.74, y: deck - 4))
+        lounger.addLine(to: CGPoint(x: w * 0.8, y: deck - 18))
+        context.stroke(lounger, with: .color(Color(hex: "#F28A6C")), style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round))
+        // Can simidi
+        let buoy = CGRect(x: w * 0.82, y: h * 0.62, width: 18, height: 18)
+        context.stroke(Path(ellipseIn: buoy.insetBy(dx: 3, dy: 3)), with: .color(Color(hex: "#F06A5A")), lineWidth: 5)
+        // Flama direği
+        let flagX: CGFloat = w * 0.7
+        var mast = Path()
+        mast.move(to: CGPoint(x: flagX, y: deck))
+        mast.addLine(to: CGPoint(x: flagX, y: h * 0.12))
+        context.stroke(mast, with: .color(ink), lineWidth: 2)
+        var flag = Path()
+        flag.move(to: CGPoint(x: flagX, y: h * 0.12))
+        flag.addQuadCurve(to: CGPoint(x: flagX + 26, y: h * 0.17), control: CGPoint(x: flagX + 14, y: h * 0.09))
+        flag.addQuadCurve(to: CGPoint(x: flagX, y: h * 0.24), control: CGPoint(x: flagX + 12, y: h * 0.22))
+        flag.closeSubpath()
+        context.fill(flag, with: .color(Color(hex: "#F5C04E")))
+    }
+
+    static func drawSnowyTop(_ context: GraphicsContext, size: CGSize, colors: [Color]) {
+        let w: CGFloat = size.width
+        let h: CGFloat = size.height
+        let base: CGFloat = h * 0.92
+        let top: CGFloat = h * 0.6
+        // Basamaklı çatı katı
+        let body = CGRect(x: 10, y: top + (base - top) * 0.35, width: w - 20, height: (base - top) * 0.65 + 4)
+        context.fill(Path(body), with: .linearGradient(Gradient(colors: colors), startPoint: CGPoint(x: 0, y: body.minY), endPoint: CGPoint(x: 0, y: body.maxY)))
+        let upper = CGRect(x: w * 0.22, y: top, width: w * 0.56, height: body.minY - top + 2)
+        context.fill(Path(upper), with: .color(colors.first ?? .red))
+        // Pencere şeridi
+        var x: CGFloat = upper.minX + 8
+        while x + 12 < upper.maxX {
+            context.fill(Path(roundedRect: CGRect(x: x, y: upper.minY + 8, width: 12, height: upper.height - 14), cornerRadius: 2),
+                         with: .color(Color(hex: "#BFE0F2")))
+            x += 18
+        }
+        // Kar örtüleri ve sarkıtlar
+        for ledge in [CGRect(x: 6, y: body.minY - 6, width: w - 12, height: 10), CGRect(x: upper.minX - 4, y: top - 6, width: upper.width + 8, height: 10)] {
+            context.fill(Path(roundedRect: ledge, cornerRadius: 5), with: .color(.white))
+            var icicle = ledge.minX + 10
+            var index = 0
+            while icicle < ledge.maxX - 8 {
+                let length: CGFloat = index % 3 == 0 ? 10 : 6
+                var drop = Path()
+                drop.move(to: CGPoint(x: icicle - 3, y: ledge.maxY - 1))
+                drop.addLine(to: CGPoint(x: icicle + 3, y: ledge.maxY - 1))
+                drop.addLine(to: CGPoint(x: icicle, y: ledge.maxY + length))
+                drop.closeSubpath()
+                context.fill(drop, with: .color(Color(hex: "#DDF0FA")))
+                icicle += 16
+                index += 1
+            }
+        }
+        // Anten ve ışık
+        var antenna = Path()
+        antenna.move(to: CGPoint(x: w / 2, y: top - 4))
+        antenna.addLine(to: CGPoint(x: w / 2, y: h * 0.12))
+        antenna.move(to: CGPoint(x: w / 2 - 8, y: h * 0.3))
+        antenna.addLine(to: CGPoint(x: w / 2 + 8, y: h * 0.3))
+        antenna.move(to: CGPoint(x: w / 2 - 5, y: h * 0.2))
+        antenna.addLine(to: CGPoint(x: w / 2 + 5, y: h * 0.2))
+        context.stroke(antenna, with: .color(ink), lineWidth: 2)
+        context.fill(Path(ellipseIn: CGRect(x: w / 2 - 4, y: h * 0.12 - 8, width: 8, height: 8)), with: .color(Color(hex: "#F06A5A")))
+        // Kardan kedi
+        let snowCat = CGPoint(x: w * 0.82, y: body.minY - 4)
+        context.fill(Path(ellipseIn: CGRect(x: snowCat.x - 10, y: snowCat.y - 16, width: 20, height: 16)), with: .color(.white))
+        context.fill(Path(ellipseIn: CGRect(x: snowCat.x - 7, y: snowCat.y - 28, width: 14, height: 13)), with: .color(.white))
+        for side in [-1, 1] as [CGFloat] {
+            var ear = Path()
+            ear.move(to: CGPoint(x: snowCat.x + side * 6, y: snowCat.y - 25))
+            ear.addLine(to: CGPoint(x: snowCat.x + side * 6, y: snowCat.y - 32))
+            ear.addLine(to: CGPoint(x: snowCat.x + side * 1, y: snowCat.y - 27))
+            ear.closeSubpath()
+            context.fill(ear, with: .color(.white))
+        }
+        context.fill(Path(ellipseIn: CGRect(x: snowCat.x - 4, y: snowCat.y - 23, width: 2.5, height: 2.5)), with: .color(ink))
+        context.fill(Path(ellipseIn: CGRect(x: snowCat.x + 1.5, y: snowCat.y - 23, width: 2.5, height: 2.5)), with: .color(ink))
     }
 }
 
@@ -199,7 +423,7 @@ struct CatTowerBase: View {
     let tower: CatTowerTheme
 
     var body: some View {
-        if let image = tower.asset("base") {
+        if let image = (theme.isDark ? tower.asset("base", variant: "night") : nil) ?? tower.asset("base") {
             Image(uiImage: image).resizable().scaledToFill()
         } else {
             GeometryReader { proxy in

@@ -31,7 +31,7 @@ public struct CatTowerRoomPlan: Hashable, Sendable {
         }
     }
 
-    /// Aksesuar yuvaları (çakışmasın diye sabit yerler).
+    /// Aksesuar yuvaları (çakışmasın diye sabit yerler). Ana mobilyanın durduğu zemin yuvası boş kalır.
     public enum Slot: Int, CaseIterable, Hashable, Sendable {
         /// Sol zemin
         case left
@@ -39,6 +39,24 @@ public struct CatTowerRoomPlan: Hashable, Sendable {
         case right
         /// Duvardaki raf / asılı
         case wall
+        /// Orta zemin (mobilya yandayken)
+        case middle
+    }
+
+    /// Ana mobilyanın zemindeki yeri.
+    public enum Spot: Int, CaseIterable, Hashable, Sendable {
+        case left
+        case middle
+        case right
+
+        /// Bu yerdeki mobilyanın kapattığı aksesuar yuvası.
+        var slot: Slot {
+            switch self {
+            case .left: return .left
+            case .middle: return .middle
+            case .right: return .right
+            }
+        }
     }
 
     public let level: Int
@@ -48,10 +66,14 @@ public struct CatTowerRoomPlan: Hashable, Sendable {
     public let window: Int
     public let floor: Int
     public let furniture: Int
+    /// Mobilyanın solda, ortada ya da sağda durması.
+    public let furnitureSpot: Spot
     /// 1–3 aksesuar, her biri ayrı yuvada ve birbirinden farklı.
     public let accessories: [Slot: Int]
     public let cat: Int
     public let isCatFlipped: Bool
+    /// Bu kattaki kedi çoğunlukla uyur.
+    public let isCatSleepy: Bool
 
     public static func kind(of level: Int) -> Kind {
         if level % 15 == 0 { return .milestone }
@@ -82,17 +104,20 @@ public struct CatTowerRoomPlan: Hashable, Sendable {
     private static func raw(level: Int, tower: Int, counts: Counts, salt: UInt64) -> CatTowerRoomPlan {
         var random = CrushRandom(seed: UInt64(truncatingIfNeeded: level) &* 0x9E37_79B9 &+ UInt64(truncatingIfNeeded: tower) &* 0x85EB_CA6B &+ salt &* 0xC2B2_AE35)
         func pick(_ count: Int) -> Int { Int(random.next() % UInt64(count)) }
-        let wall = pick(counts.walls)
+        let wall = wallIndex(level: level, tower: tower, count: counts.walls)
+        _ = pick(counts.walls)
         let window = pick(counts.windows)
         let floor = pick(counts.floors)
         let furniture = pick(counts.furniture)
         let cat = pick(counts.cats)
         let flipped = random.next() % 2 == 1
+        let spot = Spot.allCases[pick(Spot.allCases.count)]
+        let sleepy = pick(4) == 0
         // 1–3 aksesuar; özel katlarda en az 2, dönüm noktasında 3
         let kind = kind(of: level)
         let minimum = kind == .milestone ? 3 : (kind == .special ? 2 : 1)
         let wanted = min(Slot.allCases.count, max(minimum, 1 + pick(3)), counts.accessories)
-        var slots = Slot.allCases
+        var slots = Slot.allCases.filter { $0 != spot.slot }
         var used = Set<Int>()
         var accessories: [Slot: Int] = [:]
         while accessories.count < wanted, !slots.isEmpty {
@@ -107,6 +132,25 @@ public struct CatTowerRoomPlan: Hashable, Sendable {
             accessories[slot] = item
         }
         return CatTowerRoomPlan(level: level, tower: tower, kind: kind, wall: wall, window: window, floor: floor,
-                                furniture: furniture, accessories: accessories, cat: cat, isCatFlipped: flipped)
+                                furniture: furniture, furnitureSpot: spot, accessories: accessories, cat: cat,
+                                isCatFlipped: flipped, isCatSleepy: sleepy)
     }
+
+    /// Duvar sırası: binanın duvarları karışık bir sıraya dizilir ve katlar bu sırada `step` adımla
+    /// ilerler. Adım, ardışık iki ve üç katın aynı duvara düşmeyeceği şekilde seçilir; böylece bir
+    /// katın altındaki ve üstündeki ikişer katın duvarı ondan farklıdır (en az 3 duvar varsa).
+    static func wallIndex(level: Int, tower: Int, count: Int) -> Int {
+        guard count > 1 else { return 0 }
+        var order = Array(0..<count)
+        var random = CrushRandom(seed: UInt64(truncatingIfNeeded: tower + 1) &* 0xD6E8_FEB8_6659_FD93)
+        for i in stride(from: count - 1, to: 0, by: -1) {
+            order.swapAt(i, Int(random.next() % UInt64(i + 1)))
+        }
+        let step = (1..<count).first { k in
+            gcd(k, count) == 1 && (count < 3 || (2 * k) % count != 0) && (count < 4 || k > 1)
+        } ?? 1
+        return order[(level * step) % count]
+    }
+
+    private static func gcd(_ a: Int, _ b: Int) -> Int { b == 0 ? a : gcd(b, a % b) }
 }

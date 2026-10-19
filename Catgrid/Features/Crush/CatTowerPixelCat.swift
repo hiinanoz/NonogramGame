@@ -1,8 +1,9 @@
 import SwiftUI
 
 /// Odada dolaşan küçük piksel kedi (oyun ekranındaki yardımcı kedinin pozları ve tür renkleri).
-/// Kendi başına yürür, oturur, yalanır, uyur; arada mobilyanın üstüne çıkıp oturur. Görev, kat
-/// ekrandan çıkınca iptal olur (tembel kule); "Hareketi Azalt" açıkken oturur.
+/// Kendi başına yürür, oturur, yalanır, uyur; arada mobilyanın üstüne çıkıp oturur. Uykucu kedi
+/// çoğunlukla minderde uyur. Uyurken başının üstünde "Zzz" yükselir. Görev, kat ekrandan çıkınca
+/// iptal olur (tembel kule); "Hareketi Azalt" açıkken oturur (uykucu kedi uyur).
 @MainActor
 struct CatTowerPixelCat: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -10,6 +11,10 @@ struct CatTowerPixelCat: View {
     /// Odanın boyutu ve mobilyanın oturma yeri (kedi oraya zıplayabilir).
     let room: CGSize
     let seat: CGRect
+    /// Zeminin odadaki yüksekliği (oran); kedinin ayakları buraya basar.
+    var floorLine: CGFloat = 0.9
+    /// Bu kattaki kedi çoğunlukla uyur.
+    var isSleepy = false
     /// Kata göre başlangıç ve davranış çeşitliliği.
     let seed: Int
 
@@ -21,19 +26,32 @@ struct CatTowerPixelCat: View {
     /// Kedinin boyu odanın yaklaşık beşte biri.
     private var pixel: CGFloat { max(1.4, room.height * 0.2 / CGFloat(CatPose.rows)) }
     private var size: CGSize { CGSize(width: CGFloat(CatPose.columns) * pixel, height: CGFloat(CatPose.rows) * pixel) }
-    private var floorY: CGFloat { room.height * 0.9 - size.height }
-    private var seatY: CGFloat { seat.minY + seat.height * 0.3 - size.height }
+    private var floorY: CGFloat { room.height * floorLine - size.height }
+    /// Minder hizası: mobilyanın üst kenarından biraz aşağısı (sırtlığın önünde oturur).
+    private var seatY: CGFloat { seat.minY + seat.height * 0.45 - size.height }
 
     var body: some View {
         CatSprite(pose: pose, pixel: pixel, coat: coat)
             .scaleEffect(x: facingRight ? 1 : -1)
             .frame(width: size.width, height: size.height)
+            .overlay(alignment: facingRight ? .topTrailing : .topLeading) {
+                if pose == .sleep {
+                    CatTowerZzz(size: size.height * 0.55, isAnimated: !reduceMotion)
+                        .offset(x: facingRight ? size.width * 0.15 : -size.width * 0.15, y: -size.height * 0.55)
+                }
+            }
             .offset(x: xOffset(x), y: isOnSeat ? seatY : floorY)
             .allowsHitTesting(false)
             .accessibilityHidden(true)
             .task {
                 x = CGFloat((seed * 37) % 100) / 100
                 facingRight = seed % 2 == 0
+                if isSleepy {
+                    // Uykucu kedi açılışta zaten yerinde uyuyor
+                    x = seatX
+                    isOnSeat = true
+                    pose = .sleep
+                }
                 try? await Task.sleep(for: .seconds(Double(seed % 7) * 0.3))
                 await live()
             }
@@ -56,8 +74,12 @@ struct CatTowerPixelCat: View {
     private func live() async {
         while !Task.isCancelled {
             if reduceMotion {
-                pose = .sit
+                pose = isSleepy ? .sleep : .sit
                 await pause(1)
+                continue
+            }
+            if isSleepy {
+                await sleepyLoop()
                 continue
             }
             switch Int.random(in: 0..<10) {
@@ -69,6 +91,23 @@ struct CatTowerPixelCat: View {
                 pose = .sit
                 await pause(Double.random(in: 1.5...3))
             }
+        }
+    }
+
+    /// Uykucu kedi: uzun uykular, arada kısa bir uyanıp yalanma ya da yer değiştirme.
+    private func sleepyLoop() async {
+        pose = .sleep
+        await pause(Double.random(in: 10...18))
+        switch Int.random(in: 0..<4) {
+        case 0: await groom()
+        case 1:
+            await walk(to: CGFloat.random(in: 0...1))
+            pose = .sleep
+            await pause(Double.random(in: 8...14))
+            await hopOnSeat(thenSleep: true)
+        default:
+            pose = .sit
+            await pause(Double.random(in: 1.5...3))
         }
     }
 
@@ -91,7 +130,7 @@ struct CatTowerPixelCat: View {
         pose = .sit
     }
 
-    private func hopOnSeat() async {
+    private func hopOnSeat(thenSleep: Bool = false) async {
         guard !isOnSeat else {
             await nap()
             return
@@ -99,7 +138,9 @@ struct CatTowerPixelCat: View {
         await walk(to: seatX)
         withAnimation(.spring(response: 0.35, dampingFraction: 0.6)) { isOnSeat = true }
         await pause(0.4)
-        if Bool.random() {
+        if thenSleep {
+            pose = .sleep
+        } else if Bool.random() {
             await nap()
         } else {
             await groom()
@@ -131,5 +172,39 @@ struct CatTowerPixelCat: View {
 
     private func pause(_ seconds: Double) async {
         try? await Task.sleep(for: .seconds(seconds))
+    }
+}
+
+/// Uyuyan kedinin üstünde yükselip sönen "z" harfleri.
+struct CatTowerZzz: View {
+    let size: CGFloat
+    let isAnimated: Bool
+
+    var body: some View {
+        if isAnimated {
+            TimelineView(.animation(minimumInterval: 1 / 20)) { context in
+                letters(time: context.date.timeIntervalSinceReferenceDate)
+            }
+        } else {
+            letters(time: nil)
+        }
+    }
+
+    private func letters(time: TimeInterval?) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            ForEach(0..<3, id: \.self) { index in
+                let phase: Double = time.map { ($0 / 2.4 + Double(index) / 3).truncatingRemainder(dividingBy: 1) } ?? Double(index) / 3
+                let scale: CGFloat = 0.55 + CGFloat(phase) * 0.6
+                Text("z")
+                    .font(.system(size: size * scale, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(hex: "#6E8BD8"))
+                    .shadow(color: .white.opacity(0.9), radius: 0.5)
+                    .offset(x: CGFloat(phase) * size * 0.7, y: -CGFloat(phase) * size * 1.2)
+                    .opacity(time == nil ? 1 : (phase < 0.8 ? 1 : (1 - phase) * 5))
+            }
+        }
+        .frame(width: size * 1.4, height: size * 1.6, alignment: .bottomLeading)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }

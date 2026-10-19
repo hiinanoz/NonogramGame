@@ -20,6 +20,9 @@ struct CatTowerRoom: View {
     }
     /// Pencere sağda mı (duvar rafı karşı tarafta durur).
     private var windowOnRight: Bool { plan.window % 2 == 0 }
+    /// Mobilya, aksesuar ve kedinin bastığı zemin çizgisi (oda yüksekliğine oran). Görselli odalarda
+    /// görsel alta yaslandığından zemin daha geniş görünür; çizgi zeminin ortasına denk gelir.
+    private var floorLine: CGFloat { hasWallArt ? 0.92 : 0.88 }
 
     var body: some View {
         GeometryReader { proxy in
@@ -61,12 +64,12 @@ struct CatTowerRoom: View {
     @ViewBuilder
     private func wallLayer(size: CGSize) -> some View {
         if plan.kind == .milestone, let special = tower.asset("special") {
-            Image(uiImage: special).resizable().scaledToFill().frame(width: size.width, height: size.height)
+            roomPhoto(special, size: size)
         } else if let wall = tower.asset("wall", plan.wall + 1) {
             // Görsel duvarlar pencereyi ve zemini de içerir. Gece: varsa gece sürümü (pencerede ay ve
             // yıldızlar), yoksa gündüz görseli karartılır.
             let night = theme.isDark ? tower.asset("wall", plan.wall + 1, variant: "night") : nil
-            Image(uiImage: night ?? wall).resizable().scaledToFill().frame(width: size.width, height: size.height)
+            roomPhoto(night ?? wall, size: size)
                 .overlay(Color(hex: "#2A1C3A").opacity(theme.isDark ? (night == nil ? 0.28 : 0.12) : 0))
         } else {
             let paper = tower.wallpapers[plan.wall % tower.wallpapers.count]
@@ -82,6 +85,20 @@ struct CatTowerRoom: View {
         }
     }
 
+    /// Oda görseli odayı doldurur ama ortadan değil alta yakın kırpılır: tavanın bir kısmı gider,
+    /// zemin görünür kalır (mobilya ve kedi zemine basar).
+    private func roomPhoto(_ image: UIImage, size: CGSize) -> some View {
+        let scale: CGFloat = max(size.width / max(image.size.width, 1), size.height / max(image.size.height, 1))
+        let width: CGFloat = image.size.width * scale
+        let height: CGFloat = image.size.height * scale
+        return Image(uiImage: image)
+            .resizable()
+            .frame(width: width, height: height)
+            .offset(x: -(width - size.width) / 2, y: -(height - size.height) * 0.8)
+            .frame(width: size.width, height: size.height, alignment: .topLeading)
+            .clipped()
+    }
+
     private func floorLayer(size: CGSize) -> some View {
         let color = tower.floors[plan.floor % tower.floors.count]
         return CatTowerFloorBoards(color: color, isNight: theme.isDark)
@@ -89,11 +106,22 @@ struct CatTowerRoom: View {
             .offset(y: size.height * 0.8)
     }
 
-    /// Mobilyanın kapladığı alan (kedi bunun üstüne oturur).
+    /// Mobilyanın kapladığı alan: solda, ortada ya da sağda, zemine basar (kedi bunun üstüne oturur).
+    /// Görselin oranına göre tam boyutu hesaplanır, böylece kedi gerçekten minderin üstüne çıkar.
     private func furnitureFrame(_ size: CGSize) -> CGRect {
-        let w: CGFloat = size.width * 0.5
-        let h: CGFloat = size.height * 0.36
-        return CGRect(x: (size.width - w) / 2, y: size.height * 0.86 - h, width: w, height: h)
+        let maxWidth: CGFloat = size.width * 0.4
+        let maxHeight: CGFloat = size.height * 0.5
+        var w: CGFloat = size.width * 0.36
+        var h: CGFloat = size.height * 0.38
+        if let image = tower.asset("furniture", plan.furniture + 1), image.size.height > 0 {
+            let aspect: CGFloat = image.size.width / image.size.height
+            h = min(maxHeight, maxWidth / aspect)
+            w = h * aspect
+        }
+        let centers: [CGFloat] = [0.26, 0.5, 0.74]
+        let center: CGFloat = size.width * centers[plan.furnitureSpot.rawValue]
+        let x: CGFloat = min(max(center - w / 2, size.width * 0.05), size.width * 0.95 - w)
+        return CGRect(x: x, y: size.height * floorLine - h, width: w, height: h)
     }
 
     /// Halı: katların çoğunda mobilyanın altında (görsel set varsa).
@@ -101,11 +129,16 @@ struct CatTowerRoom: View {
     private func rugLayer(size: CGSize) -> some View {
         if let count = tower.assetCount("rug"), (floor.number * 7) % 10 < 7,
            let rug = tower.asset("rug", (floor.number * 3 + plan.floor) % count + 1) {
+            // Mobilyanın altında, önünden biraz taşar
+            let seat = furnitureFrame(size)
+            let width: CGFloat = max(seat.width * 1.3, size.width * 0.3)
+            let height: CGFloat = size.height * 0.14
+            let x: CGFloat = min(max(seat.midX - width / 2, 0), size.width - width)
             Image(uiImage: rug)
                 .resizable()
                 .scaledToFit()
-                .frame(width: size.width * 0.6, height: size.height * 0.16)
-                .offset(x: size.width * 0.2, y: size.height * 0.79)
+                .frame(width: width, height: height)
+                .offset(x: x, y: size.height * floorLine - height * 0.75)
         }
     }
 
@@ -141,9 +174,11 @@ struct CatTowerRoom: View {
     private func accessoryOffset(_ slot: CatTowerRoomPlan.Slot, size: CGSize, item: CGFloat) -> CGSize {
         switch slot {
         case .left:
-            return CGSize(width: size.width * 0.04, height: size.height * 0.86 - item)
+            return CGSize(width: size.width * 0.05, height: size.height * floorLine - item)
+        case .middle:
+            return CGSize(width: (size.width - item) / 2, height: size.height * floorLine - item)
         case .right:
-            return CGSize(width: size.width * 0.96 - item, height: size.height * 0.86 - item)
+            return CGSize(width: size.width * 0.95 - item, height: size.height * floorLine - item)
         case .wall:
             // Görselli odalarda pencere ortada: raf yan duvarda. Rezidansta sağ taraf
             // camla kaplı olduğundan süs sol duvara asılır.
@@ -189,13 +224,14 @@ struct CatTowerRoom: View {
                     .frame(height: 4)
             }
         }
-        .frame(width: size, height: size + (onShelf ? 4 : 0))
+        .frame(width: size, height: size + (onShelf ? 4 : 0), alignment: .bottom)
     }
 
     private func catLayer(size: CGSize) -> some View {
         // Odada dolaşan piksel kedi; rengi katın türünden (tür portreleri)
         let coat = coats.isEmpty ? CatCoat.ginger : coats[(floor.number * 5 + plan.cat) % coats.count]
-        return CatTowerPixelCat(coat: coat, room: size, seat: furnitureFrame(size), seed: floor.number)
+        return CatTowerPixelCat(coat: coat, room: size, seat: furnitureFrame(size), floorLine: floorLine,
+                                isSleepy: plan.isCatSleepy, seed: floor.number)
             .frame(width: size.width, height: size.height, alignment: .topLeading)
     }
 

@@ -35,6 +35,30 @@ final class CatTowerRoomsTests: XCTestCase {
         XCTAssertLessThan(same, 5)
     }
 
+    func testWallsDoNotRepeatWithinTwoFloors() {
+        for walls in [3, 4, 5, 7, 10] {
+            let counts = CatTowerRoomPlan.Counts(walls: walls, windows: 1, floors: 1, furniture: 3, accessories: 5, cats: 5)
+            for tower in 0..<4 {
+                let plans = (1 + tower * 75...(tower + 1) * 75).map { CatTowerRoomPlan.make(level: $0, tower: tower, counts: counts) }
+                for i in 1..<plans.count {
+                    XCTAssertNotEqual(plans[i].wall, plans[i - 1].wall, "duvar \(walls), kat \(plans[i].level)")
+                    if i > 1 { XCTAssertNotEqual(plans[i].wall, plans[i - 2].wall, "duvar \(walls), kat \(plans[i].level)") }
+                }
+                XCTAssertEqual(Set(plans.map(\.wall)).count, walls, "bütün duvarlar kullanılır")
+            }
+        }
+    }
+
+    func testFurnitureSpotLeavesItsFloorSlotEmpty() {
+        var spots = Set<CatTowerRoomPlan.Spot>()
+        for level in 1...300 {
+            let plan = CatTowerRoomPlan.make(level: level, tower: (level - 1) / 75, counts: counts)
+            spots.insert(plan.furnitureSpot)
+            XCTAssertNil(plan.accessories[plan.furnitureSpot.slot], "\(level)")
+        }
+        XCTAssertEqual(spots.count, 3, "mobilya solda, ortada ve sağda görünür")
+    }
+
     func testSpecialAndMilestoneFloors() {
         XCTAssertEqual(CatTowerRoomPlan.kind(of: 4), .normal)
         XCTAssertEqual(CatTowerRoomPlan.kind(of: 5), .special)

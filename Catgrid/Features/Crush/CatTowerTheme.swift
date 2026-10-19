@@ -13,7 +13,10 @@ import SwiftUI
 ///     tower-<anahtar>-rug-<1…>         halı (mobilyanın altında)
 ///     tower-common-…                   bütün binaların ortak mobilya/aksesuar/duvar süsü/halı seti
 ///     tower-<anahtar>-special          her 15 katta dönüm noktası odası
-///     tower-<anahtar>-roof, tower-<anahtar>-base, tower-<anahtar>-sky(-night)
+///     tower-<anahtar>-roof(-night)     çatı (şeffaf PNG, kule genişliğinde)
+///     tower-<anahtar>-facade(-night)   katlar arası dış cephe (üstü ve altı birbirine eklenebilir)
+///     tower-<anahtar>-base(-night)     kule dibi: giriş kapısı ve bahçe
+///     tower-<anahtar>-sky(-night)      kulenin arkasındaki gökyüzü/manzara
 ///
 /// Anahtarlar: yarn (Yumak Apartmanı), moon (Ay Işığı Konağı), seaside (Deniz Tatili Rezidansı),
 /// snow (Karlı Pati Kuleleri). Odalarda kedi türlerinin renklerinde piksel kediler dolaşır.
@@ -94,7 +97,7 @@ struct CatTowerTheme {
             accessories = [("flame.fill", Color(hex: "#F08A3C")), ("mug.fill", Color(hex: "#C8584F")), ("gift.fill", Color(hex: "#5FA86B")),
                            ("snowflake", Color(hex: "#7FB7E0")), ("tree.fill", Color(hex: "#3F8A5A"))]
             stone = (Color(hex: "#F2EEEA"), Color(hex: "#DCD3CA"), Color(hex: "#C2B4A6"))
-            roof = [Color(hex: "#C8584F"), Color(hex: "#963B35")]
+            roof = [Color(hex: "#9DB0C4"), Color(hex: "#5F7186")]
             flowers = [.white, Color(hex: "#E8F2FA"), Color(hex: "#C8584F")]
             sky = [Color(hex: "#CFE3F2"), Color(hex: "#EEF5FA"), Color(hex: "#FFFFFF")]
             nightSky = [Color(hex: "#1A2340"), Color(hex: "#2E3C63"), Color(hex: "#5A6E92")]
