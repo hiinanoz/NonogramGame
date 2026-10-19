@@ -24,38 +24,29 @@ struct BirdSortPathView: View {
             let tileHeight: CGFloat = width * aspect
             ScrollViewReader { reader in
                 ScrollView(showsIndicators: false) {
-                    ZStack(alignment: .topLeading) {
-                        VStack(spacing: 0) {
-                            ForEach(0..<tileCount, id: \.self) { _ in
-                                Image(island.pathImage)
-                                    .resizable()
-                                    .frame(width: width, height: tileHeight)
-                            }
-                        }
-                        ForEach(Array(range), id: \.self) { number in
-                            let point = position(of: number - range.lowerBound, width: width, tileHeight: tileHeight)
-                            BirdSortLevelNode(number: number, stars: birds.stars(for: number),
-                                              isUnlocked: birds.isUnlocked(number), isCurrent: birds.currentLevel == number,
-                                              tint: island.tint) {
-                                router.push(.birdGame(level: number))
-                            }
-                            // Kimlik düğmenin kendisinde: kaydırma bölüme ortalanır (konumlanmış
-                            // kabın tamamına değil)
-                            .id(number)
-                            .position(point)
+                    // Her yol görseli kendi 10 bölümüyle bir parça; kaydırma parçaya göre yapılır
+                    // (konumlanmış tek tek düğmelere kaydırma güvenilir değil)
+                    VStack(spacing: 0) {
+                        ForEach(0..<tileCount, id: \.self) { tile in
+                            tileView(tile, range: range, birds: birds, width: width, tileHeight: tileHeight)
+                                .id(tile)
+                                // Parçanın altına taşan bölüm düğmesi alttaki görselin üstünde kalsın
+                                .zIndex(Double(tileCount - tile))
                         }
                     }
-                    .frame(width: width, height: tileHeight * CGFloat(tileCount))
                 }
                 .scrollBounceBehavior(.basedOnSize)
                 // Kaydırma hesaplanana kadar alttan (1. bölüm) başlar
                 .defaultScrollAnchor(.bottom)
-                .task {
+                .task(id: tileHeight) {
+                    guard tileHeight > 0 else { return }
                     // Kaldığı bölüm; ada bittiyse ya da henüz gelinmediyse ilk bölüm
                     let current = birds.currentLevel
                     let target = range.contains(current) ? current : range.lowerBound
-                    try? await Task.sleep(for: .milliseconds(30))
-                    reader.scrollTo(target, anchor: .center)
+                    let spot = spot(of: target - range.lowerBound)
+                    try? await Task.sleep(for: .milliseconds(60))
+                    // Parçanın bölüm noktası ekranda aynı orandaki yere gelir: bölüm hep görünür
+                    reader.scrollTo(spot.tile, anchor: UnitPoint(x: 0.5, y: spot.node.y))
                 }
             }
         }
@@ -88,14 +79,33 @@ struct BirdSortPathView: View {
         }
     }
 
-    /// `index`: adadaki 0'dan başlayan bölüm sırası. Alttaki görselden başlar, her görselde aşağıdan
+    /// Bir yol parçası: görsel ve üstündeki bölümler (parça 0 en üstte).
+    private func tileView(_ tile: Int, range: ClosedRange<Int>, birds: BirdSortModel, width: CGFloat, tileHeight: CGFloat) -> some View {
+        ZStack(alignment: .topLeading) {
+            Image(island.pathImage)
+                .resizable()
+                .frame(width: width, height: tileHeight)
+            ForEach(Array(range), id: \.self) { number in
+                let spot = spot(of: number - range.lowerBound)
+                if spot.tile == tile {
+                    BirdSortLevelNode(number: number, stars: birds.stars(for: number),
+                                      isUnlocked: birds.isUnlocked(number), isCurrent: birds.currentLevel == number,
+                                      tint: island.tint) {
+                        router.push(.birdGame(level: number))
+                    }
+                    .position(x: spot.node.x * width, y: spot.node.y * tileHeight)
+                }
+            }
+        }
+        .frame(width: width, height: tileHeight)
+    }
+
+    /// `index`: adadaki 0'dan başlayan bölüm sırası. Alttaki parçadan başlar, her parçada aşağıdan
     /// yukarı (görselin noktaları yukarıdan aşağı verildiğinden ters sırada).
-    private func position(of index: Int, width: CGFloat, tileHeight: CGFloat) -> CGPoint {
-        let tileFromBottom = index / Self.nodesPerTile
+    private func spot(of index: Int) -> (tile: Int, node: CGPoint) {
         let nodes = island.pathNodes
         let node = nodes[nodes.count - 1 - index % Self.nodesPerTile]
-        let tile = tileCount - 1 - tileFromBottom
-        return CGPoint(x: node.x * width, y: (CGFloat(tile) + node.y) * tileHeight)
+        return (tileCount - 1 - index / Self.nodesPerTile, node)
     }
 
     private static func aspect(of name: String) -> CGFloat {
