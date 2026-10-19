@@ -93,7 +93,7 @@ hızlı); testte tam taramayla birebir aynı sonucu verdiği doğrulanır.
 
 ## Bölümler, hedefler ve yıldızlar
 
-- **4 macera × 15 bölüm:** Yumak Bahçesi, Mama Mutfağı, Fare Deliği, Çatı Katı. Bölümler sırayla açılır.
+- **4 macera × 75 bölüm (300 bölüm):** Yumak Bahçesi, Mama Mutfağı, Fare Deliği, Çatı Katı. Bölümler sırayla açılır.
 - **Tahta şekilleri:** 8x8, 9x9, kedi başı, elmas, kalp, halka (ortası delik), artı, kum saati, pati.
 - **Renk sayısı:** 1-30. bölüm 5 renk, 31-60. bölüm 6 renk (renk arttıkça eşleşme zorlaşır).
 - **Hedef türleri:** puan, belirli eşyadan şu kadar topla (ör. 25 yumak), şu kadar özel eşya patlat;
@@ -115,9 +115,9 @@ hızlı); testte tam taramayla birebir aynı sonucu verdiği doğrulanır.
 | Ödül | Ne zaman | İçerik |
 |---|---|---|
 | Başlangıç hediyesi | İlk açılış | Kedi Patisi, Karıştır, +5 Hamle (birer) |
-| Yıldız sandığı | Her 12 yıldızda | Sırayla değişen 2-4 güçlendirici |
-| Macera ödülü | Bir macerada 15 bölümün hepsi kazanılınca (bir kez) | Her güçlendiriciden 2-3 |
-| Rozetler | İlk zafer, macera bitirme, maceranın hepsi 3 yıldız, 50/100/150 yıldız, bir hamlede 5+ zincir, Kedi Çılgınlığı'nda 10+ hamle | — |
+| Yıldız sandığı | Her 15 yıldızda | Sırayla değişen 2-4 güçlendirici |
+| Macera ödülü | Bir macerada 75 bölümün hepsi kazanılınca (bir kez) | Her güçlendiriciden 2-3 |
+| Rozetler | İlk zafer, macera bitirme, maceranın hepsi 3 yıldız, 50/150/300/600/900 yıldız, bir hamlede 5+ zincir, Kedi Çılgınlığı'nda 10+ hamle | — |
 | Game Center | Toplam yıldız sıralaması (Aşama 7) | — |
 
 Güçlendiriciler: **Kedi Patisi** (tek eşyayı patlatır), **Karıştır**, **+5 Hamle**. Ödüllü reklam ve
@@ -149,3 +149,21 @@ dosyalar Assets'e bu adlarla eklenirse kendiliğinden kullanılır (eklenmeyenle
 
 Çizgili yumak, çıngırak kutusu ve altın kedi gözü süslemeleri eşyanın üstüne kodla eklenir; ayrı
 görsel gerekmez. Eşyaların her biri tahtada farklı bir zemin şekliyle ayırt edilir (renk körlüğü).
+
+## Kedi Kulesi (bölüm seçme ekranı)
+
+Her bölüm kulenin bir katı; katlar alttan üste artan numarayla dizilir, ekranda ~4,5 kat görünür
+(kat yüksekliği ekrana göre 112–176 pt). Kod: `Catgrid/Features/Crush/CatTowerLevelMap.swift`.
+
+- **Durumlar** (`CrushModel.towerFloors`): tamamlanan (1–3 yıldız), sıradaki (pembe çerçeve, nefes
+  alan rozet, hareketli kedi), kilitli (gri, perdeli oda, kilit; dokununca "önce N. bölümü geç").
+- **Seçim:** kata dokununca seçilir ve alt panel o bölümü gösterir; seçili kata tekrar dokunmak oyunu açar.
+- **Çizim:** odalar, süsler (kitaplık, yumak, yastık, bitki, oyuncak; bölüm numarasından sırayla),
+  balkon sarmaşıkları, merdiven, fenerler, çatı, zemin ve gökyüzü kodla çizilir. Kat kedileri kendi
+  animasyonlarımızın karelerinden (`crush-tower-cat-1…5`). Numara, yıldız ve kilit görsele işlenmez.
+- **Gündüz/gece:** açık temada gündüz gökyüzü ve pastel şehir; koyu temada gece, ay, yıldızlar,
+  yanan fenerler ve ışıklı pencereler.
+- **Eski harita:** `crush.classicMap` ayarı (UserDefaults) ya da `-crushClassicMap` başlatma argümanı.
+- **Çizim gelince** (Assets'e bu adlarla eklenirse kendiliğinden kullanılır, numarasız/yazısız):
+  `crush-tower-room-1…8` (oda içleri, katlarda dönüşümlü), `crush-tower-roof`, `crush-tower-base`,
+  `crush-tower-sky-day`, `crush-tower-sky-night`.
