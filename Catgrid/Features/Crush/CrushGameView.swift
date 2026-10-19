@@ -45,6 +45,8 @@ struct CrushGameView: View {
     @State private var confetti: Date?
     /// Bu bölümde bir kez bedava +5 hamle (Premium); sonrası güçlendirici ya da reklam.
     @State private var usedPremiumRevive = false
+    @State private var isOutOfLives = false
+    @State private var isShowingPaywall = false
 
     init(level: CrushLevel, reduceMotion: Bool = false) {
         _viewModel = State(initialValue: CrushGameViewModel(level: level, reduceMotion: reduceMotion))
@@ -72,6 +74,12 @@ struct CrushGameView: View {
                 Button("Not Now", role: .cancel) {}
             } message: { _ in
                 Text("Watch a short video to get one for free.")
+            }
+            .sheet(isPresented: $isShowingPaywall) {
+                PremiumPaywall()
+            }
+            .onChange(of: store.isPremium) { _, isPremium in
+                if isPremium { isOutOfLives = false }
             }
             .onAppear(perform: setUp)
             .onDisappear { viewModel.stop() }
@@ -117,17 +125,42 @@ struct CrushGameView: View {
             .animation(.spring(duration: 0.4), value: result != nil)
             .animation(.spring(duration: 0.4), value: isLost)
             .animation(.spring(duration: 0.4), value: isShowingIntro)
+            .animation(.spring(duration: 0.4), value: isOutOfLives)
+    }
+
+    /// Bölüm başı "Oyna": bir can harcanır (Premium'da harcanmaz); can yoksa can ekranı.
+    private func startPlaying() {
+        guard crush.startLevel(isPremium: store.isPremium) else {
+            isOutOfLives = true
+            return
+        }
+        crush.markIntroSeen()
+        isShowingIntro = false
+        viewModel.start()
+    }
+
+    private func watchAdForLife() {
+        Task {
+            guard await ads.watchRewardedAd() else { return }
+            crush.addLives(1)
+            audio.play(.card)
+            isOutOfLives = false
+        }
     }
 
     @ViewBuilder
     private var overlayContent: some View {
-        if isShowingIntro {
-            CrushIntroOverlay(level: level, number: number, showsHowTo: !crush.hasSeenIntro) {
-                crush.markIntroSeen()
-                isShowingIntro = false
-                viewModel.start()
-            }
+        if isOutOfLives {
+            CrushNoLivesOverlay(
+                canWatchAd: ads.isRewardedReady,
+                onWatchAd: watchAdForLife,
+                onPremium: { isShowingPaywall = true },
+                onMap: { router.pop() }
+            )
             .transition(.opacity)
+        } else if isShowingIntro {
+            CrushIntroOverlay(level: level, number: number, showsHowTo: !crush.hasSeenIntro, onPlay: startPlaying)
+                .transition(.opacity)
         } else if let result {
             CrushResultOverlay(
                 result: result,
@@ -245,6 +278,7 @@ struct CrushGameView: View {
             switch session.status {
             case .won:
                 let outcome = crush.recordWin(session, frenzyMoves: viewModel.frenzyMoves)
+                crush.refundLife(isPremium: store.isPremium)
                 ads.puzzleCompleted(isTutorial: number == 1)
                 model.reportToGameCenter()
                 confetti = Date()

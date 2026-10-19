@@ -16,9 +16,13 @@ struct CrushIntroOverlay: View {
         ZStack {
             Color.black.opacity(0.45).ignoresSafeArea()
             VStack(spacing: 16) {
-                Text("Level \(number)")
-                    .font(.system(size: 30, weight: .heavy, design: .rounded))
-                    .foregroundStyle(ModeStyle.crush.ink(theme))
+                HStack {
+                    Text("Level \(number)")
+                        .font(.system(size: 30, weight: .heavy, design: .rounded))
+                        .foregroundStyle(ModeStyle.crush.ink(theme))
+                    Spacer()
+                    CrushLivesBadge(showsTimer: false)
+                }
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(Array(level.goals.enumerated()), id: \.offset) { _, goal in
                         HStack(spacing: 12) {

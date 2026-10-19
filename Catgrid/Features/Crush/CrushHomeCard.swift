@@ -5,6 +5,7 @@ import SwiftUI
 @MainActor
 struct CrushHomeCard: View {
     @Environment(AppModel.self) private var model
+    @Environment(StoreManager.self) private var store
     @Environment(\.appTheme) private var theme
     var compact = false
     let action: () -> Void
@@ -29,6 +30,14 @@ struct CrushHomeCard: View {
                         Image(systemName: "star.fill")
                             .foregroundStyle(Gold.mid)
                         Text(verbatim: "\(crush.totalStars)")
+                        Text(verbatim: "·")
+                        Image(systemName: "heart.fill")
+                            .foregroundStyle(Color(hex: "#F0506E"))
+                        if store.isPremium {
+                            Text(verbatim: "∞")
+                        } else {
+                            Text(verbatim: "\(crush.livesCount())")
+                        }
                     }
                     .font(.caption.weight(.semibold).monospacedDigit())
                     .foregroundStyle(style.ink(theme).opacity(0.85))
@@ -55,10 +64,15 @@ struct CrushHomeCard: View {
         .buttonStyle(PressableButtonStyle())
     }
 
-    /// Kullanıcının çizimi varsa o; yoksa yan yana birkaç eşya.
+    /// Telefonda oyun oynayan hareketli kedi; yoksa çizim ya da yan yana eşyalar.
     @ViewBuilder
     private var art: some View {
-        if Illustration.exists(ModeStyle.crush.illustration) {
+        if LoopingCatAnimation.isAvailable(LoopingCatAnimation.crushCat) {
+            // Kartın yüksekliğini doldurur; genişliği en-boy oranından gelir
+            LoopingCatView(name: LoopingCatAnimation.crushCat)
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .padding(.vertical, -4)
+        } else if Illustration.exists(ModeStyle.crush.illustration) {
             IllustrationView(name: ModeStyle.crush.illustration)
                 .frame(maxHeight: .infinity)
         } else {

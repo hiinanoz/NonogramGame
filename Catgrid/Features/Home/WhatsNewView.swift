@@ -3,7 +3,7 @@ import SwiftUI
 /// Güncellemeden sonra bir kez açılan "Yenilikler" penceresi (yeni modları duyurmak için).
 /// Yeni sürümde `version` ve madde listesi güncellenir; o sürümü gören oyuncuya tekrar çıkmaz.
 enum WhatsNew {
-    static let version = "1.1"
+    static let version = "1.2"
     static let seenKey = "whatsNew.seenVersion"
 
     /// Yalnızca daha önce oynamış (güncelleme yapan) oyunculara; yeni oyuncuya hiç gösterilmez.
@@ -37,6 +37,7 @@ struct WhatsNewView: View {
                 .foregroundStyle(theme.textPrimary)
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    item("sparkles", "Meow Crush", "A brand-new match-3 mode: swipe cat toys, make special combos and clear 60 levels across 4 adventures!")
                     item("cat.fill", "Cat Puzzle", "A brand-new mode: find the hidden cats, one per color, row and column. 335 levels!")
                     item("calendar", "Daily Puzzle history", "Missed a day? Solve the puzzles of the last 10 days.")
                     item("medal.fill", "More badges", "At least 20 badges for every mode.")

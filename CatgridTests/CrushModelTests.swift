@@ -55,6 +55,29 @@ final class CrushModelTests: XCTestCase {
         XCTAssertEqual(CrushModel(defaults: defaults).totalStars, 0)
     }
 
+    /// Canlar: bölüm başı 1 can, kazanınca geri; Premium'da harcanmaz; 30 dakikada bir dolar.
+    func testLivesAreSpentRefundedAndRefilled() {
+        var clock = Date(timeIntervalSince1970: 2_000_000)
+        let defaults = makeDefaults()
+        let model = CrushModel(defaults: defaults) { clock }
+        XCTAssertEqual(model.livesCount(), 5)
+        XCTAssertTrue(model.startLevel(isPremium: false))
+        XCTAssertEqual(model.livesCount(), 4)
+        model.refundLife(isPremium: false)
+        XCTAssertEqual(model.livesCount(), 5)
+        XCTAssertTrue(model.startLevel(isPremium: true))
+        XCTAssertEqual(model.livesCount(), 5, "Premium'da can harcanmaz")
+        for _ in 0..<5 { XCTAssertTrue(model.startLevel(isPremium: false)) }
+        XCTAssertFalse(model.startLevel(isPremium: false))
+        XCTAssertTrue(model.startLevel(isPremium: true))
+        clock = clock.addingTimeInterval(31 * 60)
+        XCTAssertEqual(model.livesCount(), 1)
+        // Kayıt yeniden açılınca da sürer
+        XCTAssertEqual(CrushModel(defaults: defaults) { clock }.livesCount(), 1)
+        model.addLives(1)
+        XCTAssertEqual(model.livesCount(), 2)
+    }
+
     /// Ekran modeli: başlangıçta her hücrede bir eşya; geçersiz takas tahtayı değiştirmez.
     func testViewModelStartsInSyncWithBoard() {
         let model = CrushModel.inMemory()

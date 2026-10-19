@@ -21,6 +21,7 @@ final class CrushModel {
         static let progress = "crush.progress"
         static let stats = "crush.stats"
         static let introSeen = "crush.introSeen"
+        static let lives = "crush.lives"
     }
 
     let catalog: CrushCatalog
@@ -30,20 +31,60 @@ final class CrushModel {
     private(set) var stats: CrushStats
     /// İlk bölümdeki "nasıl oynanır" kartı gösterildi mi.
     private(set) var hasSeenIntro: Bool
+    private(set) var lives: CrushLives
+    /// Testlerde zaman sabitlenebilsin diye.
+    private let now: () -> Date
 
-    init(catalog: CrushCatalog = .standard, defaults: UserDefaults) {
+    init(catalog: CrushCatalog = .standard, defaults: UserDefaults, now: @escaping () -> Date = { Date() }) {
         self.catalog = catalog
         self.defaults = defaults
+        self.now = now
+        lives = Self.decode(CrushLives.self, defaults.data(forKey: Keys.lives)) ?? CrushLives()
         progress = Self.decode(CrushProgress.self, defaults.data(forKey: Keys.progress)) ?? CrushProgress()
         stats = Self.decode(CrushStats.self, defaults.data(forKey: Keys.stats)) ?? CrushStats()
         hasSeenIntro = defaults.bool(forKey: Keys.introSeen)
     }
 
-    static func inMemory(catalog: CrushCatalog = .standard) -> CrushModel {
+    static func inMemory(catalog: CrushCatalog = .standard, now: @escaping () -> Date = { Date() }) -> CrushModel {
         let name = "crush-\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: name) ?? .standard
         defaults.removePersistentDomain(forName: name)
-        return CrushModel(catalog: catalog, defaults: defaults)
+        return CrushModel(catalog: catalog, defaults: defaults, now: now)
+    }
+
+    // MARK: - Canlar
+
+    /// Şu anki can sayısı (Premium'da sınırsız; arayüz ∞ gösterir).
+    func livesCount(at date: Date? = nil) -> Int {
+        lives.count(at: date ?? now())
+    }
+
+    func timeToNextLife(at date: Date? = nil) -> TimeInterval? {
+        lives.timeToNextLife(at: date ?? now())
+    }
+
+    /// Bölüm başlarken: Premium'da can harcanmaz; can yoksa `false`.
+    func startLevel(isPremium: Bool) -> Bool {
+        guard !isPremium else { return true }
+        guard lives.use(at: now()) else { return false }
+        saveLives()
+        return true
+    }
+
+    /// Kazanılan bölümün canı geri verilir (Premium'da harcanmamıştı).
+    func refundLife(isPremium: Bool) {
+        guard !isPremium else { return }
+        addLives(1)
+    }
+
+    /// Ödüllü reklam ya da hediye.
+    func addLives(_ count: Int) {
+        lives.add(count, at: now())
+        saveLives()
+    }
+
+    private func saveLives() {
+        defaults.set(try? JSONEncoder().encode(lives), forKey: Keys.lives)
     }
 
     var levels: [CrushLevel] { catalog.levels }
@@ -121,7 +162,8 @@ final class CrushModel {
         progress = CrushProgress()
         stats = CrushStats()
         hasSeenIntro = false
-        for key in [Keys.progress, Keys.stats, Keys.introSeen] {
+        lives = CrushLives()
+        for key in [Keys.progress, Keys.stats, Keys.introSeen, Keys.lives] {
             defaults.removeObject(forKey: key)
         }
     }

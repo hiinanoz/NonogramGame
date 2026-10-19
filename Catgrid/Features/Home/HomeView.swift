@@ -145,7 +145,7 @@ struct HomeView: View {
             CrushHomeCard(compact: compact) {
                 router.push(.crushHub)
             }
-            .frame(height: tight ? 62 : (compact ? 70 : 84))
+            .frame(height: tight ? 68 : (compact ? 80 : 96))
             .accessibilityIdentifier("home.mode.crush")
         }
     }

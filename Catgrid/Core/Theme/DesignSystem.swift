@@ -67,7 +67,7 @@ enum ModeStyle: CaseIterable {
         case .daily: LoopingCatAnimation.dailyCat
         case .collection: LoopingCatAnimation.cardsCat
         case .cats: LoopingCatAnimation.yarnCat
-        case .crush: "crush-cat-loop"
+        case .crush: LoopingCatAnimation.crushCat
         }
     }
 

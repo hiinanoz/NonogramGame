@@ -182,7 +182,10 @@ struct CrushHubView: View {
                 arrow("chevron.right", enabled: episode.index < crush.catalog.episodeCount - 1) { selectedEpisode = episode.index + 1 }
                     .accessibilityLabel(Text("Next adventure"))
             }
-            CrushChestProgress(totalStars: crush.totalStars, starsToNext: crush.progress.starsToNextChest)
+            HStack(spacing: 8) {
+                CrushLivesBadge()
+                CrushChestProgress(totalStars: crush.totalStars, starsToNext: crush.progress.starsToNextChest)
+            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)

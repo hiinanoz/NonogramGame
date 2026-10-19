@@ -15,6 +15,8 @@ enum LoopingCatAnimation {
     static let sleepyCat = "sleepy-cat-loop"
     /// Premium şeridi: şeridin kenarından bakan üç renkli kedi.
     static let peekCat = "peek-cat-loop"
+    /// Miyav Crush ana sayfa kartı: telefonda oyun oynayan tekir yavru.
+    static let crushCat = "crush-cat-loop"
 
     /// Videonun kare hızı.
     static let frameRate: Double = 24
@@ -37,7 +39,11 @@ enum LoopingCatAnimation {
 
     /// Yüklenmeden önce yer ayırmak için en-boy oranı (kareler gelince düzen kaymasın).
     static func aspectRatio(_ name: String) -> CGFloat {
-        name == peekCat ? 300.0 / 338.0 : 360.0 / 194.0
+        switch name {
+        case peekCat: 300.0 / 338.0
+        case crushCat: 360.0 / 296.0
+        default: 360.0 / 194.0
+        }
     }
 
     /// Tek kareyi çözer; ekrandaki boyuttan büyükse küçültür.
