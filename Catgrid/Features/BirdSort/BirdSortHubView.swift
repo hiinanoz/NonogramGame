@@ -119,6 +119,8 @@ struct BirdSortHubView: View {
             }
             .saturation(unlocked ? 1 : 0.35)
             .offset(y: isCurrent && bob ? -4 : 0)
+            // Adanın çizimi haritada; bütün alan (çizimin üstü dahil) dokunulabilir
+            .contentShape(Rectangle())
         }
         .buttonStyle(PressableButtonStyle())
         .position(x: point.x, y: point.y + width * 0.12)
