@@ -22,6 +22,9 @@ enum Route: Hashable {
     /// Miyav Crush (3'lü eşleştirme) modu.
     case crushHub
     case crushGame(levelID: String)
+    case birdHub
+    case birdIsland(Int)
+    case birdGame(level: Int)
 }
 
 /// Uygulama içi gezinme yığını. Ekranlar doğrudan `NavigationLink` yerine bunu kullanır

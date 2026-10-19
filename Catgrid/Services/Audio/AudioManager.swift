@@ -29,6 +29,9 @@ enum SoundEffect: String, CaseIterable {
     case purr
     case meow
     case meow2
+    // Kuş Sıralama: kuşlar uçarken kanat sesi, dal dolunca sürü uçup gider
+    case wingFlap = "wing_flap"
+    case birdsAway = "birds_away"
 }
 
 /// Bir müzik parçası. `gain`: parçalar arası ses farkını dengeler (ses ayarıyla çarpılır).

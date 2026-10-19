@@ -36,6 +36,9 @@ struct RootView: View {
                     case .catStats: CatStatsView()
                     case .crushHub: CrushHubView()
                     case .crushGame(let levelID): CrushGameScreen(levelID: levelID)
+            case .birdHub: BirdSortHubView()
+            case .birdIsland(let index): BirdSortPathView(island: BirdSortIsland(index: index))
+            case .birdGame(let level): BirdSortGameScreen(levelNumber: level)
                     }
                 }
         }

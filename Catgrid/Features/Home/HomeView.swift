@@ -147,6 +147,13 @@ struct HomeView: View {
             }
             .frame(height: tight ? 68 : (compact ? 80 : 96))
             .accessibilityIdentifier("home.mode.crush")
+
+            // Kuş Sıralama: Miyav Crush'ın altında aynı biçimde
+            BirdSortHomeCard(compact: compact) {
+                router.push(.birdHub)
+            }
+            .frame(height: tight ? 60 : (compact ? 68 : 80))
+            .accessibilityIdentifier("home.mode.birds")
         }
     }
 

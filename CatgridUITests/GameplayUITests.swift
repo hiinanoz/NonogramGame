@@ -118,6 +118,42 @@ final class GameplayUITests: XCTestCase {
 
     /// Miyav Crush: haritadan ilk bölüme gir, hedef kartını geç, kaydırarak takas ve dokunarak
     /// seçme çökmeden çalışmalı; güçlendirici düğmeleri görünmeli.
+    func testBirdSortIslandsAndMoves() {
+        let app = XCUIApplication()
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-disableAds"]
+        app.launch()
+
+        let mode = app.buttons["home.mode.birds"]
+        if !mode.waitForExistence(timeout: 15) { app.swipeUp() }
+        XCTAssertTrue(mode.waitForExistence(timeout: 5), "Kuş Sıralama kartı görünmedi")
+        mode.tap()
+        // Kilitli ada açılmaz, ilk ada bölüm yolunu açar
+        let island = app.buttons["birds.island.1"]
+        XCTAssertTrue(island.waitForExistence(timeout: 15), "Ada haritası görünmedi")
+        island.tap()
+        let first = app.buttons["birds.level.1"]
+        XCTAssertTrue(first.waitForExistence(timeout: 10), "Bölüm yolu görünmedi")
+        first.tap()
+        let start = app.buttons["birds.intro.play"]
+        if start.waitForExistence(timeout: 10) { start.tap() }
+        let board = app.descendants(matching: .any)["birds.board"]
+        XCTAssertTrue(board.waitForExistence(timeout: 15), "Dallar görünmedi")
+        // Birkaç dal dokunuşu (geçerli ya da geçersiz hamleler), geri al ve ipucu
+        for pair in [(0, 1), (2, 3), (1, 4), (3, 0)] {
+            let a = app.descendants(matching: .any)["birds.branch.\(pair.0)"]
+            let b = app.descendants(matching: .any)["birds.branch.\(pair.1)"]
+            if a.exists && b.exists {
+                a.tap()
+                b.tap()
+                sleep(1)
+            }
+        }
+        app.buttons["birds.undo"].tap()
+        app.buttons["birds.hint"].tap()
+        sleep(1)
+        XCTAssertEqual(app.state, .runningForeground, "Uygulama çöktü")
+    }
+
     func testMeowCrushSwipeAndTap() {
         let app = XCUIApplication()
         app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-disableAds"]
