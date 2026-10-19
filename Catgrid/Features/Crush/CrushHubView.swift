@@ -84,6 +84,7 @@ struct CrushHubView: View {
                 CatTowerLevelMap(
                     floors: crush.towerFloors(episode: episodeIndex),
                     episode: episode,
+                    coats: CatTowerCoats.all(breeds: model.breeds),
                     selectedID: selected?.id,
                     focusID: focusID,
                     onSelect: { floor in
@@ -572,5 +573,18 @@ struct CrushBadgesSheet: View {
                 .monospacedDigit()
                 .foregroundStyle(theme.textSecondary)
         }
+    }
+}
+
+/// Kulede dolaşan kedilerin renkleri: kedi türlerinin piksel portrelerinden (bir kez hesaplanır).
+@MainActor
+enum CatTowerCoats {
+    private static var cache: [CatCoat]?
+
+    static func all(breeds: [Chapter]) -> [CatCoat] {
+        if let cache { return cache }
+        let coats = [CatCoat.ginger] + breeds.compactMap { chapter in chapter.portrait.flatMap(CatCoat.init(portrait:)) }
+        cache = coats
+        return coats
     }
 }

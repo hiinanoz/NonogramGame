@@ -159,8 +159,8 @@ Her bölüm kulenin bir katı; katlar alttan üste artan numarayla dizilir, ekra
   alan rozet, hareketli kedi), kilitli (gri, perdeli oda, kilit; dokununca "önce N. bölümü geç").
 - **Seçim:** kata dokununca seçilir ve alt panel o bölümü gösterir; seçili kata tekrar dokunmak oyunu açar.
 - **Çizim:** odalar, süsler (kitaplık, yumak, yastık, bitki, oyuncak; bölüm numarasından sırayla),
-  balkon sarmaşıkları, merdiven, fenerler, çatı, zemin ve gökyüzü kodla çizilir. Kat kedileri kendi
-  animasyonlarımızın karelerinden (`crush-tower-cat-1…5`). Numara, yıldız ve kilit görsele işlenmez.
+  balkon sarmaşıkları, merdiven, fenerler, çatı, zemin ve gökyüzü kodla çizilir. Odalarda kedi türlerinin
+  renklerinde küçük piksel kediler dolaşır (yürür, yalanır, uyur, mobilyaya çıkar). Numara, yıldız ve kilit görsele işlenmez.
 - **Gündüz/gece:** açık temada gündüz gökyüzü ve pastel şehir; koyu temada gece, ay, yıldızlar,
   yanan fenerler ve ışıklı pencereler.
 - **Eski harita:** `crush.classicMap` ayarı (UserDefaults) ya da `-crushClassicMap` başlatma argümanı.
@@ -181,4 +181,3 @@ Her bölüm kulenin bir katı; katlar alttan üste artan numarayla dizilir, ekra
 | `tower-<anahtar>-special` | Dönüm noktası odası (her 15 kat) | 1 | 1200×700 |
 | `tower-<anahtar>-roof` / `-base` | Çatı / kule dibi | 1+1 | ~1200×800 |
 | `tower-<anahtar>-sky` / `-sky-night` | Gökyüzü (dikey, ortası boş) | 1+1 | 1290×2796 |
-| `crush-tower-cat-<n>-blink-1…` | (İsteğe bağlı) kedinin göz kırpma kareleri | 3–4 | kediyle aynı |

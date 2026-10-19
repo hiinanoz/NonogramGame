@@ -69,6 +69,8 @@ struct CatTowerLevelMap: View {
     @Environment(\.appTheme) private var theme
     let floors: [CatTowerFloor]
     let episode: CrushEpisode
+    /// Odalarda dolaşan kedilerin renkleri.
+    var coats: [CatCoat] = []
     let selectedID: String?
     /// Açılışta ve değişince ortalanacak kat.
     let focusID: String?
@@ -96,6 +98,7 @@ struct CatTowerLevelMap: View {
                         CatTowerFloorView(
                             floor: floor,
                             tower: tower,
+                            coats: coats,
                             isSelected: floor.id == selectedID,
                             height: height,
                             onTap: { tap(floor) }
@@ -147,6 +150,7 @@ struct CatTowerFloorView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let floor: CatTowerFloor
     let tower: CatTowerTheme
+    var coats: [CatCoat] = []
     let isSelected: Bool
     let height: CGFloat
     let onTap: () -> Void
@@ -169,7 +173,7 @@ struct CatTowerFloorView: View {
                     CatTowerWall(number: floor.number, tower: tower)
                         .frame(width: wallWidth, height: height)
                         .offset(x: side)
-                    CatTowerRoom(floor: floor, plan: plan, tower: tower, isHighlighted: isCurrent || isSelected)
+                    CatTowerRoom(floor: floor, plan: plan, tower: tower, isHighlighted: isCurrent || isSelected, coats: coats)
                         .frame(width: roomWidth, height: height - balcony - 10)
                         .offset(x: side + 12, y: 8)
                     CatTowerBalcony(number: floor.number, isLocked: isLocked, tower: tower)

@@ -1,7 +1,7 @@
 import NonogramKit
 import SwiftUI
 
-/// Katmanlı oda: arka duvar → pencere → zemin → ana mobilya → aksesuarlar → kedi. Her katman
+/// Katmanlı oda: arka duvar → pencere → zemin → halı → ana mobilya → aksesuarlar → dolaşan kedi. Her katman
 /// binanın görsel setinden (varsa) ya da kodla çizilen yedekten gelir; yerleri sabit yuvalardır,
 /// böylece nesneler çakışmaz ve kedi hep mobilyanın üstünde durur.
 @MainActor
@@ -11,6 +11,8 @@ struct CatTowerRoom: View {
     let plan: CatTowerRoomPlan
     let tower: CatTowerTheme
     let isHighlighted: Bool
+    /// Odalarda dolaşan kedilerin renkleri (kedi türlerinden).
+    var coats: [CatCoat] = []
 
     private var isLocked: Bool { floor.state == .locked }
     private var hasWallArt: Bool {
@@ -185,67 +187,16 @@ struct CatTowerRoom: View {
     }
 
     private func catLayer(size: CGSize) -> some View {
-        let seat = furnitureFrame(size)
-        let height: CGFloat = size.height * 0.4
-        return CatTowerCatView(index: plan.cat + 1, isFlipped: plan.isCatFlipped, isAnimated: floor.state == .current, phase: floor.number)
-            .frame(width: size.width * 0.5, height: height, alignment: .bottom)
-            .offset(x: size.width * 0.25, y: seat.minY + seat.height * 0.55 - height)
+        // Odada dolaşan piksel kedi; rengi katın türünden (tür portreleri)
+        let coat = coats.isEmpty ? CatCoat.ginger : coats[(floor.number * 5 + plan.cat) % coats.count]
+        return CatTowerPixelCat(coat: coat, room: size, seat: furnitureFrame(size), seed: floor.number)
+            .frame(width: size.width, height: size.height, alignment: .topLeading)
     }
 
     private var frameColor: Color {
         if isHighlighted { return Color(hex: "#F0507E") }
         if plan.kind == .milestone && !isLocked { return Gold.mid }
         return theme.isDark ? Color(hex: "#5E4E42") : Color(hex: "#D8B892")
-    }
-}
-
-/// Katın kedisi. Aktif katta hareketli animasyon; diğerlerinde durağan kare. Göz kırpma kareleri
-/// (crush-tower-cat-<n>-blink-<k>) eklenirse kedi birkaç saniyede bir göz kırpar; başlangıçlar
-/// kata göre kaydırılır, "Hareketi Azalt" açıkken kırpmaz. Kare yoksa uydurulmaz.
-@MainActor
-struct CatTowerCatView: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    let index: Int
-    let isFlipped: Bool
-    let isAnimated: Bool
-    /// Göz kırpmanın zamanlamasını katlar arasında dağıtmak için.
-    let phase: Int
-
-    private static let loops = [LoopingCatAnimation.sleepyCat, LoopingCatAnimation.yarnCat, LoopingCatAnimation.cardsCat,
-                                LoopingCatAnimation.crushCat]
-
-    var body: some View {
-        content
-            .scaleEffect(x: isFlipped ? -1 : 1)
-            .allowsHitTesting(false)
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        let loop = Self.loops[(index - 1) % Self.loops.count]
-        let blink = Self.blinkFrames(index)
-        if isAnimated, LoopingCatAnimation.isAvailable(loop) {
-            LoopingCatView(name: loop)
-        } else if !blink.isEmpty, !reduceMotion, let still = CatTowerImageCache.image("crush-tower-cat-\(index)") {
-            TimelineView(.periodic(from: .now, by: 0.08)) { timeline in
-                let period: Double = 4.5 + Double(phase % 5) * 0.6
-                let t = (timeline.date.timeIntervalSinceReferenceDate + Double(phase) * 1.7).truncatingRemainder(dividingBy: period)
-                let frame = Int(t / 0.08)
-                Image(uiImage: frame < blink.count ? blink[frame] : still)
-                    .resizable()
-                    .scaledToFit()
-            }
-        } else if let still = CatTowerImageCache.image("crush-tower-cat-\(index)") {
-            Image(uiImage: still).resizable().scaledToFit()
-        }
-    }
-
-    private static func blinkFrames(_ index: Int) -> [UIImage] {
-        var frames: [UIImage] = []
-        while let frame = CatTowerImageCache.image("crush-tower-cat-\(index)-blink-\(frames.count + 1)") {
-            frames.append(frame)
-        }
-        return frames
     }
 }
 
