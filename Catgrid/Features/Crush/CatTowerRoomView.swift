@@ -30,6 +30,7 @@ struct CatTowerRoom: View {
                     floorLayer(size: size)
                 }
                 if !isLocked {
+                    rugLayer(size: size)
                     furnitureLayer(size: size)
                     accessoryLayer(size: size)
                     catLayer(size: size)
@@ -88,9 +89,22 @@ struct CatTowerRoom: View {
 
     /// Mobilyanın kapladığı alan (kedi bunun üstüne oturur).
     private func furnitureFrame(_ size: CGSize) -> CGRect {
-        let w: CGFloat = size.width * 0.44
-        let h: CGFloat = size.height * 0.3
+        let w: CGFloat = size.width * 0.5
+        let h: CGFloat = size.height * 0.36
         return CGRect(x: (size.width - w) / 2, y: size.height * 0.86 - h, width: w, height: h)
+    }
+
+    /// Halı: katların çoğunda mobilyanın altında (görsel set varsa).
+    @ViewBuilder
+    private func rugLayer(size: CGSize) -> some View {
+        if let count = tower.assetCount("rug"), (floor.number * 7) % 10 < 7,
+           let rug = tower.asset("rug", (floor.number * 3 + plan.floor) % count + 1) {
+            Image(uiImage: rug)
+                .resizable()
+                .scaledToFit()
+                .frame(width: size.width * 0.6, height: size.height * 0.16)
+                .offset(x: size.width * 0.2, y: size.height * 0.79)
+        }
     }
 
     @ViewBuilder
@@ -135,6 +149,19 @@ struct CatTowerRoom: View {
 
     @ViewBuilder
     private func accessory(_ index: Int, size: CGFloat, onShelf: Bool) -> some View {
+        if onShelf, let count = tower.assetCount("wallitem"), let item = tower.asset("wallitem", index % count + 1) {
+            // Duvar süsü (çerçeve, flama, raf): kendi askısı var, ayrıca raf çizilmez
+            Image(uiImage: item)
+                .resizable()
+                .scaledToFit()
+                .frame(width: size * 0.85, height: size * 0.85)
+        } else {
+            floorAccessory(index, size: size, onShelf: onShelf)
+        }
+    }
+
+    @ViewBuilder
+    private func floorAccessory(_ index: Int, size: CGFloat, onShelf: Bool) -> some View {
         VStack(spacing: 0) {
             if let image = tower.asset("accessory", index + 1) {
                 Image(uiImage: image).resizable().scaledToFit()

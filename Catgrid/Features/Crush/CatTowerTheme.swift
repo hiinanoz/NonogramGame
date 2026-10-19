@@ -8,7 +8,10 @@ import SwiftUI
 ///     tower-<anahtar>-wall-<1…>        oda arka duvarı (pencere dahil, mobilyasız)
 ///     tower-<anahtar>-wall-<1…>-night  aynı odanın gece sürümü (koyu tema)
 ///     tower-<anahtar>-furniture-<1…>   ana mobilya (koltuk, yatak, minder, kedi yatağı)
-///     tower-<anahtar>-accessory-<1…>   aksesuar (lamba, bitki, kitaplık…)
+///     tower-<anahtar>-accessory-<1…>   yer aksesuarı (lamba, bitki, kitaplık…)
+///     tower-<anahtar>-wallitem-<1…>    duvar süsü (çerçeve, flama, raf)
+///     tower-<anahtar>-rug-<1…>         halı (mobilyanın altında)
+///     tower-common-…                   bütün binaların ortak mobilya/aksesuar/duvar süsü/halı seti
 ///     tower-<anahtar>-special          her 15 katta dönüm noktası odası
 ///     tower-<anahtar>-roof, tower-<anahtar>-base, tower-<anahtar>-sky(-night)
 ///
@@ -101,11 +104,21 @@ struct CatTowerTheme {
 
     // MARK: - Görseller (varsa)
 
-    /// `variant`: ör. "night" → tower-<anahtar>-wall-3-night (koyu tema sürümü).
+    /// `variant`: ör. "night" → tower-<anahtar>-wall-3-night (koyu tema sürümü). Mobilya, aksesuar,
+    /// duvar süsü ve halı binaya özel yoksa bütün binaların ortak setinden (tower-common-…) gelir.
     func asset(_ kind: String, _ number: Int? = nil, variant: String? = nil) -> UIImage? {
-        var name = number.map { "tower-\(key)-\(kind)-\($0)" } ?? "tower-\(key)-\(kind)"
-        if let variant { name += "-\(variant)" }
-        return CatTowerImageCache.image(name)
+        let suffix = (number.map { "-\($0)" } ?? "") + (variant.map { "-\($0)" } ?? "")
+        if let image = CatTowerImageCache.image("tower-\(key)-\(kind)\(suffix)") { return image }
+        guard Self.sharedKinds.contains(kind) else { return nil }
+        return CatTowerImageCache.image("tower-common-\(kind)\(suffix)")
+    }
+
+    static let sharedKinds: Set<String> = ["furniture", "accessory", "wallitem", "rug"]
+
+    /// Bir türdeki görsel sayısı: binaya özel set, yoksa ortak set, o da yoksa `nil`.
+    func assetCount(_ kind: String) -> Int? {
+        CatTowerImageCache.count(prefix: "tower-\(key)-\(kind)-")
+            ?? (Self.sharedKinds.contains(kind) ? CatTowerImageCache.count(prefix: "tower-common-\(kind)-") : nil)
     }
 
     /// Katman sayıları: görsel set eklenince onun boyutu, yoksa çizim yedeğinin sayısı.
@@ -114,8 +127,8 @@ struct CatTowerTheme {
             walls: CatTowerImageCache.count(prefix: "tower-\(key)-wall-") ?? wallpapers.count,
             windows: 3,
             floors: floors.count,
-            furniture: CatTowerImageCache.count(prefix: "tower-\(key)-furniture-") ?? furniture.count,
-            accessories: CatTowerImageCache.count(prefix: "tower-\(key)-accessory-") ?? accessories.count,
+            furniture: assetCount("furniture") ?? furniture.count,
+            accessories: assetCount("accessory") ?? accessories.count,
             cats: CatTowerImageCache.count(prefix: "crush-tower-cat-") ?? 5
         )
     }
