@@ -118,15 +118,16 @@ struct CatTowerRoom: View {
 
     private func accessoryOffset(_ slot: CatTowerRoomPlan.Slot, size: CGSize, item: CGFloat) -> CGSize {
         switch slot {
-        case .left: CGSize(width: size.width * 0.04, height: size.height * 0.86 - item)
-        case .right: CGSize(width: size.width * 0.96 - item, height: size.height * 0.86 - item)
+        case .left:
+            return CGSize(width: size.width * 0.04, height: size.height * 0.86 - item)
+        case .right:
+            return CGSize(width: size.width * 0.96 - item, height: size.height * 0.86 - item)
         case .wall:
             // Görselli odalarda pencere ortada, lamba sol üstte: raf sağ duvarda
             if hasWallArt {
-                CGSize(width: size.width * 0.9 - item, height: size.height * 0.22)
-            } else {
-                CGSize(width: windowOnRight ? size.width * 0.1 : size.width * 0.9 - item, height: size.height * 0.16)
+                return CGSize(width: size.width * 0.9 - item, height: size.height * 0.22)
             }
+            return CGSize(width: windowOnRight ? size.width * 0.1 : size.width * 0.9 - item, height: size.height * 0.16)
         }
     }
 
