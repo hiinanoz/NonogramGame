@@ -271,7 +271,7 @@ final class CrushGameViewModel {
                     row: Double(creation.position.row), column: Double(creation.position.column), isSpawning: true
                 )
             }
-            await Task.yield()
+            await nextFrame()
             withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
                 for creation in step.creations { tiles[creation.piece.id]?.isSpawning = false }
             }
@@ -283,7 +283,7 @@ final class CrushGameViewModel {
         for fall in step.falls where fall.isNew {
             tiles[fall.piece.id] = CrushTile(id: fall.piece.id, piece: fall.piece, row: Double(fall.fromRow), column: Double(fall.to.column))
         }
-        await Task.yield()
+        await nextFrame()
         let distance = step.falls.map { $0.to.row - $0.fromRow }.max() ?? 1
         withAnimation(.spring(response: 0.22 + 0.035 * Double(distance), dampingFraction: 0.62)) {
             for fall in step.falls {
@@ -462,6 +462,11 @@ final class CrushGameViewModel {
             withAnimation { hint = session.hint() }
         }
         pruneLater()
+    }
+
+    /// Yeni eklenen eşyalar önce başlangıç yerinde çizilsin, animasyon ondan sonra başlasın.
+    private func nextFrame() async {
+        try? await Task.sleep(for: .milliseconds(20))
     }
 
     private func delay(_ seconds: Double) async {
