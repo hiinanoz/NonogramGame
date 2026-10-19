@@ -92,8 +92,9 @@ struct CatTowerLevelMap: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 0) {
+                    // Görselli çatı ve kule dibi kendi oranında, çizilenler sabit yükseklikte
                     CatTowerRoof(tower: tower)
-                        .frame(height: height * 1.25)
+                        .frame(height: tower.asset("roof") == nil ? height * 1.25 : nil)
                     ForEach(floors.reversed()) { floor in
                         CatTowerFloorView(
                             floor: floor,
@@ -107,7 +108,7 @@ struct CatTowerLevelMap: View {
                         .id(floor.id)
                     }
                     CatTowerBase(tower: tower)
-                        .frame(height: height * 0.75)
+                        .frame(height: tower.asset("base") == nil ? height * 0.75 : nil)
                 }
                 .frame(maxWidth: 520)
                 .frame(maxWidth: .infinity)
@@ -167,19 +168,27 @@ struct CatTowerFloorView: View {
                 let roomWidth: CGFloat = wallWidth * 0.64
                 let balcony: CGFloat = height * 0.15
                 let plan = CatTowerRoomPlan.make(level: floor.number, tower: tower.index, counts: tower.counts)
+                // Cephe görseli varsa kendi sütunları, sarmaşıkları ve kornişi var: çizilen merdiven ve
+                // balkon eklenmez
+                let hasFacade = tower.asset("facade") != nil
                 ZStack(alignment: .topLeading) {
-                    CatTowerStairs(number: floor.number, side: side, tower: tower)
-                        .frame(width: width, height: height)
+                    if !hasFacade {
+                        CatTowerStairs(number: floor.number, side: side, tower: tower)
+                            .frame(width: width, height: height)
+                    }
                     CatTowerWall(number: floor.number, tower: tower)
                         .frame(width: wallWidth, height: height)
                         .offset(x: side)
                     CatTowerRoom(floor: floor, plan: plan, tower: tower, isHighlighted: isCurrent || isSelected, coats: coats)
                         .frame(width: roomWidth, height: height - balcony - 10)
                         .offset(x: side + 12, y: 8)
-                    CatTowerBalcony(number: floor.number, isLocked: isLocked, tower: tower)
-                        .frame(width: wallWidth + 8, height: balcony)
-                        .offset(x: side - 4, y: height - balcony)
-                    if floor.number % 3 == 1 {
+                    if !hasFacade {
+                        CatTowerBalcony(number: floor.number, isLocked: isLocked, tower: tower)
+                            .frame(width: wallWidth + 8, height: balcony)
+                            .offset(x: side - 4, y: height - balcony)
+                    }
+                    // Cephe görselinin kendi fenerleri var
+                    if floor.number % 3 == 1 && !hasFacade {
                         CatTowerLantern(isLit: theme.isDark && !isLocked)
                             .frame(width: 18, height: 34)
                             .offset(x: width - side - 2, y: height * 0.22)

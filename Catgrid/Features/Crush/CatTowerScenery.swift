@@ -14,11 +14,11 @@ struct CatTowerWall: View {
     var body: some View {
         let night: UIImage? = theme.isDark ? tower.asset("facade", variant: "night") : nil
         if let facade = night ?? tower.asset("facade") {
-            Image(uiImage: facade)
-                .resizable()
-                .scaledToFill()
-                .overlay(Color(hex: "#1E1A33").opacity(theme.isDark && night == nil ? 0.42 : 0))
-                .clipped()
+            GeometryReader { proxy in
+                CatTowerFacade(image: facade, height: proxy.size.height)
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+            }
+            .overlay(Color(hex: "#1E1A33").opacity(theme.isDark && night == nil ? 0.42 : 0))
         } else {
             drawn
         }
@@ -60,6 +60,27 @@ struct CatTowerWall: View {
         .overlay {
             LinearGradient(colors: [.black.opacity(0.12), .clear, .clear, .black.opacity(0.1)], startPoint: .leading, endPoint: .trailing)
         }
+    }
+}
+
+/// Cephe görseli: kat yüksekliğine ölçeklenir; köşeler ve sütunlar korunur, yalnızca ortadaki düz
+/// duvar yatayda esner (dokuz parçalı germe), böylece her ekran genişliğinde bozulmadan oturur.
+struct CatTowerFacade: View {
+    let image: UIImage
+    let height: CGFloat
+
+    var body: some View {
+        let scaled: UIImage = Self.scaled(image, toHeight: height)
+        let w: CGFloat = scaled.size.width
+        let h: CGFloat = scaled.size.height
+        Image(uiImage: scaled)
+            .resizable(capInsets: EdgeInsets(top: h * 0.12, leading: w * 0.16, bottom: h * 0.12, trailing: w * 0.16),
+                       resizingMode: .stretch)
+    }
+
+    static func scaled(_ image: UIImage, toHeight height: CGFloat) -> UIImage {
+        guard let cg = image.cgImage, height > 0 else { return image }
+        return UIImage(cgImage: cg, scale: CGFloat(cg.height) / height, orientation: .up)
     }
 }
 
@@ -163,7 +184,8 @@ struct CatTowerRoof: View {
 
     var body: some View {
         if let image = (theme.isDark ? tower.asset("roof", variant: "night") : nil) ?? tower.asset("roof") {
-            Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: .infinity, alignment: .bottom)
+            // Saçaklar cepheden biraz taşar; yükseklik görselin oranından gelir
+            Image(uiImage: image).resizable().scaledToFit().padding(.horizontal, 14)
         } else {
             let colors: [Color] = tower.roof
             let key: String = tower.key
@@ -424,7 +446,7 @@ struct CatTowerBase: View {
 
     var body: some View {
         if let image = (theme.isDark ? tower.asset("base", variant: "night") : nil) ?? tower.asset("base") {
-            Image(uiImage: image).resizable().scaledToFill()
+            Image(uiImage: image).resizable().scaledToFit().padding(.horizontal, 20)
         } else {
             GeometryReader { proxy in
                 let w: CGFloat = proxy.size.width
