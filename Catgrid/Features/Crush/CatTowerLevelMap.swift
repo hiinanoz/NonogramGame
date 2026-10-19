@@ -165,12 +165,14 @@ struct CatTowerFloorView: View {
                 let width: CGFloat = proxy.size.width
                 let side: CGFloat = 26
                 let wallWidth: CGFloat = width - side * 2
-                let roomWidth: CGFloat = wallWidth * 0.64
                 let balcony: CGFloat = height * 0.15
                 let plan = CatTowerRoomPlan.make(level: floor.number, tower: tower.index, counts: tower.counts)
                 // Cephe görseli varsa kendi sütunları, sarmaşıkları ve kornişi var: çizilen merdiven ve
-                // balkon eklenmez
+                // balkon eklenmez; oda soldaki sütunun yanından başlar (sütun görünür kalır)
                 let hasFacade = tower.asset("facade") != nil
+                let roomInset: CGFloat = hasFacade ? height * 0.22 : 12
+                let roomWidth: CGFloat = wallWidth * 0.64 - (roomInset - 12) * 0.5
+                let roomEnd: CGFloat = side + roomInset + roomWidth
                 ZStack(alignment: .topLeading) {
                     if !hasFacade {
                         CatTowerStairs(number: floor.number, side: side, tower: tower)
@@ -181,7 +183,7 @@ struct CatTowerFloorView: View {
                         .offset(x: side)
                     CatTowerRoom(floor: floor, plan: plan, tower: tower, isHighlighted: isCurrent || isSelected, coats: coats)
                         .frame(width: roomWidth, height: height - balcony - 10)
-                        .offset(x: side + 12, y: 8)
+                        .offset(x: side + roomInset, y: 8)
                     if !hasFacade {
                         CatTowerBalcony(number: floor.number, isLocked: isLocked, tower: tower)
                             .frame(width: wallWidth + 8, height: balcony)
@@ -194,8 +196,8 @@ struct CatTowerFloorView: View {
                             .offset(x: width - side - 2, y: height * 0.22)
                     }
                     CatTowerBadge(floor: floor, isSelected: isSelected, reduceMotion: reduceMotion)
-                        .frame(width: wallWidth - roomWidth - 12, height: height - balcony)
-                        .offset(x: side + roomWidth + 12, y: 0)
+                        .frame(width: side + wallWidth - roomEnd, height: height - balcony)
+                        .offset(x: roomEnd, y: 0)
                 }
             }
         }
