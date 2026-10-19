@@ -32,6 +32,8 @@ final class CrushModel {
     /// İlk bölümdeki "nasıl oynanır" kartı gösterildi mi.
     private(set) var hasSeenIntro: Bool
     private(set) var lives: CrushLives
+    /// Kedi Kulesi'nde en son seçilen kat: ekrana geri dönünce seçim ve kaydırma yeri korunur.
+    var selectedTowerLevelID: String?
     /// Testlerde zaman sabitlenebilsin diye.
     private let now: () -> Date
 

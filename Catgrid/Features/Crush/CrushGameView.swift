@@ -279,6 +279,8 @@ struct CrushGameView: View {
             case .won:
                 let outcome = crush.recordWin(session, frenzyMoves: viewModel.frenzyMoves)
                 crush.refundLife(isPremium: store.isPremium)
+                // Kuleye dönünce yeni açılan kat seçili ve ortada olsun
+                crush.selectedTowerLevelID = nil
                 ads.puzzleCompleted(isTutorial: number == 1)
                 model.reportToGameCenter()
                 confetti = Date()

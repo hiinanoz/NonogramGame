@@ -93,7 +93,7 @@ hızlı); testte tam taramayla birebir aynı sonucu verdiği doğrulanır.
 
 ## Bölümler, hedefler ve yıldızlar
 
-- **4 macera × 75 bölüm (300 bölüm):** Yumak Bahçesi, Mama Mutfağı, Fare Deliği, Çatı Katı. Bölümler sırayla açılır.
+- **4 macera × 75 bölüm (300 bölüm):** Yumak Apartmanı, Ay Işığı Konağı, Deniz Tatili Rezidansı, Karlı Pati Kuleleri. Bölümler sırayla açılır.
 - **Tahta şekilleri:** 8x8, 9x9, kedi başı, elmas, kalp, halka (ortası delik), artı, kum saati, pati.
 - **Renk sayısı:** 1-30. bölüm 5 renk, 31-60. bölüm 6 renk (renk arttıkça eşleşme zorlaşır).
 - **Hedef türleri:** puan, belirli eşyadan şu kadar topla (ör. 25 yumak), şu kadar özel eşya patlat;
@@ -143,7 +143,7 @@ dosyalar Assets'e bu adlarla eklenirse kendiliğinden kullanılır (eklenmeyenle
 | `crush-mouse` | Mor peluş fare | 256×256, saydam PNG |
 | `crush-paw` | Turuncu pati tırmalağı | 256×256, saydam PNG |
 | `crush-background` | Oyun ekranının zemini (dikey) | 1290×2796 |
-| `crush-map-1` … `crush-map-4` | Macera haritası zeminleri (Yumak Bahçesi, Mama Mutfağı, Fare Deliği, Çatı Katı) | 1290×2796 |
+| `crush-map-1` … `crush-map-4` | Macera haritası zeminleri (Yumak Apartmanı, Ay Işığı Konağı, Deniz Tatili Rezidansı, Karlı Pati Kuleleri) | 1290×2796 |
 | `mode-crush` | Ana sayfa kartının sağındaki küçük çizim | 360×120, saydam PNG |
 | `crush-cat-loop.webp` | (İsteğe bağlı) ana sayfa kartı için hareketli kedi | diğer animasyonlar gibi |
 
@@ -164,6 +164,21 @@ Her bölüm kulenin bir katı; katlar alttan üste artan numarayla dizilir, ekra
 - **Gündüz/gece:** açık temada gündüz gökyüzü ve pastel şehir; koyu temada gece, ay, yıldızlar,
   yanan fenerler ve ışıklı pencereler.
 - **Eski harita:** `crush.classicMap` ayarı (UserDefaults) ya da `-crushClassicMap` başlatma argümanı.
-- **Çizim gelince** (Assets'e bu adlarla eklenirse kendiliğinden kullanılır, numarasız/yazısız):
-  `crush-tower-room-1…8` (oda içleri, katlarda dönüşümlü), `crush-tower-roof`, `crush-tower-base`,
-  `crush-tower-sky-day`, `crush-tower-sky-night`.
+- **Binalar:** Yumak Apartmanı (1–75), Ay Işığı Konağı (76–150), Deniz Tatili Rezidansı (151–225),
+  Karlı Pati Kuleleri (226–300). Aynı yerleşim motoru; renk, pencere manzarası, mobilya, aksesuar,
+  çatı ve gökyüzü binaya göre (`CatTowerTheme`). Yeni bölümler yeni binalarla eklenir.
+- **Katmanlı oda** (`CatTowerRoomPlan`, sabit tohum, komşu katlarda tekrar yok): arka duvar → pencere →
+  zemin → ana mobilya → 1–3 aksesuar (sol, sağ, duvar rafı yuvaları) → kedi (mobilyanın üstünde).
+  Her 5 katta özel oda (bayrak süsü), her 15 katta dönüm noktası (altın çerçeve, altın bayraklar).
+- **Görseller** (Assets'e bu adlarla eklenince çizimin yerine geçer; numara/yazı yok). Anahtarlar:
+  `yarn`, `moon`, `seaside`, `snow`.
+
+| Dosya adı | Ne | Önerilen adet | Boyut |
+|---|---|---|---|
+| `tower-<anahtar>-wall-1…` | Oda arka duvarı (pencere dahil, mobilyasız) | 3+ | 1200×700 |
+| `tower-<anahtar>-furniture-1…` | Ana mobilya (koltuk, yatak, minder, kedi yatağı), saydam | 3+ | ~600×400 |
+| `tower-<anahtar>-accessory-1…` | Aksesuar (lamba, bitki, kitaplık…), saydam | 5+ | ~300×300 |
+| `tower-<anahtar>-special` | Dönüm noktası odası (her 15 kat) | 1 | 1200×700 |
+| `tower-<anahtar>-roof` / `-base` | Çatı / kule dibi | 1+1 | ~1200×800 |
+| `tower-<anahtar>-sky` / `-sky-night` | Gökyüzü (dikey, ortası boş) | 1+1 | 1290×2796 |
+| `crush-tower-cat-<n>-blink-1…` | (İsteğe bağlı) kedinin göz kırpma kareleri | 3–4 | kediyle aynı |

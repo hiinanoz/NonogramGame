@@ -227,7 +227,7 @@ struct CrushResultOverlay: View {
                         .foregroundStyle(Gold.bright)
                 }
                 if outcome.episodeReward != nil {
-                    Label("Adventure complete!", systemImage: "flag.checkered")
+                    Label("Building complete!", systemImage: "flag.checkered")
                         .font(.headline)
                         .foregroundStyle(Gold.bright)
                 }
@@ -394,8 +394,8 @@ extension CrushBadge {
     var detail: LocalizedStringResource {
         switch self {
         case .firstWin: "Win your first level."
-        case .episodeCleared: "Win every level in this adventure."
-        case .episodePerfect: "Get 3 stars on every level in this adventure."
+        case .episodeCleared: "Win every level in this building."
+        case .episodePerfect: "Get 3 stars on every level in this building."
         case .starCollector(let stars): "Collect \(stars) stars."
         case .chainMaster: "Make a chain of 5 or more in one move."
         case .catFrenzy: "Turn 10 or more moves into a Cat Frenzy."

@@ -4,7 +4,7 @@ import Foundation
 // eşikleri elle de düzeltilebilir; `testCatalogMatchesTemplates` şekil/hamle/renk uyumunu denetler.
 enum CrushLevels {
     static let all: [CrushLevel] = [
-        // 1. macera: Yumak Bahçesi
+        // 1. bina: Yumak Apartmanı
         CrushLevel(number: 1, shape: .square8, moves: 22, colors: 5, goals: [.score(3000)], stars: [3000, 13000, 17500]),
         CrushLevel(number: 2, shape: .square8, moves: 24, colors: 5, goals: [.collect(.yarn, 25)], stars: [7500, 14000, 21500]),
         CrushLevel(number: 3, shape: .heart, moves: 22, colors: 5, goals: [.score(3000)], stars: [3000, 11000, 16000]),
@@ -80,7 +80,7 @@ enum CrushLevels {
         CrushLevel(number: 73, shape: .ring, moves: 22, colors: 6, goals: [.score(2000)], stars: [2000, 4000, 5500]),
         CrushLevel(number: 74, shape: .square8, moves: 24, colors: 6, goals: [.collect(.yarn, 15)], stars: [4500, 8500, 11500]),
         CrushLevel(number: 75, shape: .heart, moves: 25, colors: 6, goals: [.collect(.bowl, 15), .collect(.paw, 15), .specials(1)], stars: [4500, 7500, 9500]),
-        // 2. macera: Mama Mutfağı
+        // 2. bina: Ay Işığı Konağı
         CrushLevel(number: 76, shape: .square8, moves: 20, colors: 5, goals: [.score(3500)], stars: [3500, 13000, 21500]),
         CrushLevel(number: 77, shape: .heart, moves: 22, colors: 6, goals: [.collect(.bowl, 10)], stars: [3500, 7000, 9000]),
         CrushLevel(number: 78, shape: .paw, moves: 24, colors: 6, goals: [.specials(1)], stars: [5500, 9000, 12000]),
@@ -156,7 +156,7 @@ enum CrushLevels {
         CrushLevel(number: 148, shape: .square8, moves: 20, colors: 6, goals: [.score(2500)], stars: [2500, 5000, 8500]),
         CrushLevel(number: 149, shape: .heart, moves: 22, colors: 6, goals: [.collect(.bowl, 15)], stars: [4500, 7000, 10000]),
         CrushLevel(number: 150, shape: .paw, moves: 25, colors: 6, goals: [.collect(.yarn, 20), .collect(.treat, 15), .specials(1)], stars: [4000, 8000, 10500]),
-        // 3. macera: Fare Deliği
+        // 3. bina: Deniz Tatili Rezidansı
         CrushLevel(number: 151, shape: .heart, moves: 22, colors: 5, goals: [.score(4500)], stars: [4500, 11500, 16000]),
         CrushLevel(number: 152, shape: .paw, moves: 20, colors: 6, goals: [.collect(.yarn, 15)], stars: [4000, 7000, 10000]),
         CrushLevel(number: 153, shape: .diamond, moves: 22, colors: 6, goals: [.specials(1)], stars: [4500, 8000, 9500]),
@@ -232,7 +232,7 @@ enum CrushLevels {
         CrushLevel(number: 223, shape: .heart, moves: 22, colors: 6, goals: [.score(3000)], stars: [3000, 5500, 7500]),
         CrushLevel(number: 224, shape: .paw, moves: 20, colors: 6, goals: [.collect(.yarn, 15)], stars: [3500, 7000, 10000]),
         CrushLevel(number: 225, shape: .diamond, moves: 25, colors: 6, goals: [.collect(.bowl, 20), .collect(.paw, 20), .specials(2)], stars: [4500, 7500, 10000]),
-        // 4. macera: Çatı Katı
+        // 4. bina: Karlı Pati Kuleleri
         CrushLevel(number: 226, shape: .paw, moves: 24, colors: 5, goals: [.score(7000)], stars: [7000, 15500, 22500]),
         CrushLevel(number: 227, shape: .diamond, moves: 22, colors: 6, goals: [.collect(.bowl, 20)], stars: [3500, 6500, 9000]),
         CrushLevel(number: 228, shape: .hourglass, moves: 20, colors: 6, goals: [.specials(1)], stars: [3000, 6000, 7500]),

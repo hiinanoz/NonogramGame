@@ -1,25 +1,25 @@
 import NonogramKit
 import SwiftUI
 
-/// Miyav Crush maceraları (15'er bölüm).
+/// Miyav Crush binaları (75'er bölüm): her macera bir kedi binası. Yeni bölümler yeni binalarla eklenir.
 struct CrushEpisode: Hashable {
     let index: Int
 
     var title: LocalizedStringResource {
         switch index {
-        case 0: "Yarn Garden"
-        case 1: "Treat Kitchen"
-        case 2: "Mouse Hole"
-        default: "Cozy Attic"
+        case 0: "Yarn Apartments"
+        case 1: "Moonlight Mansion"
+        case 2: "Seaside Residence"
+        default: "Snowy Paw Towers"
         }
     }
 
     var icon: String {
         switch index {
-        case 0: "leaf.fill"
-        case 1: "fork.knife"
-        case 2: "door.left.hand.open"
-        default: "house.fill"
+        case 0: "building.2.fill"
+        case 1: "moon.stars.fill"
+        case 2: "beach.umbrella.fill"
+        default: "snowflake"
         }
     }
 
@@ -59,8 +59,12 @@ struct CrushHubView: View {
     @State private var selectedEpisode: Int?
     @State private var isShowingBadges = false
 
-    /// Oyuncunun dokunarak seçtiği bölüm; `nil` ise maceradaki sıradaki bölüm.
-    @State private var selectedLevelID: String?
+    /// Oyuncunun dokunarak seçtiği bölüm; `nil` ise binadaki sıradaki bölüm. Modelde tutulur:
+    /// oyundan dönünce seçim ve kule konumu korunur.
+    private var selectedLevelID: String? {
+        get { model.crush.selectedTowerLevelID }
+        nonmutating set { model.crush.selectedTowerLevelID = newValue }
+    }
     /// Kilitli kata dokununca kısa uyarı.
     @State private var lockedNote: Int?
 
@@ -73,7 +77,8 @@ struct CrushHubView: View {
         let selected = selectedLevel(in: levels, current: current)
         // Kule açılışta ve macera değişince sıradaki bölüme (yoksa son açık bölüme) kayar
         let currentInEpisode: String? = levels.first(where: { $0.id == current?.id })?.id
-        let focusID: String? = currentInEpisode ?? levels.last(where: { crush.isUnlocked($0) })?.id
+        let restored: String? = levels.first(where: { $0.id == selectedLevelID && crush.isUnlocked($0) })?.id
+        let focusID: String? = restored ?? currentInEpisode ?? levels.last(where: { crush.isUnlocked($0) })?.id
         Group {
             if CatTowerFlag.isTowerEnabled {
                 CatTowerLevelMap(
@@ -226,7 +231,7 @@ struct CrushHubView: View {
         return VStack(spacing: 8) {
             HStack(spacing: 8) {
                 arrow("chevron.left", enabled: episode.index > 0) { selectedEpisode = episode.index - 1 }
-                    .accessibilityLabel(Text("Previous adventure"))
+                    .accessibilityLabel(Text("Previous building"))
                 VStack(spacing: 1) {
                     HStack(spacing: 6) {
                         Image(systemName: episode.icon)
@@ -250,7 +255,7 @@ struct CrushHubView: View {
                 }
                 .frame(maxWidth: .infinity)
                 arrow("chevron.right", enabled: episode.index < crush.catalog.episodeCount - 1) { selectedEpisode = episode.index + 1 }
-                    .accessibilityLabel(Text("Next adventure"))
+                    .accessibilityLabel(Text("Next building"))
             }
             HStack(spacing: 8) {
                 CrushLivesBadge()

@@ -53,6 +53,22 @@ final class CatTowerTests: XCTestCase {
         XCTAssertEqual(second.first?.number, first.count + 1)
     }
 
+    /// Dört binanın teması ve her katın oda planı: kedi görselleri pakette, aksesuar/mobilya
+    /// sayıları görsel yokken çizim yedeğinden gelir.
+    func testEveryBuildingHasThemeAndRoomPlans() {
+        for building in 0..<4 {
+            let tower = CatTowerTheme(index: building)
+            XCTAssertEqual(tower.key, CatTowerTheme.keys[building])
+            let counts = tower.counts
+            XCTAssertEqual(counts.cats, 5, "crush-tower-cat-1…5 pakette olmalı")
+            for level in (building * 75 + 1)...(building * 75 + 75) {
+                let plan = CatTowerRoomPlan.make(level: level, tower: building, counts: counts)
+                XCTAssertTrue((1...3).contains(plan.accessories.count))
+                XCTAssertTrue(plan.wall < counts.walls && plan.furniture < counts.furniture)
+            }
+        }
+    }
+
     /// Kule ekranı gündüz/gece, küçük ve büyük telefonda, yüzlerce katla çizilir.
     func testTowerRendersInBothThemesAndSizes() throws {
         let puzzle = Puzzle(id: "tower", pattern: ["#.", ".#"])
