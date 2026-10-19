@@ -9,12 +9,12 @@ Kart Koleksiyonu kartlarının altına eklenecek. Mevcut modlara dokunmadan, ayr
 |---|---|---|
 | 1. Motor | Veri modelleri, eşleşme bulma, özel eşyalar ve birleşimler, yerçekimi/dolum, zincirleme, olası hamle, karıştırma, testler | **Bitti** (`NonogramKit/Crush`) |
 | 2. Bölümler ve hedefler | Bölüm dosyası (şekilli tahtalar, hamle sayısı, hedefler, yıldız eşikleri), ilerleme kaydı, 1-3 yıldız, ilk 60 bölüm | **Bitti** (`CrushSession`, `CrushCatalog`, `CrushLevels`) |
-| 3. Oyun ekranı (temel) | Tahta çizimi, kaydırarak takas, geçersiz takasın geri dönmesi, adımların sırayla oynatılması (patla → düş → dol), hamle/puan/hedef çubuğu | Sırada |
-| 4. His ve efektler | Pofuduk tüy/pati parçacıkları, sekmeli düşüş, iplik/patlama/lazer efektleri, "Miyav!", "Harika!", "Pati Gücü!" yazıları, sesler ve titreşim | |
-| 5. Ödül sistemi | Bölüm sonu yıldız ve puan, kalan hamlelerin özel eşyaya dönüşmesi ("Kedi Çılgınlığı", Candy Crush'taki "Sugar Crush"), rozetler, Game Center sıralaması | **Kurallar bitti** (`CrushRewards`); ekranları Aşama 3-4'te |
-| 6. Güçlendiriciler ve can | Çekiç, karıştır, +5 hamle (ödüllü reklam / Premium); can sistemi (5 can, zamanla dolar) | |
-| 7. Harita ve entegrasyon | Ana sayfa kartı (hareketli kedi), bölüm haritası, istatistikler, 8 dil, App Store metinleri | |
-| 8. Görseller | 6 eşya × (normal, çizgili, kutu) + altın kedi gözü; arka planlar; kart görseli | Görsel listesi Aşama 3'te |
+| 3. Oyun ekranı (temel) | Tahta çizimi, kaydırarak takas, geçersiz takasın geri dönmesi, adımların sırayla oynatılması (patla → düş → dol), hamle/puan/hedef çubuğu | **Bitti** (`Catgrid/Features/Crush`) |
+| 4. His ve efektler | Pofuduk tüy/pati parçacıkları, sekmeli düşüş, iplik/patlama/lazer efektleri, "Miyav!", "Harika!", "Pati Gücü!" yazıları, sesler ve titreşim | **Bitti** (mevcut seslerle) |
+| 5. Ödül sistemi | Bölüm sonu yıldız ve puan, kalan hamlelerin özel eşyaya dönüşmesi ("Kedi Çılgınlığı", Candy Crush'taki "Sugar Crush"), rozetler, Game Center sıralaması | **Bitti** (Game Center sıralaması onay bekliyor) |
+| 6. Güçlendiriciler ve can | Çekiç, karıştır, +5 hamle (ödüllü reklam / Premium); can sistemi (5 can, zamanla dolar) | **Güçlendiriciler bitti**; can sistemi onay bekliyor |
+| 7. Harita ve entegrasyon | Ana sayfa kartı (hareketli kedi), bölüm haritası, istatistikler, 8 dil, App Store metinleri | **Bitti** (App Store metinleri yayından önce) |
+| 8. Görseller | 6 eşya × (normal, çizgili, kutu) + altın kedi gözü; arka planlar; kart görseli | Liste aşağıda; şimdilik kodla çizilenler kullanılıyor |
 
 ## Mimari (katmanlar)
 
@@ -128,3 +128,24 @@ Premium ile de kazanılacak (Aşama 6).
 - **İsim ve görseller:** "Candy Crush" King'in tescilli markası. Mağaza metinlerinde ve uygulamada bu adı
   kullanmayacağız; mekanik benzer olabilir ama görseller, isimler ve sesler özgün olmalı.
   "Meow Crush / Miyav Crush" adı sorun değil, açıklamada "Candy Crush gibi" ifadesi kullanılmamalı.
+
+## Görsel listesi (Aşama 8, isteğe bağlı)
+
+Oyun şu an görselsiz de tam çalışır: eşyalar, zemin ve ana sayfa kartı kodla çiziliyor. Aşağıdaki
+dosyalar Assets'e bu adlarla eklenirse kendiliğinden kullanılır (eklenmeyenler çizimle kalır).
+
+| Dosya adı | Ne | Boyut |
+|---|---|---|
+| `crush-yarn` | Mavi yün yumağı | 256×256, saydam PNG |
+| `crush-wand` | Kırmızı tüylü kedi oltası | 256×256, saydam PNG |
+| `crush-treat` | Sarı balık ödül maması | 256×256, saydam PNG |
+| `crush-bowl` | Yeşil mama kabı | 256×256, saydam PNG |
+| `crush-mouse` | Mor peluş fare | 256×256, saydam PNG |
+| `crush-paw` | Turuncu pati tırmalağı | 256×256, saydam PNG |
+| `crush-background` | Oyun ekranının zemini (dikey) | 1290×2796 |
+| `crush-map-1` … `crush-map-4` | Macera haritası zeminleri (Yumak Bahçesi, Mama Mutfağı, Fare Deliği, Çatı Katı) | 1290×2796 |
+| `mode-crush` | Ana sayfa kartının sağındaki küçük çizim | 360×120, saydam PNG |
+| `crush-cat-loop.webp` | (İsteğe bağlı) ana sayfa kartı için hareketli kedi | diğer animasyonlar gibi |
+
+Çizgili yumak, çıngırak kutusu ve altın kedi gözü süslemeleri eşyanın üstüne kodla eklenir; ayrı
+görsel gerekmez. Eşyaların her biri tahtada farklı bir zemin şekliyle ayırt edilir (renk körlüğü).
