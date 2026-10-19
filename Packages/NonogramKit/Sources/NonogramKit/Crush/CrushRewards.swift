@@ -29,18 +29,18 @@ public struct CrushReward: Hashable, Codable, Sendable {
 public enum CrushBadge: Hashable, Codable, Sendable {
     /// İlk bölüm kazanıldı
     case firstWin
-    /// Bir maceranın (15 bölüm) hepsi kazanıldı
+    /// Bir maceranın (75 bölüm) hepsi kazanıldı
     case episodeCleared(Int)
     /// Bir maceranın hepsi 3 yıldızla
     case episodePerfect(Int)
-    /// Toplam yıldız eşiği (50, 100, 150)
+    /// Toplam yıldız eşiği (50, 150, 300, 600, 900)
     case starCollector(Int)
     /// Bir hamlede 5+ zincir
     case chainMaster
     /// Kedi Çılgınlığı'nda 10+ hamle ödüle döndü
     case catFrenzy
 
-    public static let starMilestones = [50, 100, 150]
+    public static let starMilestones = [50, 150, 300, 600, 900]
 }
 
 /// Bir bölüm sonucunu kaydedince oyuncuya gösterilecekler.
@@ -82,7 +82,7 @@ public struct CrushProgress: Hashable, Codable, Sendable {
     public private(set) var claimedEpisodes: Set<Int> = []
 
     /// Her bu kadar yıldızda bir sandık açılır.
-    public static let starsPerChest = 12
+    public static let starsPerChest = 15
     /// İlk açılışta hediye
     public static let startingBoosters: [CrushBooster: Int] = [.paw: 1, .shuffle: 1, .extraMoves: 1]
 

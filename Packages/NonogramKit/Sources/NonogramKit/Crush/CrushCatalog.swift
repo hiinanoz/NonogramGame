@@ -1,9 +1,9 @@
 import Foundation
 
-/// Miyav Crush bölümleri: 15'er bölümlük maceralar. Hedef sayıları ve yıldız eşikleri
+/// Miyav Crush bölümleri: 75'er bölümlük maceralar (her macera bir kedi kulesi). Hedef sayıları ve yıldız eşikleri
 /// `CrushBalanceTests` simülasyonuyla ayarlanmıştır (yeniden üretmek için oradaki açıklamaya bakın).
 public struct CrushCatalog: Sendable {
-    public static let levelsPerEpisode = 15
+    public static let levelsPerEpisode = 75
 
     public let levels: [CrushLevel]
 

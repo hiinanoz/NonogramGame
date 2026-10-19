@@ -59,13 +59,118 @@ struct CrushHubView: View {
     @State private var selectedEpisode: Int?
     @State private var isShowingBadges = false
 
+    /// Oyuncunun dokunarak seçtiği bölüm; `nil` ise maceradaki sıradaki bölüm.
+    @State private var selectedLevelID: String?
+    /// Kilitli kata dokununca kısa uyarı.
+    @State private var lockedNote: Int?
+
     var body: some View {
         let crush = model.crush
         let current = crush.currentLevel
         let episodeIndex = selectedEpisode ?? current.map { crush.episode(of: $0) } ?? 0
         let episode = CrushEpisode(index: episodeIndex)
         let levels = crush.catalog.levels(in: episodeIndex)
-        ScrollViewReader { proxy in
+        let selected = selectedLevel(in: levels, current: current)
+        // Kule açılışta ve macera değişince sıradaki bölüme (yoksa son açık bölüme) kayar
+        let currentInEpisode: String? = levels.first(where: { $0.id == current?.id })?.id
+        let focusID: String? = currentInEpisode ?? levels.last(where: { crush.isUnlocked($0) })?.id
+        Group {
+            if CatTowerFlag.isTowerEnabled {
+                CatTowerLevelMap(
+                    floors: crush.towerFloors(episode: episodeIndex),
+                    episode: episode,
+                    selectedID: selected?.id,
+                    focusID: focusID,
+                    onSelect: { floor in
+                        Haptics.selection()
+                        withAnimation(.snappy(duration: 0.2)) { selectedLevelID = floor.id }
+                    },
+                    onPlay: { floor in router.push(.crushGame(levelID: floor.id)) },
+                    onLocked: showLockedNote
+                )
+            } else {
+                classicMap(levels: levels, current: current, episode: episode, episodeIndex: episodeIndex)
+            }
+        }
+        .overlay(alignment: .center) {
+            if let lockedNote {
+                Label {
+                    Text("Win level \(lockedNote) to open this floor")
+                } icon: {
+                    Image(systemName: "lock.fill")
+                }
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(theme.textPrimary)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Capsule().fill(theme.surface).shadow(color: .black.opacity(0.15), radius: 8, y: 3))
+                .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                .allowsHitTesting(false)
+            }
+        }
+        .onChange(of: episodeIndex) { _, _ in selectedLevelID = nil }
+        .safeAreaInset(edge: .top, spacing: 0) { header(episode: episode, levels: levels) }
+        .safeAreaInset(edge: .bottom, spacing: 0) { footer(current: selected) }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(theme.background.ignoresSafeArea())
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    router.pop()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(theme.textPrimary)
+                        .frame(width: 38, height: 38)
+                        .background(Circle().fill(.white.opacity(0.92)))
+                        .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
+                }
+                .accessibilityLabel(Text("Back"))
+                .accessibilityIdentifier("crush.hub.back")
+            }
+            ToolbarItem(placement: .principal) {
+                Text("Meow Crush")
+                    .font(.headline)
+                    .foregroundStyle(theme.textPrimary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .background(Capsule().fill(.white.opacity(0.92)))
+                    .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+            }
+        }
+        .sheet(isPresented: $isShowingBadges) {
+            CrushBadgesSheet()
+                .appChrome()
+        }
+    }
+
+    /// Alt panelde gösterilen bölüm: seçilen; yoksa bu maceradaki sıradaki, o da yoksa maceranın
+    /// son açık bölümü.
+    private func selectedLevel(in levels: [CrushLevel], current: CrushLevel?) -> CrushLevel? {
+        let crush = model.crush
+        if let id = selectedLevelID, let level = levels.first(where: { $0.id == id }), crush.isUnlocked(level) {
+            return level
+        }
+        if let current, levels.contains(where: { $0.id == current.id }) { return current }
+        return levels.last(where: { crush.isUnlocked($0) }) ?? levels.first
+    }
+
+    private func showLockedNote(_ floor: CatTowerFloor) {
+        Haptics.play(.mistake)
+        let needed = model.crush.currentLevel.map { model.crush.number(of: $0) } ?? max(1, floor.number - 1)
+        withAnimation(.snappy) { lockedNote = needed }
+        Task {
+            try? await Task.sleep(for: .seconds(1.8))
+            if lockedNote == needed { withAnimation(.easeOut) { lockedNote = nil } }
+        }
+    }
+
+    /// Eski kıvrımlı yol haritası (ayarla geri açılabilir).
+    private func classicMap(levels: [CrushLevel], current: CrushLevel?, episode: CrushEpisode, episodeIndex: Int) -> some View {
+        let crush = model.crush
+        return ScrollViewReader { proxy in
             ScrollView {
                 VStack(spacing: 0) {
                     ForEach(Array(levels.enumerated()), id: \.element.id) { offset, level in
@@ -109,41 +214,6 @@ struct CrushHubView: View {
             }
             .ignoresSafeArea()
             .animation(.easeInOut(duration: 0.35), value: episodeIndex)
-        }
-        .safeAreaInset(edge: .top, spacing: 0) { header(episode: episode, levels: levels) }
-        .safeAreaInset(edge: .bottom, spacing: 0) { footer(current: current) }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(theme.background.ignoresSafeArea())
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    router.pop()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.body.weight(.bold))
-                        .foregroundStyle(theme.textPrimary)
-                        .frame(width: 38, height: 38)
-                        .background(Circle().fill(.white.opacity(0.92)))
-                        .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
-                }
-                .accessibilityLabel(Text("Back"))
-                .accessibilityIdentifier("crush.hub.back")
-            }
-            ToolbarItem(placement: .principal) {
-                Text("Meow Crush")
-                    .font(.headline)
-                    .foregroundStyle(theme.textPrimary)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 6)
-                    .background(Capsule().fill(.white.opacity(0.92)))
-                    .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
-            }
-        }
-        .sheet(isPresented: $isShowingBadges) {
-            CrushBadgesSheet()
-                .appChrome()
         }
     }
 

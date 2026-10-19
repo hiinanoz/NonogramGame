@@ -128,6 +128,12 @@ final class GameplayUITests: XCTestCase {
         mode.tap()
         let play = app.buttons["crush.hub.play"]
         XCTAssertTrue(play.waitForExistence(timeout: 15), "Oyna düğmesi görünmedi")
+        // Kedi Kulesi: kilitli kata dokunmak oyunu açmaz
+        let locked = app.buttons["crush.floor.2"]
+        if locked.waitForExistence(timeout: 5) {
+            locked.tap()
+            XCTAssertFalse(app.buttons["crush.intro.play"].waitForExistence(timeout: 2), "Kilitli kat açılmamalı")
+        }
         play.tap()
         let start = app.buttons["crush.intro.play"]
         XCTAssertTrue(start.waitForExistence(timeout: 10), "Hedef kartı görünmedi")

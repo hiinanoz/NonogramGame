@@ -23,83 +23,59 @@ final class CrushBalanceTests: XCTestCase {
         let goals: [Kind]
     }
 
-    private static func t(_ shape: CrushShape, _ moves: Int, _ colors: Int, _ goals: Kind...) -> Template {
-        Template(shape: shape, moves: moves, colors: colors, goals: goals)
+    /// Bölüm şablonları: macera başına 75 bölüm. Şekil, renk, hamle ve hedef türleri sabit bir
+    /// düzenle dönülür; macera içinde ve maceralar boyunca zorluk artar, arada nefes bölümleri var.
+    static let levelCount = 300
+
+    static let shapes: [CrushShape] = [.square9, .catHead, .diamond, .heart, .ring, .plus, .hourglass, .paw, .square8]
+
+    static func template(_ number: Int) -> Template {
+        let k = (number - 1) % CrushCatalog.levelsPerEpisode
+        let episode = (number - 1) / CrushCatalog.levelsPerEpisode
+        let isBoss = k % 15 == 14
+        let isBreather = k % 10 == 0
+        let shape: CrushShape = number <= 2 ? .square8 : shapes[(number * 4 + episode) % shapes.count]
+        let colors: Int
+        if episode == 0 {
+            colors = k < 40 || isBreather ? 5 : 6
+        } else {
+            colors = isBreather ? 5 : 6
+        }
+        let moves = isBoss ? 25 : 20 + [0, 2, 4, 2][number % 4]
+        let palette = Array(CrushColor.allCases.prefix(colors))
+        func color(_ j: Int) -> CrushColor { palette[(number * 3 + j * 2) % palette.count] }
+        let goals: [Kind]
+        if number <= 3 {
+            let first: [[Kind]] = [[.score], [.collect(.yarn)], [.score]]
+            goals = first[number - 1]
+        } else if isBoss {
+            goals = [.collect(color(0)), .collect(color(1)), .specials]
+        } else {
+            switch k % 6 {
+            case 0: goals = [.score]
+            case 1: goals = [.collect(color(0))]
+            case 2: goals = [.specials]
+            case 3: goals = [.collect(color(0)), .collect(color(1))]
+            case 4: goals = [.collect(color(0)), .specials]
+            default: goals = [.collect(color(0)), .collect(color(1))]
+            }
+        }
+        return Template(shape: shape, moves: moves, colors: colors, goals: goals)
     }
 
-    static let templates: [Template] = [
-        // 1. macera: Yumak Bahçesi
-        t(.square8, 20, 5, .score),
-        t(.square8, 20, 5, .collect(.yarn)),
-        t(.catHead, 20, 5, .score),
-        t(.square9, 20, 5, .collect(.treat)),
-        t(.diamond, 20, 5, .specials),
-        t(.heart, 22, 5, .score),
-        t(.square9, 20, 5, .collect(.mouse), .collect(.bowl)),
-        t(.ring, 22, 5, .collect(.wand)),
-        t(.plus, 22, 5, .score),
-        t(.square8, 20, 5, .specials),
-        t(.catHead, 22, 5, .collect(.yarn), .specials),
-        t(.hourglass, 22, 5, .score),
-        t(.paw, 22, 5, .collect(.treat), .collect(.mouse)),
-        t(.diamond, 22, 5, .collect(.bowl)),
-        t(.heart, 25, 5, .collect(.yarn), .collect(.wand), .specials),
-        // 2. macera: Mama Mutfağı
-        t(.square9, 20, 5, .score),
-        t(.ring, 22, 5, .collect(.mouse)),
-        t(.plus, 20, 5, .specials),
-        t(.catHead, 22, 5, .collect(.wand), .collect(.treat)),
-        t(.hourglass, 22, 5, .score),
-        t(.square8, 20, 5, .collect(.bowl), .specials),
-        t(.paw, 22, 5, .collect(.yarn)),
-        t(.diamond, 22, 5, .score),
-        t(.heart, 22, 5, .collect(.mouse), .collect(.treat)),
-        t(.ring, 22, 5, .specials),
-        t(.square9, 20, 5, .collect(.wand), .collect(.bowl), .collect(.yarn)),
-        t(.catHead, 22, 5, .score),
-        t(.plus, 22, 5, .collect(.treat), .specials),
-        t(.hourglass, 22, 5, .collect(.mouse)),
-        t(.paw, 25, 5, .collect(.yarn), .collect(.wand), .specials),
-        // 3. macera: Fare Deliği
-        t(.square9, 25, 6, .score),
-        t(.square8, 22, 6, .collect(.paw)),
-        t(.heart, 24, 6, .specials),
-        t(.diamond, 24, 6, .collect(.yarn), .collect(.paw)),
-        t(.ring, 24, 6, .score),
-        t(.catHead, 24, 6, .collect(.treat), .specials),
-        t(.plus, 24, 6, .collect(.mouse)),
-        t(.hourglass, 24, 6, .score),
-        t(.paw, 24, 6, .collect(.bowl), .collect(.wand)),
-        t(.square9, 22, 6, .specials),
-        t(.heart, 24, 6, .collect(.paw), .collect(.yarn), .specials),
-        t(.diamond, 24, 6, .score),
-        t(.ring, 24, 6, .collect(.treat), .collect(.mouse)),
-        t(.catHead, 24, 6, .collect(.wand)),
-        t(.square9, 26, 6, .collect(.yarn), .collect(.treat), .collect(.paw)),
-        // 4. macera: Çatı Katı
-        t(.plus, 22, 6, .score),
-        t(.paw, 22, 6, .collect(.mouse), .specials),
-        t(.hourglass, 22, 6, .collect(.bowl)),
-        t(.heart, 22, 6, .specials),
-        t(.square8, 20, 6, .collect(.paw), .collect(.wand)),
-        t(.ring, 22, 6, .score),
-        t(.diamond, 22, 6, .collect(.yarn), .specials),
-        t(.catHead, 22, 6, .collect(.treat), .collect(.bowl)),
-        t(.square9, 20, 6, .score),
-        t(.plus, 22, 6, .collect(.mouse), .collect(.paw)),
-        t(.paw, 22, 6, .specials),
-        t(.hourglass, 22, 6, .collect(.wand), .collect(.yarn)),
-        t(.heart, 22, 6, .score),
-        t(.ring, 22, 6, .collect(.bowl), .collect(.treat), .specials),
-        t(.catHead, 25, 6, .collect(.yarn), .collect(.wand), .collect(.paw), .specials),
-    ]
+    static let templates: [Template] = (1...levelCount).map(template)
 
     /// Botun kazanma oranı hedefi: ilk bölümlerde neredeyse her zaman, sona doğru üçte iki;
     /// macera sonları (15, 30 …) biraz daha zor.
     static func targetWinRate(_ number: Int) -> Double {
         if number <= 3 { return 0.99 }
-        let base = 0.95 - 0.30 * Double(number - 1) / 59
-        return number % CrushCatalog.levelsPerEpisode == 0 ? base - 0.08 : base
+        let k = (number - 1) % CrushCatalog.levelsPerEpisode
+        // Bütün oyun boyunca %95'ten %62'ye; her macera biraz daha kolay başlar
+        var rate = 0.95 - 0.33 * Double(number - 1) / Double(levelCount - 1)
+        rate += 0.05 * max(0, 1 - Double(k) / 20)
+        if k % 15 == 14 { rate -= 0.08 }
+        if k % 10 == 0 { rate += 0.05 }
+        return min(0.98, rate)
     }
 
     // MARK: - Bot
@@ -169,7 +145,7 @@ final class CrushBalanceTests: XCTestCase {
         guard ProcessInfo.processInfo.environment["CRUSH_BALANCE"] != nil else {
             throw XCTSkip("CRUSH_BALANCE=1 ile çalıştırın")
         }
-        let runs = Int(ProcessInfo.processInfo.environment["CRUSH_RUNS"] ?? "") ?? 80
+        let runs = Int(ProcessInfo.processInfo.environment["CRUSH_RUNS"] ?? "") ?? 100
         var output: [String] = []
         var report: [String] = []
         let only = Int(ProcessInfo.processInfo.environment["CRUSH_ONLY"] ?? "")

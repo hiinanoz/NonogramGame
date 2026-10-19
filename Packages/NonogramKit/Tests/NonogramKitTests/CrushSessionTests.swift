@@ -206,15 +206,17 @@ final class CrushSessionTests: XCTestCase {
         var progress = CrushProgress()
         var chests: [CrushReward] = []
         var episodeReward: CrushReward?
-        for level in catalog.levels(in: 0) {
+        let episode = catalog.levels(in: 0)
+        for level in episode {
             let outcome = progress.record(levelID: level.id, score: 1, stars: 3, catalog: catalog)
             chests += outcome.chests
             if let reward = outcome.episodeReward { episodeReward = reward }
         }
-        // 45 yıldız → 3 sandık (12, 24, 36)
-        XCTAssertEqual(progress.totalStars, 45)
-        XCTAssertEqual(chests, [CrushProgress.chest(number: 0), CrushProgress.chest(number: 1), CrushProgress.chest(number: 2)])
-        XCTAssertEqual(progress.starsToNextChest, 3)
+        let total = episode.count * 3
+        let per = CrushProgress.starsPerChest
+        XCTAssertEqual(progress.totalStars, total)
+        XCTAssertEqual(chests, (0..<(total / per)).map { CrushProgress.chest(number: $0) })
+        XCTAssertEqual(progress.starsToNextChest, per - total % per)
         XCTAssertEqual(episodeReward, CrushProgress.episodeReward(0))
         XCTAssertTrue(progress.badges.contains(.episodeCleared(0)))
         XCTAssertTrue(progress.badges.contains(.episodePerfect(0)))
@@ -222,7 +224,7 @@ final class CrushSessionTests: XCTestCase {
         let expectedPaws = 1 + chests.map { $0.boosters[.paw] ?? 0 }.reduce(0, +) + (episodeReward?.boosters[.paw] ?? 0)
         XCTAssertEqual(progress.count(of: .paw), expectedPaws)
         // Macera ödülü yalnızca bir kez
-        let again = progress.record(levelID: catalog.levels[14].id, score: 1, stars: 3, catalog: catalog)
+        let again = progress.record(levelID: episode[episode.count - 1].id, score: 1, stars: 3, catalog: catalog)
         XCTAssertNil(again.episodeReward)
         XCTAssertTrue(again.chests.isEmpty)
     }
