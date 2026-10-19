@@ -141,9 +141,11 @@ struct CatTowerRoom: View {
         case .right:
             return CGSize(width: size.width * 0.96 - item, height: size.height * 0.86 - item)
         case .wall:
-            // Görselli odalarda pencere ortada, lamba sol üstte: raf sağ duvarda
+            // Görselli odalarda pencere ortada: raf yan duvarda. Rezidansta sağ taraf
+            // camla kaplı olduğundan süs sol duvara asılır.
             if hasWallArt {
-                return CGSize(width: size.width * 0.9 - item, height: size.height * 0.22)
+                let x = tower.key == "seaside" ? size.width * 0.05 : size.width * 0.9 - item
+                return CGSize(width: x, height: size.height * 0.22)
             }
             return CGSize(width: windowOnRight ? size.width * 0.1 : size.width * 0.9 - item, height: size.height * 0.16)
         }
