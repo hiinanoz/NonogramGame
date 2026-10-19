@@ -91,7 +91,7 @@ struct BirdSortBoardLayout {
     /// Kuş boyu: dalın uzunluğuna ve satır yüksekliğine sığar.
     var birdSize: CGFloat {
         let along = (sideWidth * 0.78) / CGFloat(capacity)
-        return min(along * 1.22, rowHeight * 0.78, 76)
+        return min(along * 1.38, rowHeight * 0.82, 80)
     }
 
     /// Dalın üst yüzeyi (kuşların ayak bastığı çizgi).
