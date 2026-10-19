@@ -74,4 +74,25 @@ final class BirdSortModelTests: XCTestCase {
         XCTAssertTrue(viewModel.birds.isEmpty)
         XCTAssertTrue((1...3).contains(viewModel.stars))
     }
+
+    func testUnfinishedLevelIsSavedAndResumed() async {
+        let defaults = makeDefaults()
+        let model = BirdSortModel(defaults: defaults)
+        var session = BirdSortSession(level: BirdSortCatalog.level(3))
+        guard let move = BirdSortSolver.solve(session.board)?.moves.first else { return XCTFail() }
+        session.play(from: move.source, to: move.target)
+        model.saveGame(session)
+        let reloaded = BirdSortModel(defaults: defaults)
+        XCTAssertNil(reloaded.savedSession(for: 4))
+        guard let saved = reloaded.savedSession(for: 3) else { return XCTFail("kayıt yok") }
+        let viewModel = BirdSortGameViewModel(level: BirdSortCatalog.level(3), resuming: saved)
+        await viewModel.load()
+        XCTAssertEqual(viewModel.moves, 1)
+        XCTAssertEqual(viewModel.session?.board, session.board)
+        XCTAssertTrue(viewModel.canUndo)
+        viewModel.restart()
+        XCTAssertEqual(viewModel.moves, 0)
+        reloaded.clearSavedGame()
+        XCTAssertNil(BirdSortModel(defaults: defaults).savedGame)
+    }
 }

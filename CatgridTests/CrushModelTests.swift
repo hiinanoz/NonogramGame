@@ -91,4 +91,24 @@ final class CrushModelTests: XCTestCase {
         }
         XCTAssertTrue(viewModel.canPlay)
     }
+
+    func testUnfinishedLevelIsSavedAndResumed() {
+        let defaults = makeDefaults()
+        let model = CrushModel(defaults: defaults)
+        let level = model.levels[0]
+        var session = CrushSession(level: level, seed: 3)
+        if let swap = session.hint() { _ = session.play(swap) }
+        XCTAssertNil(model.savedSession(for: level))
+        model.saveGame(CrushSavedGame(session: session, usedPremiumRevive: true))
+        let reloaded = CrushModel(defaults: defaults)
+        let saved = reloaded.savedSession(for: level)
+        XCTAssertEqual(saved?.session.movesUsed, session.movesUsed)
+        XCTAssertEqual(saved?.session.board, session.board)
+        XCTAssertEqual(saved?.usedPremiumRevive, true)
+        XCTAssertNil(reloaded.savedSession(for: model.levels[1]), "başka bölümün kaydı değil")
+        let viewModel = CrushGameViewModel(session: saved!.session)
+        XCTAssertEqual(viewModel.movesLeft, session.movesLeft)
+        reloaded.clearSavedGame()
+        XCTAssertNil(CrushModel(defaults: defaults).savedGame)
+    }
 }

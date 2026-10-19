@@ -58,9 +58,15 @@ final class BirdSortGameViewModel {
     var onSelect: () -> Void = {}
     var onWin: () -> Void = {}
 
-    init(level: BirdSortLevel) {
+    /// Kayıttan dönülen bölüm (varsa); `load()` tahtayı üretmek yerine bunu kullanır.
+    private var resumed: BirdSortSession?
+
+    init(level: BirdSortLevel, resuming saved: BirdSortSession? = nil) {
         self.level = level
+        resumed = saved
     }
+
+    var hasProgress: Bool { (session?.moves ?? 0) > 0 && !isWon }
 
     var branchCount: Int { session?.board.branches.count ?? level.branchCount }
     var capacity: Int { level.capacity }
@@ -71,6 +77,15 @@ final class BirdSortGameViewModel {
     /// Tahta arka planda üretilir (ileri bölümlerde birkaç yüz milisaniye sürebilir).
     func load() async {
         guard session == nil else { return }
+        if let resumed {
+            session = resumed
+            // Baştan başlatmak için ilk tahta: kayıttaki geçmişin ilki
+            initialBoard = BirdSortBoard(branches: Array((resumed.history.first ?? resumed.board).branches.prefix(level.branchCount)),
+                                         capacity: level.capacity)
+            isStuck = resumed.isStuck
+            rebuild(animated: false)
+            return
+        }
         let level = level
         let made = await Task.detached(priority: .userInitiated) { BirdSortSession(level: level) }.value
         session = made

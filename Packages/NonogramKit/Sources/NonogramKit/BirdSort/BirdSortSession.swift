@@ -1,7 +1,7 @@
 import Foundation
 
 /// Oynanan bir kuş sıralama bölümü: tahta, hamle sayısı, geri alma geçmişi ve ekstra dal.
-public struct BirdSortSession: Sendable {
+public struct BirdSortSession: Codable, Sendable {
     public let level: BirdSortLevel
     public private(set) var board: BirdSortBoard
     /// Üreticinin çözümünün hamle sayısı (yıldızlar buna göre).
@@ -12,6 +12,11 @@ public struct BirdSortSession: Sendable {
     /// İpucu planı: hesaplandığı tahta ve kalan hamleler. Oyuncu plandan çıkınca yeniden hesaplanır;
     /// her seferinde baştan çözmek ipuçlarını bir ileri bir geri gidip gelen hamlelere sokabilir.
     private var plan: (board: BirdSortBoard, moves: [BirdSortBoard.Move])?
+
+    /// İpucu planı kaydedilmez (dönüşte yeniden hesaplanır).
+    private enum CodingKeys: String, CodingKey {
+        case level, board, par, moves, history, extraBranches
+    }
     public static let maxExtraBranches = 1
 
     public init(level: BirdSortLevel) {

@@ -12,6 +12,17 @@ struct CrushStats: Codable, Equatable {
     var boostersUsed = 0
 }
 
+/// Duraklatılıp çıkılan bölüm: oyun durumu ve Premium'un bedava +5 hamlesi kullanıldı mı.
+struct CrushSavedGame: Codable, Equatable {
+    var session: CrushSession
+    var usedPremiumRevive: Bool
+
+    static func == (lhs: CrushSavedGame, rhs: CrushSavedGame) -> Bool {
+        lhs.session.level.id == rhs.session.level.id && lhs.session.movesUsed == rhs.session.movesUsed
+            && lhs.session.score == rhs.session.score && lhs.usedPremiumRevive == rhs.usedPremiumRevive
+    }
+}
+
 /// Miyav Crush modu: bölüm kataloğu, ilerleme (yıldızlar, güçlendiriciler, rozetler) ve
 /// istatistikler. Kayıtlar UserDefaults'ta JSON olarak (küçük ve tek cihazlık veri).
 @MainActor
@@ -22,6 +33,7 @@ final class CrushModel {
         static let stats = "crush.stats"
         static let introSeen = "crush.introSeen"
         static let lives = "crush.lives"
+        static let savedGame = "crush.savedGame"
     }
 
     let catalog: CrushCatalog
@@ -34,6 +46,8 @@ final class CrushModel {
     private(set) var lives: CrushLives
     /// Kedi Kulesi'nde en son seçilen kat: ekrana geri dönünce seçim ve kaydırma yeri korunur.
     var selectedTowerLevelID: String?
+    /// Yarıda bırakılan bölüm: geri dönünce kaldığı yerden sürer (can yeniden harcanmaz).
+    private(set) var savedGame: CrushSavedGame?
     /// Testlerde zaman sabitlenebilsin diye.
     private let now: () -> Date
 
@@ -45,6 +59,25 @@ final class CrushModel {
         progress = Self.decode(CrushProgress.self, defaults.data(forKey: Keys.progress)) ?? CrushProgress()
         stats = Self.decode(CrushStats.self, defaults.data(forKey: Keys.stats)) ?? CrushStats()
         hasSeenIntro = defaults.bool(forKey: Keys.introSeen)
+        savedGame = Self.decode(CrushSavedGame.self, defaults.data(forKey: Keys.savedGame))
+    }
+
+    // MARK: - Yarıda bırakılan bölüm
+
+    /// Bu bölüm için kayıtlı oyun (başka bölüm kayıtlıysa `nil`).
+    func savedSession(for level: CrushLevel) -> CrushSavedGame? {
+        guard let savedGame, savedGame.session.level.id == level.id, savedGame.session.status == .playing else { return nil }
+        return savedGame
+    }
+
+    func saveGame(_ game: CrushSavedGame) {
+        savedGame = game
+        defaults.set(try? JSONEncoder().encode(game), forKey: Keys.savedGame)
+    }
+
+    func clearSavedGame() {
+        savedGame = nil
+        defaults.removeObject(forKey: Keys.savedGame)
     }
 
     static func inMemory(catalog: CrushCatalog = .standard, now: @escaping () -> Date = { Date() }) -> CrushModel {
@@ -165,7 +198,8 @@ final class CrushModel {
         stats = CrushStats()
         hasSeenIntro = false
         lives = CrushLives()
-        for key in [Keys.progress, Keys.stats, Keys.introSeen, Keys.lives] {
+        savedGame = nil
+        for key in [Keys.progress, Keys.stats, Keys.introSeen, Keys.lives, Keys.savedGame] {
             defaults.removeObject(forKey: key)
         }
     }

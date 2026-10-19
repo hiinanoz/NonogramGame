@@ -126,6 +126,14 @@ final class CrushGameViewModel {
         syncTiles(animated: false)
     }
 
+    /// Kayıtlı bölümden devam.
+    init(session: CrushSession, reduceMotion: Bool = false) {
+        self.session = session
+        self.reduceMotion = reduceMotion
+        displayedScore = session.score
+        syncTiles(animated: false)
+    }
+
     var level: CrushLevel { session.level }
     var board: CrushBoard { session.board }
     var status: CrushSession.Status { session.status }

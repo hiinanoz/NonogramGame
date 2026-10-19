@@ -5,7 +5,7 @@ import Foundation
 ///
 /// Zorluk: ilk bölümler iki yanda 5'er dal ve dalda 4 kuşla başlar; ilerledikçe iki yanda 9'ar dal
 /// ve dalda 6 kuşa kadar çıkar. İlk adada 10 kuş türü vardır, sonraki her adaya bir tür eklenir.
-public struct BirdSortLevel: Hashable, Sendable {
+public struct BirdSortLevel: Hashable, Codable, Sendable {
     /// 1'den başlayan bölüm numarası (bütün adalar boyunca).
     public let number: Int
     public let island: Int

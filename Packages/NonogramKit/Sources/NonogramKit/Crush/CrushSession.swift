@@ -9,8 +9,8 @@ import Foundation
 /// - **Yalnızca puan hedefli bölümler** bütün hamleler oynanınca biter; puan hedefe ulaştıysa kazanılır.
 /// - Hamleler biter ve hedefler tamamlanmadıysa bölüm kaybedilir (+5 hamleyle devam edilebilir).
 /// - Yıldız: kazanılan bölüm en az 1 yıldız; 2. ve 3. yıldız puan eşiklerinden.
-public struct CrushSession: Sendable {
-    public enum Status: Hashable, Sendable {
+public struct CrushSession: Codable, Sendable {
+    public enum Status: Hashable, Codable, Sendable {
         case playing
         case won
         case lost

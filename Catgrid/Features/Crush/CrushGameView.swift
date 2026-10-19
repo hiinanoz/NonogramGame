@@ -10,7 +10,7 @@ struct CrushGameScreen: View {
 
     var body: some View {
         if let level = model.crush.level(withID: levelID) {
-            CrushGameView(level: level, reduceMotion: reduceMotion)
+            CrushGameView(level: level, saved: model.crush.savedSession(for: level), reduceMotion: reduceMotion)
                 .id(levelID)
         } else {
             ContentUnavailableView("Level not found", systemImage: "questionmark.square.dashed")
@@ -34,8 +34,12 @@ struct CrushGameView: View {
     @Environment(AdCoordinator.self) private var ads
     @Environment(StoreManager.self) private var store
     @Environment(\.appTheme) private var theme
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var viewModel: CrushGameViewModel
+    @State private var isPaused = false
+    /// Bölüm bitti ya da baştan başlatıldı: çıkarken kaydedilmez.
+    @State private var isDiscarded = false
     @State private var isShowingIntro = true
     @State private var result: CrushResult?
     @State private var isLost = false
@@ -48,8 +52,15 @@ struct CrushGameView: View {
     @State private var isOutOfLives = false
     @State private var isShowingPaywall = false
 
-    init(level: CrushLevel, reduceMotion: Bool = false) {
-        _viewModel = State(initialValue: CrushGameViewModel(level: level, reduceMotion: reduceMotion))
+    init(level: CrushLevel, saved: CrushSavedGame? = nil, reduceMotion: Bool = false) {
+        if let saved {
+            // Yarıda bırakılan bölüm: kaldığı yerden, giriş kartı ve can harcamadan
+            _viewModel = State(initialValue: CrushGameViewModel(session: saved.session, reduceMotion: reduceMotion))
+            _isShowingIntro = State(initialValue: false)
+            _usedPremiumRevive = State(initialValue: saved.usedPremiumRevive)
+        } else {
+            _viewModel = State(initialValue: CrushGameViewModel(level: level, reduceMotion: reduceMotion))
+        }
     }
 
     private var crush: CrushModel { model.crush }
@@ -82,7 +93,17 @@ struct CrushGameView: View {
                 if isPremium { isOutOfLives = false }
             }
             .onAppear(perform: setUp)
-            .onDisappear { viewModel.stop() }
+            .onDisappear {
+                viewModel.stop()
+                saveProgress()
+            }
+            .onChange(of: scenePhase) { _, phase in
+                // Uygulama arka plana geçince bölüm kaydedilir ve duraklatılır
+                if phase != .active {
+                    saveProgress()
+                    if canPause { isPaused = true }
+                }
+            }
     }
 
     private var content: some View {
@@ -122,6 +143,7 @@ struct CrushGameView: View {
 
     private var overlays: some View {
         overlayContent
+            .animation(.spring(duration: 0.3), value: isPaused)
             .animation(.spring(duration: 0.4), value: result != nil)
             .animation(.spring(duration: 0.4), value: isLost)
             .animation(.spring(duration: 0.4), value: isShowingIntro)
@@ -150,7 +172,17 @@ struct CrushGameView: View {
 
     @ViewBuilder
     private var overlayContent: some View {
-        if isOutOfLives {
+        if isPaused {
+            ModePauseOverlay(
+                onContinue: { isPaused = false },
+                onRestart: {
+                    isPaused = false
+                    isConfirmingRestart = true
+                },
+                onMap: { router.pop() }
+            )
+            .transition(.opacity)
+        } else if isOutOfLives {
             CrushNoLivesOverlay(
                 canWatchAd: ads.isRewardedReady,
                 onWatchAd: watchAdForLife,
@@ -188,17 +220,28 @@ struct CrushGameView: View {
 
     private var toolbarMenu: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                Button {
-                    isConfirmingRestart = true
-                } label: {
-                    Label("Start Over", systemImage: "arrow.counterclockwise")
-                }
-            } label: {
-                Image(systemName: "ellipsis.circle")
-                    .foregroundStyle(theme.textPrimary)
+            ModePauseButton {
+                guard canPause else { return }
+                Haptics.selection()
+                pawMode = false
+                isPaused = true
             }
-            .accessibilityLabel(Text("More"))
+            .opacity(canPause ? 1 : 0.4)
+            .accessibilityIdentifier("crush.pause")
+        }
+    }
+
+    /// Oynanırken duraklatılabilir (giriş, sonuç ve kaybetme kartlarında değil).
+    private var canPause: Bool {
+        session.status == .playing && !isShowingIntro && !isOutOfLives && result == nil && !isLost
+    }
+
+    /// Çıkarken: oynanmakta olan bölüm kaydedilir; bitmiş ya da başlamamış bölüm silinir.
+    private func saveProgress() {
+        if !isDiscarded && session.status == .playing && !isShowingIntro && !isOutOfLives {
+            crush.saveGame(CrushSavedGame(session: session, usedPremiumRevive: usedPremiumRevive))
+        } else if crush.savedGame?.session.level.id == level.id {
+            crush.clearSavedGame()
         }
     }
 
@@ -274,9 +317,15 @@ struct CrushGameView: View {
                 Haptics.play(.lineCompleted)
             }
         }
+        if !isShowingIntro {
+            // Kayıttan dönüldü: oyun hemen sürer
+            viewModel.start()
+        }
         viewModel.onEnd = { session in
             switch session.status {
             case .won:
+                isDiscarded = true
+                crush.clearSavedGame()
                 let outcome = crush.recordWin(session, frenzyMoves: viewModel.frenzyMoves)
                 crush.refundLife(isPremium: store.isPremium)
                 // Kuleye dönünce yeni açılan kat seçili ve ortada olsun
@@ -324,11 +373,17 @@ struct CrushGameView: View {
 
     private func restart() {
         if session.status == .lost { crush.recordLoss(session) }
+        isDiscarded = true
+        crush.clearSavedGame()
         router.replaceTop(with: .crushGame(levelID: level.id))
     }
 
     private func leave(to route: Route?) {
-        if session.status == .lost { crush.recordLoss(session) }
+        if session.status == .lost {
+            crush.recordLoss(session)
+            isDiscarded = true
+            crush.clearSavedGame()
+        }
         ads.continueAfterPuzzle {
             if let route {
                 router.replaceTop(with: route)

@@ -11,7 +11,9 @@ struct BirdSortGameScreen: View {
     @Environment(AdCoordinator.self) private var ads
     @Environment(StoreManager.self) private var store
     @Environment(\.appTheme) private var theme
+    @Environment(\.scenePhase) private var scenePhase
     let levelNumber: Int
+    @State private var isPaused = false
     @State private var viewModel: BirdSortGameViewModel
     @State private var isShowingIntro = false
     @State private var reward: BirdSortReward?
@@ -24,9 +26,9 @@ struct BirdSortGameScreen: View {
         var id: Self { self }
     }
 
-    init(levelNumber: Int) {
+    init(levelNumber: Int, saved: BirdSortSession? = nil) {
         self.levelNumber = levelNumber
-        _viewModel = State(initialValue: BirdSortGameViewModel(level: BirdSortCatalog.level(levelNumber)))
+        _viewModel = State(initialValue: BirdSortGameViewModel(level: BirdSortCatalog.level(levelNumber), resuming: saved))
     }
 
     private var birds: BirdSortModel { model.birds }
@@ -57,7 +59,18 @@ struct BirdSortGameScreen: View {
                 .ignoresSafeArea()
         }
         .overlay {
-            if viewModel.isWon {
+            if isPaused && !viewModel.isWon {
+                ModePauseOverlay(
+                    onContinue: { isPaused = false },
+                    onRestart: {
+                        isPaused = false
+                        birds.clearSavedGame()
+                        viewModel.restart()
+                    },
+                    onMap: { leave(to: nil, showAd: false) }
+                )
+                .transition(.opacity)
+            } else if viewModel.isWon {
                 BirdSortWinOverlay(level: levelNumber, stars: viewModel.stars, moves: viewModel.moves, reward: reward,
                                    hasNext: levelNumber < BirdSortCatalog.levelCount,
                                    onNext: { leave(to: .birdGame(level: levelNumber + 1)) },
@@ -86,6 +99,14 @@ struct BirdSortGameScreen: View {
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.isWon)
         .animation(.easeInOut, value: viewModel.isStuck)
+        .animation(.spring(response: 0.3), value: isPaused)
+        .onDisappear { saveProgress() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active {
+                saveProgress()
+                if viewModel.session != nil && !viewModel.isWon { isPaused = true }
+            }
+        }
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $isShowingPaywall) { PremiumPaywall() }
         .alert(adOfferTitle, isPresented: isOfferingAd) {
@@ -127,12 +148,12 @@ struct BirdSortGameScreen: View {
             .background(Capsule().fill(.white.opacity(0.92)))
             .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
             Spacer(minLength: 0)
-            BirdSortRoundButton(symbol: "arrow.counterclockwise") {
-                audio.play(.tap)
-                viewModel.restart()
+            ModePauseButton {
+                guard viewModel.session != nil, !viewModel.isWon else { return }
+                Haptics.selection()
+                isPaused = true
             }
-            .accessibilityLabel(Text("Replay"))
-            .accessibilityIdentifier("birds.game.restart")
+            .accessibilityIdentifier("birds.game.pause")
         }
         .padding(.horizontal, 16)
         .padding(.top, 6)
@@ -238,6 +259,7 @@ struct BirdSortGameScreen: View {
         viewModel.onWin = {
             audio.play(.fanfare)
             Haptics.play(.solved)
+            birds.clearSavedGame()
             let outcome = birds.recordWin(level: levelNumber, stars: viewModel.stars, moves: viewModel.moves)
             reward = outcome.reward
             ads.puzzleCompleted(isTutorial: levelNumber <= 2)
@@ -292,6 +314,16 @@ struct BirdSortGameScreen: View {
         case .hint: return Text("No Hints Left")
         case .branch: return Text("No Extra Branches Left")
         case nil: return Text(verbatim: "")
+        }
+    }
+
+    /// Çıkarken: hamle yapılmış bölüm kaydedilir; bitmiş bölümün kaydı silinir.
+    private func saveProgress() {
+        guard let session = viewModel.session else { return }
+        if viewModel.isWon {
+            if birds.savedGame?.level.number == levelNumber { birds.clearSavedGame() }
+        } else if viewModel.hasProgress {
+            birds.saveGame(session)
         }
     }
 

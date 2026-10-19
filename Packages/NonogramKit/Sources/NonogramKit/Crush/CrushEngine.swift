@@ -5,7 +5,8 @@ import Foundation
 ///
 /// Saf değer tipidir: arayüzden, zamandan ve animasyondan bağımsızdır. Her hamle, UI'ın sırayla
 /// oynatacağı adımlar (`CrushStep`) döndürür; tahtanın son hâli `board`'dadır.
-public struct CrushEngine: Sendable {
+/// Kayıt: yarıda bırakılan bölüm tahtası ve rastgele sayı durumu ile saklanır (devam edilir).
+public struct CrushEngine: Codable, Sendable {
     public private(set) var board: CrushBoard
     public let colors: [CrushColor]
     private var random: CrushRandom

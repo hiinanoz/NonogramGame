@@ -97,3 +97,39 @@ final class BirdSortTests: XCTestCase {
         XCTAssertTrue((1...3).contains(session.stars))
     }
 }
+
+final class SavedSessionTests: XCTestCase {
+    func testBirdSortSessionRoundTrips() throws {
+        var session = BirdSortSession(level: BirdSortCatalog.level(5))
+        _ = session.hint()
+        if let move = BirdSortSolver.solve(session.board)?.moves.first {
+            session.play(from: move.source, to: move.target)
+        }
+        let data = try JSONEncoder().encode(session)
+        let restored = try JSONDecoder().decode(BirdSortSession.self, from: data)
+        XCTAssertEqual(restored.board, session.board)
+        XCTAssertEqual(restored.moves, session.moves)
+        XCTAssertEqual(restored.par, session.par)
+        XCTAssertEqual(restored.level, session.level)
+        XCTAssertTrue(restored.canUndo)
+    }
+
+    func testCrushSessionRoundTripsAndPlaysOn() throws {
+        let level = CrushCatalog.standard.levels[0]
+        var session = CrushSession(level: level, seed: 7)
+        if let swap = session.hint() { _ = session.play(swap) }
+        let data = try JSONEncoder().encode(session)
+        var restored = try JSONDecoder().decode(CrushSession.self, from: data)
+        XCTAssertEqual(restored.board, session.board)
+        XCTAssertEqual(restored.movesLeft, session.movesLeft)
+        XCTAssertEqual(restored.score, session.score)
+        // Kayıttan dönen oyun aynı rastgele sırayla sürer
+        if let swap = session.hint() {
+            let a = session.play(swap)
+            let b = restored.play(swap)
+            XCTAssertEqual(session.board, restored.board)
+            XCTAssertEqual(session.score, restored.score)
+            _ = (a, b)
+        }
+    }
+}

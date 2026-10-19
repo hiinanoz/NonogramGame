@@ -19,6 +19,7 @@ final class BirdSortModel {
     enum Keys {
         static let progress = "birdsort.progress"
         static let introSeen = "birdsort.introSeen"
+        static let savedGame = "birdsort.savedGame"
     }
 
     private let defaults: UserDefaults
@@ -26,12 +27,30 @@ final class BirdSortModel {
     private(set) var hasSeenIntro: Bool
     /// Ada haritasında en son açılan ada (geri dönünce aynı ada).
     var selectedIsland: Int?
+    /// Yarıda bırakılan bölüm: geri dönünce kaldığı yerden sürer.
+    private(set) var savedGame: BirdSortSession?
 
     init(defaults: UserDefaults) {
         self.defaults = defaults
         progress = (defaults.data(forKey: Keys.progress)).flatMap { try? JSONDecoder().decode(BirdSortProgress.self, from: $0) }
             ?? BirdSortProgress()
         hasSeenIntro = defaults.bool(forKey: Keys.introSeen)
+        savedGame = defaults.data(forKey: Keys.savedGame).flatMap { try? JSONDecoder().decode(BirdSortSession.self, from: $0) }
+    }
+
+    func savedSession(for level: Int) -> BirdSortSession? {
+        guard let savedGame, savedGame.level.number == level, !savedGame.isWon else { return nil }
+        return savedGame
+    }
+
+    func saveGame(_ session: BirdSortSession) {
+        savedGame = session
+        defaults.set(try? JSONEncoder().encode(session), forKey: Keys.savedGame)
+    }
+
+    func clearSavedGame() {
+        savedGame = nil
+        defaults.removeObject(forKey: Keys.savedGame)
     }
 
     static func inMemory() -> BirdSortModel {
@@ -121,6 +140,8 @@ final class BirdSortModel {
         progress = BirdSortProgress()
         hasSeenIntro = false
         selectedIsland = nil
+        savedGame = nil
+        defaults.removeObject(forKey: Keys.savedGame)
         defaults.removeObject(forKey: Keys.progress)
         defaults.removeObject(forKey: Keys.introSeen)
     }
