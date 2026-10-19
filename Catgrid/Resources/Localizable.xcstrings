@@ -28157,52 +28157,6 @@
         }
       }
     },
-    "Bird Sort": {
-      "localizations": {
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kuş Sıralama"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バードソート"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vogel-Sortieren"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tri des oiseaux"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ordena los pájaros"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Separe os Pássaros"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "새 정렬"
-          }
-        }
-      }
-    },
     "Play Level %lld": {
       "localizations": {
         "tr": {
@@ -29215,52 +29169,6 @@
         }
       }
     },
-    "Bird Sort: sort the birds onto the branches across 6 islands and 450 levels. The cat cheers every flock that flies away!": {
-      "localizations": {
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kuş Sıralama: 6 adada 450 bölüm boyunca kuşları dallara diz. Uçup giden her sürüde kedi seviniyor!"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バードソート：6つの島、450レベルで鳥を枝に並べよう。飛び立つたびにネコが大喜び！"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vogel-Sortieren: Sortiere die Vögel auf 6 Inseln in 450 Levels auf die Äste. Die Katze jubelt bei jedem Schwarm, der davonfliegt!"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tri des oiseaux : range les oiseaux sur les branches à travers 6 îles et 450 niveaux. Le chat applaudit chaque volée qui s'envole !"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ordena los pájaros: colócalos en las ramas en 6 islas y 450 niveles. ¡El gato celebra cada bandada que se va volando!"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Separe os Pássaros: organize os pássaros nos galhos em 6 ilhas e 450 níveis. O gato comemora cada bando que voa!"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "새 정렬: 6개의 섬, 450개 레벨에서 새들을 가지에 정리하세요. 새 떼가 날아갈 때마다 고양이가 기뻐해요!"
-          }
-        }
-      }
-    },
     "A brand-new match-3 mode: swipe cat toys, make special combos and climb 300 floors of the Cat Tower!": {
       "localizations": {
         "tr": {
@@ -29303,6 +29211,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "새로운 3매치 모드: 고양이 장난감을 밀어 특별 콤보를 만들고 고양이 타워 300층을 올라가세요!"
+          }
+        }
+      }
+    },
+    "Meow Sort": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miyav Sort"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ニャンソート"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miau Sort"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miaou Sort"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miau Sort"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miau Sort"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "냥 정렬"
+          }
+        }
+      }
+    },
+    "Meow Sort: sort the birds onto the branches across 6 islands and 450 levels. The cat cheers every flock that flies away!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miyav Sort: 6 adada 450 bölüm boyunca kuşları dallara diz. Uçup giden her sürüde kedi seviniyor!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ニャンソート：6つの島、450レベルで鳥を枝に並べよう。飛び立つたびにネコが大喜び！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miau Sort: Sortiere die Vögel auf 6 Inseln in 450 Levels auf die Äste. Die Katze jubelt bei jedem Schwarm, der davonfliegt!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miaou Sort : range les oiseaux sur les branches à travers 6 îles et 450 niveaux. Le chat applaudit chaque volée qui s'envole !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miau Sort: colócalos en las ramas en 6 islas y 450 niveles. ¡El gato celebra cada bandada que se va volando!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miau Sort: organize os pássaros nos galhos em 6 ilhas e 450 níveis. O gato comemora cada bando que voa!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "냥 정렬: 6개의 섬, 450개 레벨에서 새들을 가지에 정리하세요. 새 떼가 날아갈 때마다 고양이가 기뻐해요!"
           }
         }
       }

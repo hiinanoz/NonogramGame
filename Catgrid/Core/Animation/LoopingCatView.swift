@@ -17,6 +17,7 @@ enum LoopingCatAnimation {
     static let peekCat = "peek-cat-loop"
     /// Miyav Crush ana sayfa kartı: telefonda oyun oynayan tekir yavru.
     static let crushCat = "crush-cat-loop"
+    static let sortCat = "sort-cat-loop"
 
     /// Videonun kare hızı.
     static let frameRate: Double = 24

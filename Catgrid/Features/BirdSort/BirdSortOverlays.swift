@@ -98,7 +98,7 @@ struct BirdSortIntroOverlay: View {
                             .offset(y: index % 2 == 0 ? 0 : -4)
                     }
                 }
-                Text("Bird Sort")
+                Text("Meow Sort")
                     .font(.title2.weight(.heavy))
                     .foregroundStyle(theme.textPrimary)
                 VStack(alignment: .leading, spacing: 10) {
@@ -136,75 +136,5 @@ struct BirdSortIntroOverlay: View {
                 .foregroundStyle(theme.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-    }
-}
-
-/// Ana sayfadaki Kuş Sıralama kartı.
-@MainActor
-struct BirdSortHomeCard: View {
-    @Environment(AppModel.self) private var model
-    @Environment(\.appTheme) private var theme
-    var compact = false
-    let action: () -> Void
-
-    var body: some View {
-        let birds = model.birds
-        let ink = theme.isDark ? Color(hex: "#BFE6F7") : Color(hex: "#1E5B7A")
-        Button(action: action) {
-            HStack(spacing: 10) {
-                Image("bird-0-stand")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: compact ? 32 : 38, height: compact ? 32 : 38)
-                    .background(Circle().fill(.white.opacity(0.85)).padding(-3))
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Bird Sort")
-                        .font(compact ? Font.headline.bold() : .title3.bold())
-                        .foregroundStyle(ink)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
-                    HStack(spacing: 4) {
-                        Text("Level \(birds.currentLevel)")
-                        Text(verbatim: "·")
-                        Image(systemName: "star.fill")
-                            .foregroundStyle(Gold.mid)
-                        Text(verbatim: "\(birds.totalStars)")
-                    }
-                    .font(.caption.weight(.semibold).monospacedDigit())
-                    .foregroundStyle(ink.opacity(0.85))
-                    .lineLimit(1)
-                }
-                Spacer(minLength: 4)
-                HStack(spacing: -10) {
-                    ForEach([1, 4, 6], id: \.self) { species in
-                        Image("bird-\(species)-stand")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: compact ? 30 : 36, height: compact ? 30 : 36)
-                    }
-                }
-                .scaleEffect(x: -1)
-                Image(systemName: "arrow.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 24, height: 24)
-                    .background(Circle().fill(Color(hex: "#2E8FC0")))
-            }
-            .padding(.horizontal, compact ? 10 : 12)
-            .padding(.vertical, 6)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(LinearGradient(colors: theme.isDark ? [Color(hex: "#1F3A4A"), Color(hex: "#18303D")]
-                                                              : [Color(hex: "#DDF3FB"), Color(hex: "#BFE6F7")],
-                                         startPoint: .topLeading, endPoint: .bottomTrailing))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .strokeBorder(.white.opacity(theme.isDark ? 0.06 : 0.7), lineWidth: 1)
-            )
-            .shadow(color: Color(hex: "#2E8FC0").opacity(theme.isDark ? 0 : 0.16), radius: 8, y: 4)
-        }
-        .buttonStyle(PressableButtonStyle())
     }
 }

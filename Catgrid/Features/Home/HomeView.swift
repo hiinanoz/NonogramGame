@@ -102,13 +102,15 @@ struct HomeView: View {
     }
 
     /// Kedi Bulmaca öne çıkar: üstte tam genişlikte büyük kart, altında Günlük Bulmaca ve
-    /// Kart Koleksiyonu yan yana, en altta Miyav Crush.
+    /// Kart Koleksiyonu yan yana, en altta Miyav Crush ve Miyav Sort yan yana; hepsi aynı yükseklikte.
     private func modeCards(compact: Bool, tight: Bool = false) -> some View {
-        // Üç kart aynı yükseklikte: büyük kart ile alttaki iki kart hizalı dursun
+        // Bütün oyun kartları aynı yükseklikte (Kedi Bulmaca kartının boyu)
         let cardHeight: CGFloat = tight ? 124 : (compact ? 140 : 168)
         let streak = model.dailyStreak
         let collected = model.collectedBreeds.count
         let cats = model.cats
+        let crush = model.crush
+        let birds = model.birds
         return VStack(spacing: 10) {
             FeaturedModeCard(style: .cats, title: "Cat Puzzle", subtitle: Text("One cat per color, row and column"), compact: compact) {
                 Text("Level \(min(cats.solvedCount + 1, max(cats.levels.count, 1)))")
@@ -141,19 +143,41 @@ struct HomeView: View {
             }
             .frame(height: cardHeight)
 
-            // Miyav Crush: Günlük ve Koleksiyon kartlarının altında, enine kısa kart
-            CrushHomeCard(compact: compact) {
-                router.push(.crushHub)
-            }
-            .frame(height: tight ? 68 : (compact ? 80 : 96))
-            .accessibilityIdentifier("home.mode.crush")
+            // Miyav Crush ve Miyav Sort: Günlük ve Koleksiyon kartlarının altında, aynı boyda
+            HStack(spacing: 10) {
+                ModeCard(style: .crush, title: "Meow Crush", compact: compact, tight: tight) {
+                    HStack(spacing: 3) {
+                        if let level = crush.currentLevel {
+                            Text("Level \(crush.number(of: level))")
+                        }
+                        Text(verbatim: "·")
+                        Image(systemName: "heart.fill")
+                            .foregroundStyle(Color(hex: "#F0506E"))
+                        if store.isPremium {
+                            Text(verbatim: "∞")
+                        } else {
+                            Text(verbatim: "\(crush.livesCount())")
+                        }
+                    }
+                } action: {
+                    router.push(.crushHub)
+                }
+                .accessibilityIdentifier("home.mode.crush")
 
-            // Kuş Sıralama: Miyav Crush'ın altında aynı biçimde
-            BirdSortHomeCard(compact: compact) {
-                router.push(.birdHub)
+                ModeCard(style: .sort, title: "Meow Sort", compact: compact, tight: tight) {
+                    HStack(spacing: 3) {
+                        Text("Level \(birds.currentLevel)")
+                        Text(verbatim: "·")
+                        Image(systemName: "star.fill")
+                            .foregroundStyle(Gold.mid)
+                        Text(verbatim: "\(birds.totalStars)")
+                    }
+                } action: {
+                    router.push(.birdHub)
+                }
+                .accessibilityIdentifier("home.mode.birds")
             }
-            .frame(height: tight ? 60 : (compact ? 68 : 80))
-            .accessibilityIdentifier("home.mode.birds")
+            .frame(height: cardHeight)
         }
     }
 

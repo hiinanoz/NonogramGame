@@ -2,12 +2,13 @@ import SwiftUI
 import UIKit
 
 /// Oyun modlarının renk kimliği: Günlük Bulmaca lavanta, Kart Koleksiyonu şeftali,
-/// Kedi Bulmaca nane, Miyav Crush ahududu. Kartlar, ikonlar ve ilerleme göstergeleri bunları kullanır.
+/// Kedi Bulmaca nane, Miyav Crush ahududu, Miyav Sort gök mavisi. Kartlar, ikonlar ve ilerleme göstergeleri bunları kullanır.
 enum ModeStyle: CaseIterable {
     case daily
     case collection
     case cats
     case crush
+    case sort
 
     /// İkon, ok ve ilerleme rengi.
     func tint(_ theme: AppTheme) -> Color {
@@ -20,6 +21,8 @@ enum ModeStyle: CaseIterable {
         case (.cats, true): Color(hex: "#7FD6C8")
         case (.crush, false): Color(hex: "#E0577E")
         case (.crush, true): Color(hex: "#F59AB5")
+        case (.sort, false): Color(hex: "#2E8FC0")
+        case (.sort, true): Color(hex: "#8FCDEB")
         }
     }
 
@@ -38,6 +41,8 @@ enum ModeStyle: CaseIterable {
         case (.cats, true): [Color(hex: "#25403C"), Color(hex: "#1D3330")]
         case (.crush, false): [Color(hex: "#FFE8EF"), Color(hex: "#FBD0DE")]
         case (.crush, true): [Color(hex: "#432A35"), Color(hex: "#35212A")]
+        case (.sort, false): [Color(hex: "#E2F4FC"), Color(hex: "#C4E6F6")]
+        case (.sort, true): [Color(hex: "#21384A"), Color(hex: "#1A2D3B")]
         }
     }
 
@@ -48,6 +53,7 @@ enum ModeStyle: CaseIterable {
         case (.collection, false): Color(hex: "#8A4E14")
         case (.cats, false): Color(hex: "#1F6B61")
         case (.crush, false): Color(hex: "#9B2C4F")
+        case (.sort, false): Color(hex: "#1E5B7A")
         case (_, true): theme.textPrimary
         }
     }
@@ -58,6 +64,7 @@ enum ModeStyle: CaseIterable {
         case .collection: "rectangle.portrait.on.rectangle.portrait.fill"
         case .cats: "square.grid.3x3.fill"
         case .crush: "sparkles"
+        case .sort: "bird.fill"
         }
     }
 
@@ -68,6 +75,7 @@ enum ModeStyle: CaseIterable {
         case .collection: LoopingCatAnimation.cardsCat
         case .cats: LoopingCatAnimation.yarnCat
         case .crush: LoopingCatAnimation.crushCat
+        case .sort: LoopingCatAnimation.sortCat
         }
     }
 
@@ -78,6 +86,7 @@ enum ModeStyle: CaseIterable {
         case .collection: "mode-collection"
         case .cats: "mode-cats"
         case .crush: "mode-crush"
+        case .sort: "mode-sort"
         }
     }
 }

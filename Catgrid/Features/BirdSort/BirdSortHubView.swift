@@ -49,7 +49,7 @@ struct BirdSortHubView: View {
                     .accessibilityIdentifier("birds.hub.back")
             }
             ToolbarItem(placement: .principal) {
-                BirdSortTitleCapsule(title: Text("Bird Sort"))
+                BirdSortTitleCapsule(title: Text("Meow Sort"))
             }
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 4) {
