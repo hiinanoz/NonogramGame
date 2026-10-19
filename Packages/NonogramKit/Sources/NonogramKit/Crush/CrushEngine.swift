@@ -103,8 +103,32 @@ public struct CrushEngine: Sendable {
             steps.append(resolveMatches(groups, cascade: 1, swap: swap))
         }
 
+        return .success(finish(steps, swap: swap))
+    }
+
+    /// Kedi Patisi güçlendiricisi: tek eşyayı patlatır (özel eşyaysa etkisi de çalışır), sonra
+    /// zincirleme ve gerekirse karıştırma. Boş ya da oynanamaz hücrede `nil`.
+    public mutating func smash(_ position: GridPosition) -> CrushMoveResult? {
+        guard board.isPlayable(position), board[position] != nil else { return nil }
+        var step = CrushStep(cascade: 1)
+        // Çıngırak kutusu iki patlamasını hemen yapar
+        if board[position]?.special == .wrappedPrimed {
+            step.activations.append(CrushActivation(position: position, kind: .explosion(radius: 1)))
+            var initial: [GridPosition: CrushClearReason] = [position: .explosion(position)]
+            for cell in square(around: position, radius: 1) where cell != position { initial[cell] = .explosion(position) }
+            resolve(initial: initial, consumed: [position], step: &step)
+        } else {
+            resolve(initial: [position: .match], consumed: [], step: &step)
+        }
+        settle(&step)
+        return finish([step], swap: CrushSwap(from: position, to: position))
+    }
+
+    /// Hamlenin ilk adımından sonra: zincirleme adımlar ve gerekirse karıştırma.
+    private mutating func finish(_ first: [CrushStep], swap: CrushSwap) -> CrushMoveResult {
+        var steps = first
         // Zincirleme: yeni eşleşmeler ve ikinci kez patlayacak çıngırak kutuları bitene kadar
-        var cascade = 2
+        var cascade = (steps.last?.cascade ?? 0) + 1
         while cascade <= Self.maxCascades {
             let groups = Self.findMatches(in: board)
             let primed = board.playablePositions.filter { board[$0]?.special == .wrappedPrimed }
@@ -117,7 +141,7 @@ public struct CrushEngine: Sendable {
         if possibleMoves().isEmpty {
             shuffled = shuffle()
         }
-        return .success(CrushMoveResult(swap: swap, steps: steps, shuffled: shuffled))
+        return CrushMoveResult(swap: swap, steps: steps, shuffled: shuffled)
     }
 
     /// Tahtadaki bütün geçerli hamleler.

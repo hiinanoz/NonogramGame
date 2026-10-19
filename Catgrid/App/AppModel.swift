@@ -12,6 +12,8 @@ final class AppModel {
     let badges: BadgeStore
     /// Kedi Bulmaca modu.
     let cats: CatPuzzleModel
+    /// Miyav Crush modu.
+    let crush: CrushModel
     /// Testlerde "bugün" sabitlenebilsin diye.
     private let now: () -> Date
 
@@ -21,6 +23,7 @@ final class AppModel {
         daily: DailyPuzzles = .empty,
         badges: BadgeStore? = nil,
         cats: CatPuzzleModel? = nil,
+        crush: CrushModel? = nil,
         now: @escaping () -> Date = { Date() }
     ) {
         self.catalog = catalog
@@ -29,6 +32,7 @@ final class AppModel {
         // Varsayılan bağımsız değişken ana aktörde çalışmadığı için kayıt burada oluşturulur
         self.badges = badges ?? .inMemory()
         self.cats = cats ?? .inMemory()
+        self.crush = crush ?? .inMemory()
         self.now = now
         // 1.0'dan gelen oyuncunun hak ettiği rozetler sessizce verilir
         self.badges.update(with: badgeProgress)
@@ -47,7 +51,10 @@ final class AppModel {
             #endif
             let catalog = try CatalogLoader.load(from: .main)
             let cats = CatPuzzleModel(pack: CatPuzzleModel.loadPack(), breeds: catalog.chapters.filter { $0.kind == .breed }, defaults: .standard)
-            return AppModel(catalog: catalog, progress: ProgressStore.live(), daily: loadDaily(), badges: BadgeStore(defaults: .standard), cats: cats)
+            return AppModel(
+                catalog: catalog, progress: ProgressStore.live(), daily: loadDaily(), badges: BadgeStore(defaults: .standard),
+                cats: cats, crush: CrushModel(defaults: .standard)
+            )
         } catch {
             // Paketlenmiş içerik hatalıysa: testler (ContentValidationTests) bunu yayından önce yakalar
             fatalError("Bölüm içeriği yüklenemedi: \(error)")
@@ -347,6 +354,7 @@ final class AppModel {
         progress.resetAll()
         badges.reset()
         cats.reset()
+        crush.reset()
         isTutorialSkipped = false
         UserDefaults.standard.removeObject(forKey: Self.tutorialSkippedKey)
     }

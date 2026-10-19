@@ -114,21 +114,37 @@ public struct CrushSession: Sendable {
         case .success(let move):
             movesLeft -= 1
             movesUsed += 1
-            score += move.score
-            bestCascade = max(bestCascade, move.cascades)
-            var gained: [CrushColor: Int] = [:]
-            var specials = 0
-            for step in move.steps {
-                for clear in step.clears {
-                    if let color = clear.piece.color { gained[color, default: 0] += 1 }
-                    if clear.piece.isSpecial { specials += 1 }
-                }
-            }
-            for (color, count) in gained { collected[color, default: 0] += count }
-            specialsUsed += specials
-            updateStatus()
-            return .success(Turn(move: move, collected: gained, specialsUsed: specials, status: status))
+            return .success(account(move))
         }
+    }
+
+    /// Kedi Patisi: tek eşyayı patlatır; hamle harcamaz.
+    public mutating func usePaw(at position: GridPosition) -> Turn? {
+        guard status == .playing, let move = engine.smash(position) else { return nil }
+        return account(move)
+    }
+
+    /// Karıştır güçlendiricisi: hamle harcamaz.
+    public mutating func shuffle() {
+        guard status == .playing else { return }
+        engine.shuffle()
+    }
+
+    private mutating func account(_ move: CrushMoveResult) -> Turn {
+        score += move.score
+        bestCascade = max(bestCascade, move.cascades)
+        var gained: [CrushColor: Int] = [:]
+        var specials = 0
+        for step in move.steps {
+            for clear in step.clears {
+                if let color = clear.piece.color { gained[color, default: 0] += 1 }
+                if clear.piece.isSpecial { specials += 1 }
+            }
+        }
+        for (color, count) in gained { collected[color, default: 0] += count }
+        specialsUsed += specials
+        updateStatus()
+        return Turn(move: move, collected: gained, specialsUsed: specials, status: status)
     }
 
     private mutating func updateStatus() {

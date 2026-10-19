@@ -115,4 +115,44 @@ final class GameplayUITests: XCTestCase {
         XCTAssertEqual(app.state, .runningForeground, "Uygulama çöktü")
         XCTAssertTrue(board.exists)
     }
+
+    /// Miyav Crush: haritadan ilk bölüme gir, hedef kartını geç, kaydırarak takas ve dokunarak
+    /// seçme çökmeden çalışmalı; güçlendirici düğmeleri görünmeli.
+    func testMeowCrushSwipeAndTap() {
+        let app = XCUIApplication()
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-disableAds"]
+        app.launch()
+
+        let mode = app.buttons["home.mode.crush"]
+        XCTAssertTrue(mode.waitForExistence(timeout: 15), "Miyav Crush kartı görünmedi")
+        mode.tap()
+        let play = app.buttons["crush.hub.play"]
+        XCTAssertTrue(play.waitForExistence(timeout: 15), "Oyna düğmesi görünmedi")
+        play.tap()
+        let start = app.buttons["crush.intro.play"]
+        XCTAssertTrue(start.waitForExistence(timeout: 10), "Hedef kartı görünmedi")
+        start.tap()
+
+        let board = app.descendants(matching: .any)["crush.board"]
+        XCTAssertTrue(board.waitForExistence(timeout: 10), "Tahta görünmedi")
+        func cell(_ row: Int, _ column: Int) -> XCUICoordinate {
+            board.coordinate(withNormalizedOffset: CGVector(dx: (Double(column) + 0.5) / 8, dy: (Double(row) + 0.5) / 8))
+        }
+        // Birkaç kaydırma (geçerli ya da geçersiz) ve dokunarak takas
+        for row in [2, 4, 6] {
+            cell(row, 3).press(forDuration: 0.05, thenDragTo: cell(row, 4))
+            sleep(2)
+            cell(row, 5).press(forDuration: 0.05, thenDragTo: cell(row + 1, 5))
+            sleep(2)
+        }
+        cell(1, 1).tap()
+        cell(1, 2).tap()
+        sleep(2)
+        XCTAssertTrue(app.buttons["crush.booster.shuffle"].exists)
+        app.buttons["crush.booster.shuffle"].tap()
+        sleep(1)
+
+        XCTAssertEqual(app.state, .runningForeground, "Uygulama çöktü")
+        XCTAssertTrue(board.exists)
+    }
 }

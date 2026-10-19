@@ -34,6 +34,8 @@ struct RootView: View {
                     case .catTheme(let index): CatThemeLevelsView(catTheme: CatTheme(rawValue: index) ?? .spring)
                     case .catGame(let levelID): CatGameScreen(levelID: levelID)
                     case .catStats: CatStatsView()
+                    case .crushHub: CrushHubView()
+                    case .crushGame(let levelID): CrushGameScreen(levelID: levelID)
                     }
                 }
         }

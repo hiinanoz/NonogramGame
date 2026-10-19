@@ -102,7 +102,7 @@ struct HomeView: View {
     }
 
     /// Kedi Bulmaca öne çıkar: üstte tam genişlikte büyük kart, altında Günlük Bulmaca ve
-    /// Kart Koleksiyonu yan yana.
+    /// Kart Koleksiyonu yan yana, en altta Miyav Crush.
     private func modeCards(compact: Bool, tight: Bool = false) -> some View {
         // Üç kart aynı yükseklikte: büyük kart ile alttaki iki kart hizalı dursun
         let cardHeight: CGFloat = tight ? 124 : (compact ? 140 : 168)
@@ -140,6 +140,13 @@ struct HomeView: View {
                 .accessibilityIdentifier("home.mode.collection")
             }
             .frame(height: cardHeight)
+
+            // Miyav Crush: Günlük ve Koleksiyon kartlarının altında, enine kısa kart
+            CrushHomeCard(compact: compact) {
+                router.push(.crushHub)
+            }
+            .frame(height: tight ? 62 : (compact ? 70 : 84))
+            .accessibilityIdentifier("home.mode.crush")
         }
     }
 

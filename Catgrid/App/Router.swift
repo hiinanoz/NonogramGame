@@ -19,6 +19,9 @@ enum Route: Hashable {
     case catTheme(Int)
     case catGame(levelID: String)
     case catStats
+    /// Miyav Crush (3'lü eşleştirme) modu.
+    case crushHub
+    case crushGame(levelID: String)
 }
 
 /// Uygulama içi gezinme yığını. Ekranlar doğrudan `NavigationLink` yerine bunu kullanır

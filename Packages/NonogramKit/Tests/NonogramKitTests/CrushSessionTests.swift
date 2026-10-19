@@ -114,6 +114,43 @@ final class CrushSessionTests: XCTestCase {
         XCTAssertTrue(engine.celebrate(movesLeft: 0).isEmpty)
     }
 
+    // MARK: - Güçlendiriciler
+
+    func testPawSmashesOnePieceWithoutUsingAMove() throws {
+        var session = CrushSession(level: level([.score(100_000)]), seed: 23)
+        let target = GridPosition(row: 4, column: 4)
+        let piece = try XCTUnwrap(session.board[target])
+        let turn = try XCTUnwrap(session.usePaw(at: target))
+        XCTAssertEqual(session.movesLeft, 20)
+        XCTAssertTrue(turn.move.steps[0].clears.contains { $0.piece.id == piece.id })
+        XCTAssertGreaterThan(session.score, 0)
+        XCTAssertTrue(session.board.playablePositions.allSatisfy { session.board[$0] != nil })
+        XCTAssertTrue(CrushEngine.findMatches(in: session.board).isEmpty)
+    }
+
+    func testPawOnRattleBoxExplodesTwiceAndRemovesIt() throws {
+        var session = CrushSession(level: level([.score(100_000)]), seed: 29)
+        // Kutuyu doğrudan koymak için motoru tahtayla kur
+        var board = session.board
+        let center = GridPosition(row: 4, column: 4)
+        board[center] = CrushPiece(id: 9_999, color: .yarn, special: .wrapped)
+        var engine = CrushEngine(board: board, colors: CrushColor.allCases, seed: 1)
+        let result = try XCTUnwrap(engine.smash(center))
+        let explosions = result.steps.flatMap(\.activations).filter { $0.kind == .explosion(radius: 1) }
+        XCTAssertEqual(explosions.count, 2)
+        XCTAssertFalse(engine.board.playablePositions.contains { engine.board[$0]?.id == 9_999 })
+        XCTAssertNil(session.usePaw(at: GridPosition(row: -1, column: 0)))
+    }
+
+    func testShuffleKeepsPiecesAndMoves() {
+        var session = CrushSession(level: level([.score(100_000)]), seed: 31)
+        let before = session.board.cells.compactMap { $0?.id }.sorted()
+        session.shuffle()
+        XCTAssertEqual(session.board.cells.compactMap { $0?.id }.sorted(), before)
+        XCTAssertEqual(session.movesLeft, 20)
+        XCTAssertFalse(session.engine.possibleMoves().isEmpty)
+    }
+
     // MARK: - Yıldızlar
 
     func testStars() {

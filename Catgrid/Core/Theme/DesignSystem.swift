@@ -2,11 +2,12 @@ import SwiftUI
 import UIKit
 
 /// Oyun modlarının renk kimliği: Günlük Bulmaca lavanta, Kart Koleksiyonu şeftali,
-/// Kedi Bulmaca nane. Kartlar, ikonlar ve ilerleme göstergeleri bunları kullanır.
+/// Kedi Bulmaca nane, Miyav Crush ahududu. Kartlar, ikonlar ve ilerleme göstergeleri bunları kullanır.
 enum ModeStyle: CaseIterable {
     case daily
     case collection
     case cats
+    case crush
 
     /// İkon, ok ve ilerleme rengi.
     func tint(_ theme: AppTheme) -> Color {
@@ -17,20 +18,27 @@ enum ModeStyle: CaseIterable {
         case (.collection, true): Color(hex: "#F2B577")
         case (.cats, false): Color(hex: "#2F9E8F")
         case (.cats, true): Color(hex: "#7FD6C8")
+        case (.crush, false): Color(hex: "#E0577E")
+        case (.crush, true): Color(hex: "#F59AB5")
         }
     }
 
     /// Kart zemini: yukarıdan aşağı yumuşak pastel geçiş.
     func background(_ theme: AppTheme) -> LinearGradient {
-        let colors: [Color] = switch (self, theme.isDark) {
+        LinearGradient(colors: backgroundColors(theme), startPoint: .top, endPoint: .bottom)
+    }
+
+    func backgroundColors(_ theme: AppTheme) -> [Color] {
+        switch (self, theme.isDark) {
         case (.daily, false): [Color(hex: "#F1E9FF"), Color(hex: "#DDD0FA")]
         case (.daily, true): [Color(hex: "#352E4A"), Color(hex: "#2A243B")]
         case (.collection, false): [Color(hex: "#FFF2DD"), Color(hex: "#FBE0BC")]
         case (.collection, true): [Color(hex: "#43352A"), Color(hex: "#352A21")]
         case (.cats, false): [Color(hex: "#E2F6F1"), Color(hex: "#C3EAE1")]
         case (.cats, true): [Color(hex: "#25403C"), Color(hex: "#1D3330")]
+        case (.crush, false): [Color(hex: "#FFE8EF"), Color(hex: "#FBD0DE")]
+        case (.crush, true): [Color(hex: "#432A35"), Color(hex: "#35212A")]
         }
-        return LinearGradient(colors: colors, startPoint: .top, endPoint: .bottom)
     }
 
     /// Kartın yazı rengi (açık zeminde koyu, koyu zeminde açık).
@@ -39,6 +47,7 @@ enum ModeStyle: CaseIterable {
         case (.daily, false): Color(hex: "#5A3FA8")
         case (.collection, false): Color(hex: "#8A4E14")
         case (.cats, false): Color(hex: "#1F6B61")
+        case (.crush, false): Color(hex: "#9B2C4F")
         case (_, true): theme.textPrimary
         }
     }
@@ -48,6 +57,7 @@ enum ModeStyle: CaseIterable {
         case .daily: "calendar"
         case .collection: "rectangle.portrait.on.rectangle.portrait.fill"
         case .cats: "square.grid.3x3.fill"
+        case .crush: "sparkles"
         }
     }
 
@@ -57,6 +67,7 @@ enum ModeStyle: CaseIterable {
         case .daily: LoopingCatAnimation.dailyCat
         case .collection: LoopingCatAnimation.cardsCat
         case .cats: LoopingCatAnimation.yarnCat
+        case .crush: "crush-cat-loop"
         }
     }
 
@@ -66,6 +77,7 @@ enum ModeStyle: CaseIterable {
         case .daily: "mode-daily"
         case .collection: "mode-collection"
         case .cats: "mode-cats"
+        case .crush: "mode-crush"
         }
     }
 }
