@@ -93,8 +93,11 @@ struct CatTowerLevelMap: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     // Görselli çatı ve kule dibi kendi oranında, çizilenler sabit yükseklikte
+                    // Görselli çatı en üst katın kornişine biraz biner, arada gökyüzü görünmez
                     CatTowerRoof(tower: tower)
                         .frame(height: tower.asset("roof") == nil ? height * 1.25 : nil)
+                        .padding(.bottom, tower.asset("roof") == nil ? 0 : -6)
+                        .zIndex(1)
                     ForEach(floors.reversed()) { floor in
                         CatTowerFloorView(
                             floor: floor,
@@ -107,8 +110,11 @@ struct CatTowerLevelMap: View {
                         .frame(height: height)
                         .id(floor.id)
                     }
+                    // Görselli giriş, ilk katın odasının hemen altından başlar (katın alt kornişini örter)
                     CatTowerBase(tower: tower)
                         .frame(height: tower.asset("base") == nil ? height * 0.75 : nil)
+                        .padding(.top, tower.asset("base") == nil ? 0 : -height * 0.15)
+                        .zIndex(1)
                 }
                 .frame(maxWidth: 520)
                 .frame(maxWidth: .infinity)

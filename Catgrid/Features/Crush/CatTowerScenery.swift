@@ -184,8 +184,8 @@ struct CatTowerRoof: View {
 
     var body: some View {
         if let image = (theme.isDark ? tower.asset("roof", variant: "night") : nil) ?? tower.asset("roof") {
-            // Saçaklar cepheden biraz taşar; yükseklik görselin oranından gelir
-            Image(uiImage: image).resizable().scaledToFit().padding(.horizontal, 14)
+            // Saçaklar cepheden çok az taşar; yükseklik görselin oranından gelir
+            Image(uiImage: image).resizable().scaledToFit().padding(.horizontal, 20)
         } else {
             let colors: [Color] = tower.roof
             let key: String = tower.key
@@ -446,7 +446,7 @@ struct CatTowerBase: View {
 
     var body: some View {
         if let image = (theme.isDark ? tower.asset("base", variant: "night") : nil) ?? tower.asset("base") {
-            Image(uiImage: image).resizable().scaledToFit().padding(.horizontal, 20)
+            Image(uiImage: image).resizable().scaledToFit().padding(.horizontal, 22)
         } else {
             GeometryReader { proxy in
                 let w: CGFloat = proxy.size.width
