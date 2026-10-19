@@ -54,20 +54,20 @@ final class BirdSortModelTests: XCTestCase {
         XCTAssertEqual(viewModel.birds.count, viewModel.level.sets * viewModel.level.capacity)
         var won = false
         viewModel.onWin = { won = true }
-        var guardCount = 0
-        while !viewModel.isWon, guardCount < 200 {
-            guard let session = viewModel.session, let move = BirdSortSolver.solve(session.board)?.moves.first else {
-                return XCTFail("çözüm yok")
-            }
-            let expected = session.moves + 1
+        // Çözüm bir kez hesaplanır ve sırayla oynanır (her hamlede yeniden çözmek ileri geri
+        // aynı hamlelere dönebilir)
+        guard let board = viewModel.session?.board, let solution = BirdSortSolver.solve(board) else {
+            return XCTFail("çözüm yok")
+        }
+        for (index, move) in solution.moves.enumerated() {
             viewModel.tap(branch: move.source)
             viewModel.tap(branch: move.target)
             var waited = 0
-            while (viewModel.isAnimating || (viewModel.session?.moves ?? 0) < expected), waited < 100 {
+            while (viewModel.isAnimating || (viewModel.session?.moves ?? 0) < index + 1), waited < 100 {
                 try? await Task.sleep(for: .milliseconds(50))
                 waited += 1
             }
-            guardCount += 1
+            XCTAssertEqual(viewModel.session?.moves, index + 1, "hamle \(index) oynanmadı")
         }
         XCTAssertTrue(viewModel.isWon)
         XCTAssertTrue(won)
