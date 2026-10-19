@@ -6,6 +6,7 @@ import SwiftUI
 /// yerine kendiliğinden kullanılır (numara/yazı/arayüz olmadan):
 ///
 ///     tower-<anahtar>-wall-<1…>        oda arka duvarı (pencere dahil, mobilyasız)
+///     tower-<anahtar>-wall-<1…>-night  aynı odanın gece sürümü (koyu tema)
 ///     tower-<anahtar>-furniture-<1…>   ana mobilya (koltuk, yatak, minder, kedi yatağı)
 ///     tower-<anahtar>-accessory-<1…>   aksesuar (lamba, bitki, kitaplık…)
 ///     tower-<anahtar>-special          her 15 katta dönüm noktası odası
@@ -100,8 +101,10 @@ struct CatTowerTheme {
 
     // MARK: - Görseller (varsa)
 
-    func asset(_ kind: String, _ number: Int? = nil) -> UIImage? {
-        let name = number.map { "tower-\(key)-\(kind)-\($0)" } ?? "tower-\(key)-\(kind)"
+    /// `variant`: ör. "night" → tower-<anahtar>-wall-3-night (koyu tema sürümü).
+    func asset(_ kind: String, _ number: Int? = nil, variant: String? = nil) -> UIImage? {
+        var name = number.map { "tower-\(key)-\(kind)-\($0)" } ?? "tower-\(key)-\(kind)"
+        if let variant { name += "-\(variant)" }
         return CatTowerImageCache.image(name)
     }
 

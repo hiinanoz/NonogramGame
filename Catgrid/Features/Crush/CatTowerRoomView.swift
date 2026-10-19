@@ -60,9 +60,11 @@ struct CatTowerRoom: View {
         if plan.kind == .milestone, let special = tower.asset("special") {
             Image(uiImage: special).resizable().scaledToFill().frame(width: size.width, height: size.height)
         } else if let wall = tower.asset("wall", plan.wall + 1) {
-            // Görsel duvarlar pencereyi ve zemini de içerir; gece biraz kararır
-            Image(uiImage: wall).resizable().scaledToFill().frame(width: size.width, height: size.height)
-                .overlay(Color(hex: "#2A1C3A").opacity(theme.isDark ? 0.28 : 0))
+            // Görsel duvarlar pencereyi ve zemini de içerir. Gece: varsa gece sürümü (pencerede ay ve
+            // yıldızlar), yoksa gündüz görseli karartılır.
+            let night = theme.isDark ? tower.asset("wall", plan.wall + 1, variant: "night") : nil
+            Image(uiImage: night ?? wall).resizable().scaledToFill().frame(width: size.width, height: size.height)
+                .overlay(Color(hex: "#2A1C3A").opacity(theme.isDark ? (night == nil ? 0.28 : 0.12) : 0))
         } else {
             let paper = tower.wallpapers[plan.wall % tower.wallpapers.count]
             ZStack(alignment: .topLeading) {
