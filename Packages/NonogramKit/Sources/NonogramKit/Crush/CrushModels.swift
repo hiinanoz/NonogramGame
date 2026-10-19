@@ -186,6 +186,8 @@ public enum CrushMoveError: Error, Equatable, Sendable {
     case notAdjacent
     case notPlayable
     case noMatch
+    /// Bölüm bitti (hamle kalmadı ya da kazanıldı)
+    case levelOver
 }
 
 // MARK: - Bölüm ve hedefler
@@ -198,6 +200,12 @@ public enum CrushGoal: Hashable, Codable, Sendable {
     case collect(CrushColor, Int)
     /// Belirli sayıda özel eşya patlat
     case specials(Int)
+
+    public var target: Int {
+        switch self {
+        case .score(let target), .collect(_, let target), .specials(let target): target
+        }
+    }
 }
 
 /// Bir Miyav Crush bölümü.

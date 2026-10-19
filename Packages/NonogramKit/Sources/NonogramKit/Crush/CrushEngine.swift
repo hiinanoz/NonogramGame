@@ -22,6 +22,8 @@ public struct CrushEngine: Sendable {
         public static let striped = 60
         public static let wrapped = 100
         public static let colorBomb = 200
+        /// Bölüm bitince kalan her hamle için (Kedi Çılgınlığı)
+        public static let bonusPerMove = 300
     }
 
     // MARK: - Kurulum
@@ -167,6 +169,42 @@ public struct CrushEngine: Sendable {
         return true
     }
 
+    // MARK: - Kedi Çılgınlığı
+
+    /// Bölüm kazanılınca kalan hamleler ödüle döner ("Kedi Çılgınlığı"): her hamle rastgele bir
+    /// eşyayı çizgili yumağa çevirir (ilk adım, yalnızca dönüşümler), sonra tahtadaki bütün özel
+    /// eşyalar ve yeni eşleşmeler bitene kadar patlar. Puan adımlara yazılır.
+    public mutating func celebrate(movesLeft: Int) -> [CrushStep] {
+        var steps: [CrushStep] = []
+        if movesLeft > 0 {
+            var step = CrushStep(cascade: 1)
+            var candidates = board.playablePositions.filter { board[$0]?.special == CrushSpecial.none }
+            candidates.shuffle(using: &random)
+            for position in candidates.prefix(movesLeft) {
+                guard let old = board[position] else { continue }
+                let special: CrushSpecial = Bool.random(using: &random) ? .stripedRow : .stripedColumn
+                let piece = CrushPiece(id: old.id, color: old.color, special: special)
+                board[position] = piece
+                step.creations.append(CrushCreation(position: position, piece: piece))
+            }
+            step.score = movesLeft * Points.bonusPerMove
+            steps.append(step)
+        }
+        var cascade = 1
+        while cascade <= Self.maxCascades {
+            let groups = Self.findMatches(in: board)
+            let primed = board.playablePositions.filter { board[$0]?.special == .wrappedPrimed }
+            let specials = board.playablePositions.filter {
+                guard let special = board[$0]?.special else { return false }
+                return special != .none && special != .wrappedPrimed
+            }
+            if groups.isEmpty && primed.isEmpty && specials.isEmpty { break }
+            steps.append(resolveMatches(groups, cascade: cascade, swap: nil, primed: primed, detonate: specials))
+            cascade += 1
+        }
+        return steps
+    }
+
     // MARK: - Eşleşme bulma
 
     /// Aynı renkte en az 3 eşyalık yatay ya da dikey dizi.
@@ -270,7 +308,7 @@ public struct CrushEngine: Sendable {
     /// Bir adımı çözer: eşleşen ve (varsa) ikinci kez patlayacak hücreleri temizler, özel eşyaları
     /// doğurur, ardından yerçekimi ve dolum.
     private mutating func resolveMatches(_ groups: [MatchGroup], cascade: Int, swap: CrushSwap?,
-                                         primed: [GridPosition] = []) -> CrushStep {
+                                         primed: [GridPosition] = [], detonate: [GridPosition] = []) -> CrushStep {
         var step = CrushStep(cascade: cascade)
         var initial: [GridPosition: CrushClearReason] = [:]
         var creations: [(GridPosition, CrushPiece)] = []
@@ -311,6 +349,11 @@ public struct CrushEngine: Sendable {
                 initial[cell] = .explosion(position)
             }
             initial[position] = .explosion(position)
+        }
+
+        // Kedi Çılgınlığı: tahtadaki özel eşyalar kendiliğinden patlar
+        for position in detonate where initial[position] == nil {
+            initial[position] = .match
         }
 
         resolve(initial: initial, consumed: Set(primed), step: &step)

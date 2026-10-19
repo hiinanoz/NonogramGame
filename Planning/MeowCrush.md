@@ -8,10 +8,10 @@ Kart Koleksiyonu kartlarının altına eklenecek. Mevcut modlara dokunmadan, ayr
 | Aşama | İçerik | Durum |
 |---|---|---|
 | 1. Motor | Veri modelleri, eşleşme bulma, özel eşyalar ve birleşimler, yerçekimi/dolum, zincirleme, olası hamle, karıştırma, testler | **Bitti** (`NonogramKit/Crush`) |
-| 2. Bölümler ve hedefler | Bölüm dosyası (şekilli tahtalar, hamle sayısı, hedefler, yıldız eşikleri), ilerleme kaydı, 1-3 yıldız, ilk 60 bölüm | Sırada |
-| 3. Oyun ekranı (temel) | Tahta çizimi, kaydırarak takas, geçersiz takasın geri dönmesi, adımların sırayla oynatılması (patla → düş → dol), hamle/puan/hedef çubuğu | |
+| 2. Bölümler ve hedefler | Bölüm dosyası (şekilli tahtalar, hamle sayısı, hedefler, yıldız eşikleri), ilerleme kaydı, 1-3 yıldız, ilk 60 bölüm | **Bitti** (`CrushSession`, `CrushCatalog`, `CrushLevels`) |
+| 3. Oyun ekranı (temel) | Tahta çizimi, kaydırarak takas, geçersiz takasın geri dönmesi, adımların sırayla oynatılması (patla → düş → dol), hamle/puan/hedef çubuğu | Sırada |
 | 4. His ve efektler | Pofuduk tüy/pati parçacıkları, sekmeli düşüş, iplik/patlama/lazer efektleri, "Miyav!", "Harika!", "Pati Gücü!" yazıları, sesler ve titreşim | |
-| 5. Ödül sistemi | Bölüm sonu yıldız ve puan, kalan hamlelerin özel eşyaya dönüşmesi ("Kedi Çılgınlığı", Candy Crush'taki "Sugar Crush"), rozetler, Game Center sıralaması | |
+| 5. Ödül sistemi | Bölüm sonu yıldız ve puan, kalan hamlelerin özel eşyaya dönüşmesi ("Kedi Çılgınlığı", Candy Crush'taki "Sugar Crush"), rozetler, Game Center sıralaması | **Kurallar bitti** (`CrushRewards`); ekranları Aşama 3-4'te |
 | 6. Güçlendiriciler ve can | Çekiç, karıştır, +5 hamle (ödüllü reklam / Premium); can sistemi (5 can, zamanla dolar) | |
 | 7. Harita ve entegrasyon | Ana sayfa kartı (hareketli kedi), bölüm haritası, istatistikler, 8 dil, App Store metinleri | |
 | 8. Görseller | 6 eşya × (normal, çizgili, kutu) + altın kedi gözü; arka planlar; kart görseli | Görsel listesi Aşama 3'te |
@@ -22,7 +22,10 @@ Kart Koleksiyonu kartlarının altına eklenecek. Mevcut modlara dokunmadan, ayr
 NonogramKit/Crush            ← saf motor (Foundation dışında bağımlılık yok, swift test ile test edilir)
   CrushModels.swift          renkler, özel eşyalar, tahta, takas, adım/sonuç, bölüm, hedef, tohumlu rastgele
   CrushEngine.swift          kurallar ve algoritmalar
-  (Aşama 2) CrushSession     hamle sayısı, hedef sayaçları, yıldızlar, bölüm sonu
+  CrushSession.swift         hamle sayısı, hedef sayaçları, yıldızlar, bölüm sonu, Kedi Çılgınlığı
+  CrushCatalog.swift         maceralar (15'er bölüm), tahta şekilleri
+  CrushLevels.swift          60 bölüm (simülasyonla ayarlandı)
+  CrushRewards.swift         ilerleme kaydı, kilitler, yıldız sandıkları, macera ödülleri, rozetler, güçlendiriciler
 Catgrid/Features/Crush       ← arayüz (SwiftUI)
   CrushViewModel             motoru sürer; adımları zaman çizelgesine çevirir (animasyon durumları)
   CrushBoardView             tahta + eşyalar (Canvas/TimelineView, 60 FPS)
@@ -87,6 +90,38 @@ hızlı); testte tam taramayla birebir aynı sonucu verdiği doğrulanır.
 - Temizlenen her eşya: 20 × zincir adımı (2. adımda 40, 3. adımda 60 …)
 - Özel eşya doğunca: yumak 60, kutu 100, altın göz 200
 - Kombo yazıları adım sayısına göre: 2 → "Miyav!", 3 → "Harika!", 4+ → "Pati Gücü!"
+
+## Bölümler, hedefler ve yıldızlar
+
+- **4 macera × 15 bölüm:** Yumak Bahçesi, Mama Mutfağı, Fare Deliği, Çatı Katı. Bölümler sırayla açılır.
+- **Tahta şekilleri:** 8x8, 9x9, kedi başı, elmas, kalp, halka (ortası delik), artı, kum saati, pati.
+- **Renk sayısı:** 1-30. bölüm 5 renk, 31-60. bölüm 6 renk (renk arttıkça eşleşme zorlaşır).
+- **Hedef türleri:** puan, belirli eşyadan şu kadar topla (ör. 25 yumak), şu kadar özel eşya patlat;
+  bir bölümde birden çok hedef olabilir.
+- **Bitiş:** Toplama/özel eşya hedefli bölüm hedefler tamamlanınca hemen kazanılır. Yalnızca puan
+  hedefli bölüm bütün hamleler oynanınca biter. Hamle biter, hedef tamamlanmazsa kaybedilir
+  (+5 hamle güçlendiricisiyle devam).
+- **Kedi Çılgınlığı:** Kazanınca kalan her hamle rastgele bir eşyayı çizgili yumağa çevirir
+  (+300 puan/hamle), sonra tahtadaki bütün özel eşyalar patlar.
+- **Yıldız:** Kazanılan bölüm en az 1 yıldız; 2. ve 3. yıldız puan eşiklerinden.
+- **Ayar (simülasyon):** Bir bot (çoğunlukla en iyi hamle, bazen rastgele) her bölümü 150 kez oynar.
+  Hedef sayıları, botun kazanma oranı 1. bölümde ~%99, 60. bölümde ~%65 olacak şekilde seçilir
+  (macera sonları biraz daha zor). 2. yıldız botun ortalama puanı, 3. yıldız en iyi %12'si.
+  Gerçek oyuncu bottan iyi oynar. Yeniden üretmek: `CRUSH_BALANCE=1 swift test -c release
+  -Xswiftc -enable-testing --filter CrushBalanceTests`.
+
+## Ödüller
+
+| Ödül | Ne zaman | İçerik |
+|---|---|---|
+| Başlangıç hediyesi | İlk açılış | Kedi Patisi, Karıştır, +5 Hamle (birer) |
+| Yıldız sandığı | Her 12 yıldızda | Sırayla değişen 2-4 güçlendirici |
+| Macera ödülü | Bir macerada 15 bölümün hepsi kazanılınca (bir kez) | Her güçlendiriciden 2-3 |
+| Rozetler | İlk zafer, macera bitirme, maceranın hepsi 3 yıldız, 50/100/150 yıldız, bir hamlede 5+ zincir, Kedi Çılgınlığı'nda 10+ hamle | — |
+| Game Center | Toplam yıldız sıralaması (Aşama 7) | — |
+
+Güçlendiriciler: **Kedi Patisi** (tek eşyayı patlatır), **Karıştır**, **+5 Hamle**. Ödüllü reklam ve
+Premium ile de kazanılacak (Aşama 6).
 
 ## Dikkat
 
