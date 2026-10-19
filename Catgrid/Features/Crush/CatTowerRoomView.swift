@@ -13,6 +13,9 @@ struct CatTowerRoom: View {
     let isHighlighted: Bool
 
     private var isLocked: Bool { floor.state == .locked }
+    private var hasWallArt: Bool {
+        (plan.kind == .milestone && tower.asset("special") != nil) || tower.asset("wall", plan.wall + 1) != nil
+    }
     /// Pencere sağda mı (duvar rafı karşı tarafta durur).
     private var windowOnRight: Bool { plan.window % 2 == 0 }
 
@@ -22,7 +25,10 @@ struct CatTowerRoom: View {
             let shape = CatTowerArch()
             ZStack(alignment: .topLeading) {
                 wallLayer(size: size)
-                floorLayer(size: size)
+                // Görsel duvarlar zemini de içerir
+                if !hasWallArt {
+                    floorLayer(size: size)
+                }
                 if !isLocked {
                     furnitureLayer(size: size)
                     accessoryLayer(size: size)
@@ -54,8 +60,9 @@ struct CatTowerRoom: View {
         if plan.kind == .milestone, let special = tower.asset("special") {
             Image(uiImage: special).resizable().scaledToFill().frame(width: size.width, height: size.height)
         } else if let wall = tower.asset("wall", plan.wall + 1) {
-            // Görsel duvarlar pencereyi de içerir
+            // Görsel duvarlar pencereyi ve zemini de içerir; gece biraz kararır
             Image(uiImage: wall).resizable().scaledToFill().frame(width: size.width, height: size.height)
+                .overlay(Color(hex: "#2A1C3A").opacity(theme.isDark ? 0.28 : 0))
         } else {
             let paper = tower.wallpapers[plan.wall % tower.wallpapers.count]
             ZStack(alignment: .topLeading) {
