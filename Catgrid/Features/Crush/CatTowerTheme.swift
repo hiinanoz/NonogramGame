@@ -16,7 +16,7 @@ import SwiftUI
 ///     tower-<anahtar>-roof, tower-<anahtar>-base, tower-<anahtar>-sky(-night)
 ///
 /// Anahtarlar: yarn (Yumak Apartmanı), moon (Ay Işığı Konağı), seaside (Deniz Tatili Rezidansı),
-/// snow (Karlı Pati Kuleleri). Kedi kareleri: crush-tower-cat-<1…5>; göz kırpma için isteğe bağlı
+/// snow (Karlı Pati Kuleleri). Kedi kareleri: crush-tower-cat-<1…4>; göz kırpma için isteğe bağlı
 /// crush-tower-cat-<n>-blink-<1…k>.
 @MainActor
 struct CatTowerTheme {
@@ -129,7 +129,7 @@ struct CatTowerTheme {
             floors: floors.count,
             furniture: assetCount("furniture") ?? furniture.count,
             accessories: assetCount("accessory") ?? accessories.count,
-            cats: CatTowerImageCache.count(prefix: "crush-tower-cat-") ?? 5
+            cats: CatTowerImageCache.count(prefix: "crush-tower-cat-") ?? 4
         )
     }
 }

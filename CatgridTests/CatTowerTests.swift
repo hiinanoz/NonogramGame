@@ -60,7 +60,7 @@ final class CatTowerTests: XCTestCase {
             let tower = CatTowerTheme(index: building)
             XCTAssertEqual(tower.key, CatTowerTheme.keys[building])
             let counts = tower.counts
-            XCTAssertEqual(counts.cats, 5, "crush-tower-cat-1…5 pakette olmalı")
+            XCTAssertEqual(counts.cats, 4, "crush-tower-cat-1…4 pakette olmalı")
             for level in (building * 75 + 1)...(building * 75 + 75) {
                 let plan = CatTowerRoomPlan.make(level: level, tower: building, counts: counts)
                 XCTAssertTrue((1...3).contains(plan.accessories.count))

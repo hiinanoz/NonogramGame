@@ -122,7 +122,7 @@ struct CatTowerRoom: View {
     }
 
     private func accessoryLayer(size: CGSize) -> some View {
-        let item: CGFloat = size.height * 0.3
+        let item: CGFloat = size.height * 0.24
         let entries = plan.accessories.sorted { $0.key.rawValue < $1.key.rawValue }
         return ZStack(alignment: .topLeading) {
             ForEach(Array(entries.enumerated()), id: \.offset) { _, entry in
@@ -186,10 +186,10 @@ struct CatTowerRoom: View {
 
     private func catLayer(size: CGSize) -> some View {
         let seat = furnitureFrame(size)
-        let height: CGFloat = size.height * 0.52
+        let height: CGFloat = size.height * 0.4
         return CatTowerCatView(index: plan.cat + 1, isFlipped: plan.isCatFlipped, isAnimated: floor.state == .current, phase: floor.number)
-            .frame(width: size.width * 0.6, height: height, alignment: .bottom)
-            .offset(x: size.width * 0.2, y: seat.minY + seat.height * 0.45 - height)
+            .frame(width: size.width * 0.5, height: height, alignment: .bottom)
+            .offset(x: size.width * 0.25, y: seat.minY + seat.height * 0.55 - height)
     }
 
     private var frameColor: Color {
@@ -212,7 +212,7 @@ struct CatTowerCatView: View {
     let phase: Int
 
     private static let loops = [LoopingCatAnimation.sleepyCat, LoopingCatAnimation.yarnCat, LoopingCatAnimation.cardsCat,
-                                LoopingCatAnimation.crushCat, LoopingCatAnimation.dailyCat]
+                                LoopingCatAnimation.crushCat]
 
     var body: some View {
         content
