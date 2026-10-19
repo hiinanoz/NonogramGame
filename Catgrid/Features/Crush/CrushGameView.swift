@@ -448,7 +448,7 @@ struct CrushScoreBar: View {
                     Capsule().fill(theme.surface)
                     Capsule()
                         .fill(LinearGradient(colors: [ModeStyle.crush.tint(theme).opacity(0.7), ModeStyle.crush.tint(theme)], startPoint: .leading, endPoint: .trailing))
-                        .frame(width: max(10, width * min(1, Double(score) / top)))
+                        .frame(width: max(10, width * CGFloat(min(1, Double(score) / top))))
                         .animation(.snappy, value: score)
                     ForEach(Array(thresholds.enumerated()), id: \.offset) { _, threshold in
                         let reached = score >= threshold
@@ -458,7 +458,7 @@ struct CrushScoreBar: View {
                             .shadow(color: .black.opacity(reached ? 0.25 : 0), radius: 1, y: 1)
                             .scaleEffect(reached ? 1.2 : 1)
                             .animation(.spring(response: 0.3, dampingFraction: 0.5), value: reached)
-                            .position(x: min(width - 8, width * Double(threshold) / top), y: 6)
+                            .position(x: min(width - 8, width * CGFloat(Double(threshold) / top)), y: 6)
                     }
                 }
             }

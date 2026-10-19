@@ -154,9 +154,13 @@ struct TokenShape: Shape {
     private func polygon(sides: Int, in rect: CGRect, rotation: Angle, corner: CGFloat) -> Path {
         let c = CGPoint(x: rect.midX, y: rect.midY)
         let r = min(rect.width, rect.height) / 2
-        let points = (0..<sides).map { i -> CGPoint in
-            let angle = rotation.radians + Double(i) * 2 * .pi / Double(sides) - .pi / 2
-            return CGPoint(x: c.x + r * cos(angle), y: c.y + r * sin(angle))
+        var points: [CGPoint] = []
+        for i in 0..<sides {
+            let step: Double = 2 * Double.pi / Double(sides)
+            let angle: Double = rotation.radians + Double(i) * step - Double.pi / 2
+            let x: CGFloat = c.x + r * CGFloat(cos(angle))
+            let y: CGFloat = c.y + r * CGFloat(sin(angle))
+            points.append(CGPoint(x: x, y: y))
         }
         return rounded(points, radius: r * corner)
     }
@@ -164,10 +168,11 @@ struct TokenShape: Shape {
     private func roundedStar(in rect: CGRect) -> Path {
         let c = CGPoint(x: rect.midX, y: rect.midY)
         let r = min(rect.width, rect.height) / 2
-        let points = (0..<16).map { i -> CGPoint in
-            let angle = Double(i) * .pi / 8 - .pi / 2
-            let radius = i.isMultiple(of: 2) ? r : r * 0.84
-            return CGPoint(x: c.x + radius * cos(angle), y: c.y + radius * sin(angle))
+        var points: [CGPoint] = []
+        for i in 0..<16 {
+            let angle: Double = Double(i) * Double.pi / 8 - Double.pi / 2
+            let radius: CGFloat = i.isMultiple(of: 2) ? r : r * 0.84
+            points.append(CGPoint(x: c.x + radius * CGFloat(cos(angle)), y: c.y + radius * CGFloat(sin(angle))))
         }
         return rounded(points, radius: r * 0.12)
     }
@@ -230,10 +235,11 @@ struct YarnGlyph: Shape {
         let r = min(rect.width, rect.height) / 2
         let c = CGPoint(x: rect.midX, y: rect.midY)
         var path = Path(ellipseIn: CGRect(x: c.x - r, y: c.y - r, width: 2 * r, height: 2 * r))
-        for offset in [-0.45, 0.0, 0.45] {
-            path.move(to: CGPoint(x: c.x - r * 0.9, y: c.y + r * CGFloat(offset) - r * 0.35))
-            path.addQuadCurve(to: CGPoint(x: c.x + r * 0.9, y: c.y + r * CGFloat(offset) + r * 0.35),
-                              control: CGPoint(x: c.x, y: c.y + r * CGFloat(offset) - r * 0.6))
+        let offsets: [CGFloat] = [-0.45, 0, 0.45]
+        for offset in offsets {
+            let base: CGFloat = c.y + r * offset
+            path.move(to: CGPoint(x: c.x - r * 0.9, y: base - r * 0.35))
+            path.addQuadCurve(to: CGPoint(x: c.x + r * 0.9, y: base + r * 0.35), control: CGPoint(x: c.x, y: base - r * 0.6))
         }
         // Sarkan iplik ucu
         path.move(to: CGPoint(x: c.x + r * 0.7, y: c.y + r * 0.7))

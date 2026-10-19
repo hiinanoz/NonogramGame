@@ -238,28 +238,34 @@ struct CrushEffectsLayer: View {
         case .beam(let isRow, let index, let color):
             // Ortadan iki yana açılan parlak iplik
             let origin = center(effect.origin)
-            let reach = min(1, t * 2.5)
-            let thickness = cell * (0.55 - 0.35 * t)
-            let rect: CGRect = isRow
-                ? CGRect(x: origin.x - size.width * reach, y: (CGFloat(index) + 0.5) * cell - thickness / 2, width: size.width * reach * 2, height: thickness)
-                : CGRect(x: (CGFloat(index) + 0.5) * cell - thickness / 2, y: origin.y - size.height * reach, width: thickness, height: size.height * reach * 2)
+            let reach: CGFloat = min(1, CGFloat(t) * 2.5)
+            let thickness: CGFloat = cell * (0.55 - 0.35 * CGFloat(t))
+            let line: CGFloat = (CGFloat(index) + 0.5) * cell - thickness / 2
+            let rect: CGRect
+            if isRow {
+                rect = CGRect(x: origin.x - size.width * reach, y: line, width: size.width * reach * 2, height: thickness)
+            } else {
+                rect = CGRect(x: line, y: origin.y - size.height * reach, width: thickness, height: size.height * reach * 2)
+            }
             context.fill(Path(roundedRect: rect, cornerRadius: thickness / 2), with: .color(color.opacity(0.55 * fade)))
             let core = isRow ? rect.insetBy(dx: 0, dy: thickness * 0.32) : rect.insetBy(dx: thickness * 0.32, dy: 0)
             context.fill(Path(roundedRect: core, cornerRadius: thickness / 4), with: .color(.white.opacity(0.9 * fade)))
         case .blast(let radius, let color):
             let origin = center(effect.origin)
-            let r = cell * (CGFloat(radius) + 0.5) * (0.4 + 0.9 * t)
+            let growth: CGFloat = 0.4 + 0.9 * CGFloat(t)
+            let r: CGFloat = cell * (CGFloat(radius) + 0.5) * growth
             let ring = Path(ellipseIn: CGRect(x: origin.x - r, y: origin.y - r, width: 2 * r, height: 2 * r))
             context.fill(ring, with: .color(color.opacity(0.25 * fade)))
-            context.stroke(ring, with: .color(.white.opacity(0.9 * fade)), lineWidth: cell * 0.18 * fade)
+            context.stroke(ring, with: .color(.white.opacity(0.9 * fade)), lineWidth: cell * 0.18 * CGFloat(fade))
         case .laser(let targets):
             let origin = center(effect.origin)
-            let reach = min(1, t * 3)
+            let reach: CGFloat = min(1, CGFloat(t) * 3)
             for target in targets {
                 let end = center(target)
+                let tip = CGPoint(x: origin.x + (end.x - origin.x) * reach, y: origin.y + (end.y - origin.y) * reach)
                 var path = Path()
                 path.move(to: origin)
-                path.addLine(to: CGPoint(x: origin.x + (end.x - origin.x) * reach, y: origin.y + (end.y - origin.y) * reach))
+                path.addLine(to: tip)
                 context.stroke(path, with: .color(Gold.bright.opacity(0.85 * fade)), lineWidth: cell * 0.12)
                 context.stroke(path, with: .color(.white.opacity(fade)), lineWidth: cell * 0.04)
             }
@@ -271,9 +277,11 @@ struct CrushEffectsLayer: View {
     private func draw(_ particle: CrushParticle, at now: Date, in context: inout GraphicsContext) {
         let age = now.timeIntervalSince(particle.start)
         guard age >= 0, age < 0.9 else { return }
-        let x = (particle.origin.x + particle.velocity.dx * age) * cell
-        let y = (particle.origin.y + particle.velocity.dy * age + 3.2 * age * age) * cell
-        let size = particle.size * cell * (1 - age * 0.6)
+        let t = CGFloat(age)
+        let gravity: CGFloat = 3.2 * t * t
+        let x: CGFloat = (particle.origin.x + particle.velocity.dx * t) * cell
+        let y: CGFloat = (particle.origin.y + particle.velocity.dy * t + gravity) * cell
+        let size: CGFloat = particle.size * cell * (1 - t * 0.6)
         var piece = context
         piece.opacity = 1 - age / 0.9
         piece.translateBy(x: x, y: y)
@@ -282,8 +290,10 @@ struct CrushEffectsLayer: View {
             // Küçük pati: taban ve dört parmak
             let pad = Path(ellipseIn: CGRect(x: -size * 0.6, y: -size * 0.2, width: size * 1.2, height: size))
             piece.fill(pad, with: .color(particle.color))
-            for (dx, dy) in [(-0.75, -0.55), (-0.25, -0.9), (0.25, -0.9), (0.75, -0.55)] {
-                let toe = Path(ellipseIn: CGRect(x: size * dx - size * 0.22, y: size * dy - size * 0.22, width: size * 0.44, height: size * 0.44))
+            let toes: [(CGFloat, CGFloat)] = [(-0.75, -0.55), (-0.25, -0.9), (0.25, -0.9), (0.75, -0.55)]
+            for (dx, dy) in toes {
+                let toeSize: CGFloat = size * 0.44
+                let toe = Path(ellipseIn: CGRect(x: size * dx - toeSize / 2, y: size * dy - toeSize / 2, width: toeSize, height: toeSize))
                 piece.fill(toe, with: .color(particle.color))
             }
         } else {

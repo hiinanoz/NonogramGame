@@ -392,14 +392,17 @@ final class CrushGameViewModel {
         for clear in clears {
             let color = clear.piece.color?.tint ?? Gold.bright
             for index in 0..<perPiece {
-                let angle = Double.random(in: 0..<(2 * .pi))
+                let angle = Double.random(in: 0..<(2 * Double.pi))
                 let speed = Double.random(in: 0.8...2.2)
+                let origin = CGPoint(x: CGFloat(clear.position.column) + 0.5, y: CGFloat(clear.position.row) + 0.5)
+                let velocity = CGVector(dx: CGFloat(cos(angle) * speed), dy: CGFloat(sin(angle) * speed - 1.2))
+                let isPaw = (index == 0 && clear.piece.isSpecial) || index == 1
                 particles.append(CrushParticle(
-                    origin: CGPoint(x: Double(clear.position.column) + 0.5, y: Double(clear.position.row) + 0.5),
-                    velocity: CGVector(dx: cos(angle) * speed, dy: sin(angle) * speed - 1.2),
+                    origin: origin,
+                    velocity: velocity,
                     color: index == 0 ? .white : color,
-                    isPaw: index == 0 && clear.piece.isSpecial || index == 1,
-                    size: Double.random(in: 0.1...0.2),
+                    isPaw: isPaw,
+                    size: CGFloat.random(in: 0.1...0.2),
                     spin: Double.random(in: -6...6),
                     start: start
                 ))
