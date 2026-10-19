@@ -120,7 +120,13 @@ struct CatTowerRoom: View {
         switch slot {
         case .left: CGSize(width: size.width * 0.04, height: size.height * 0.86 - item)
         case .right: CGSize(width: size.width * 0.96 - item, height: size.height * 0.86 - item)
-        case .wall: CGSize(width: windowOnRight ? size.width * 0.1 : size.width * 0.9 - item, height: size.height * 0.16)
+        case .wall:
+            // Görselli odalarda pencere ortada, lamba sol üstte: raf sağ duvarda
+            if hasWallArt {
+                CGSize(width: size.width * 0.9 - item, height: size.height * 0.22)
+            } else {
+                CGSize(width: windowOnRight ? size.width * 0.1 : size.width * 0.9 - item, height: size.height * 0.16)
+            }
         }
     }
 
