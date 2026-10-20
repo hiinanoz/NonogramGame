@@ -16,6 +16,8 @@ final class AppModel {
     let crush: CrushModel
     /// Kuş Sıralama modu.
     let birds: BirdSortModel
+    /// Kedi Kutusu modu.
+    let blocks: CatBlockModel
     /// Testlerde "bugün" sabitlenebilsin diye.
     private let now: () -> Date
 
@@ -27,6 +29,7 @@ final class AppModel {
         cats: CatPuzzleModel? = nil,
         crush: CrushModel? = nil,
         birds: BirdSortModel? = nil,
+        blocks: CatBlockModel? = nil,
         now: @escaping () -> Date = { Date() }
     ) {
         self.catalog = catalog
@@ -37,6 +40,7 @@ final class AppModel {
         self.cats = cats ?? .inMemory()
         self.crush = crush ?? .inMemory()
         self.birds = birds ?? .inMemory()
+        self.blocks = blocks ?? .inMemory()
         self.now = now
         // 1.0'dan gelen oyuncunun hak ettiği rozetler sessizce verilir
         self.badges.update(with: badgeProgress)
@@ -57,7 +61,8 @@ final class AppModel {
             let cats = CatPuzzleModel(pack: CatPuzzleModel.loadPack(), breeds: catalog.chapters.filter { $0.kind == .breed }, defaults: .standard)
             return AppModel(
                 catalog: catalog, progress: ProgressStore.live(), daily: loadDaily(), badges: BadgeStore(defaults: .standard),
-                cats: cats, crush: CrushModel(defaults: .standard), birds: BirdSortModel(defaults: .standard)
+                cats: cats, crush: CrushModel(defaults: .standard), birds: BirdSortModel(defaults: .standard),
+                blocks: CatBlockModel(defaults: .standard)
             )
         } catch {
             // Paketlenmiş içerik hatalıysa: testler (ContentValidationTests) bunu yayından önce yakalar
@@ -360,6 +365,7 @@ final class AppModel {
         cats.reset()
         crush.reset()
         birds.reset()
+        blocks.reset()
         isTutorialSkipped = false
         UserDefaults.standard.removeObject(forKey: Self.tutorialSkippedKey)
     }

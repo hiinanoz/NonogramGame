@@ -7,6 +7,9 @@ struct ModePauseOverlay: View {
     let onContinue: () -> Void
     let onRestart: () -> Void
     let onMap: () -> Void
+    /// Çıkış düğmesi: haritası olan modlarda "Haritaya Dön", olmayanlarda "Ana Sayfa".
+    var leaveTitle: LocalizedStringKey = "Back to Map"
+    var leaveIcon = "map.fill"
 
     var body: some View {
         ZStack {
@@ -37,7 +40,7 @@ struct ModePauseOverlay: View {
                     .buttonStyle(SecondaryButtonStyle())
                     .accessibilityIdentifier("pause.restart")
                     Button(action: onMap) {
-                        Label("Back to Map", systemImage: "map.fill")
+                        Label(leaveTitle, systemImage: leaveIcon)
                     }
                     .buttonStyle(SecondaryButtonStyle())
                     .accessibilityIdentifier("pause.map")

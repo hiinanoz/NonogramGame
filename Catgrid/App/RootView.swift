@@ -39,6 +39,9 @@ struct RootView: View {
                     case .birdHub: BirdSortHubView()
                     case .birdIsland(let index): BirdSortPathView(island: BirdSortIsland(index: index))
                     // Kimlik bölüme bağlı: "Sonraki bölüm" ekranı yeniden kurar (yeni tahta)
+                    case .blockHub: CatBlockHubView()
+                    case .blockGame(let token):
+                        CatBlockGameScreen(saved: model.blocks.savedGame, best: model.blocks.bestScore).id(token)
                     case .birdGame(let level): BirdSortGameScreen(levelNumber: level, saved: model.birds.savedSession(for: level)).id(level)
                     }
                 }

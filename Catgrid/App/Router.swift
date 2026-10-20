@@ -25,6 +25,9 @@ enum Route: Hashable {
     case birdHub
     case birdIsland(Int)
     case birdGame(level: Int)
+    case blockHub
+    /// Her açılışta yeni kimlik: ekran yeniden kurulur (yeni oyun ya da kayıttan devam).
+    case blockGame(String)
 }
 
 /// Uygulama içi gezinme yığını. Ekranlar doğrudan `NavigationLink` yerine bunu kullanır

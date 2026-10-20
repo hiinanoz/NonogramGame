@@ -96,3 +96,32 @@ final class BirdSortModelTests: XCTestCase {
         XCTAssertNil(BirdSortModel(defaults: defaults).savedGame)
     }
 }
+
+@MainActor
+final class CatBlockModelTests: XCTestCase {
+    func testBestScoreAndSavedGamePersist() {
+        let name = "catblock-test-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: name)!
+        defaults.removePersistentDomain(forName: name)
+        let model = CatBlockModel(defaults: defaults)
+        XCTAssertTrue(model.report(score: 120))
+        XCTAssertFalse(model.report(score: 80), "daha düşük puan rekor değil")
+        var game = CatBlockGame(seed: 9)
+        if let piece = game.tray[0] {
+            outer: for r in 0..<CatBlockGame.size {
+                for c in 0..<CatBlockGame.size where game.canPlace(piece, row: r, column: c) {
+                    game.place(trayIndex: 0, row: r, column: c)
+                    break outer
+                }
+            }
+        }
+        model.saveGame(game)
+        let reloaded = CatBlockModel(defaults: defaults)
+        XCTAssertEqual(reloaded.bestScore, 120)
+        XCTAssertEqual(reloaded.savedGame?.score, game.score)
+        reloaded.recordFinishedGame(score: 300)
+        XCTAssertEqual(reloaded.bestScore, 300)
+        XCTAssertNil(reloaded.savedGame)
+        XCTAssertEqual(reloaded.gamesPlayed, 1)
+    }
+}

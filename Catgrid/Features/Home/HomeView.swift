@@ -178,6 +178,19 @@ struct HomeView: View {
                 .accessibilityIdentifier("home.mode.birds")
             }
             .frame(height: cardHeight)
+
+            // Kedi Kutusu: en altta, en yüksek puanla
+            ModeCard(style: .block, title: "Cat Block", compact: compact, tight: tight) {
+                HStack(spacing: 3) {
+                    Image(systemName: "crown.fill")
+                        .foregroundStyle(Gold.mid)
+                    Text("Best \(model.blocks.bestScore)")
+                }
+            } action: {
+                router.push(.blockHub)
+            }
+            .frame(height: cardHeight)
+            .accessibilityIdentifier("home.mode.block")
         }
     }
 

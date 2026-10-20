@@ -37,6 +37,7 @@ struct WhatsNewView: View {
                 .foregroundStyle(theme.textPrimary)
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    item("square.grid.3x3.square", "Cat Block", "Cat Block: drag the blocks, fill rows and columns, chain combos and beat your best score!")
                     item("bird.fill", "Meow Sort", "Meow Sort: sort the birds onto the branches across 6 islands and 450 levels. The cat cheers every flock that flies away!")
                     item("sparkles", "Meow Crush", "A brand-new match-3 mode: swipe cat toys, make special combos and climb 300 floors of the Cat Tower!")
                     item("cat.fill", "Cat Puzzle", "A brand-new mode: find the hidden cats, one per color, row and column. 335 levels!")

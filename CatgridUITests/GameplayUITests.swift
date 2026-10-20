@@ -118,6 +118,34 @@ final class GameplayUITests: XCTestCase {
 
     /// Miyav Crush: haritadan ilk bölüme gir, hedef kartını geç, kaydırarak takas ve dokunarak
     /// seçme çökmeden çalışmalı; güçlendirici düğmeleri görünmeli.
+    func testCatBlockStartsAndDrags() {
+        let app = XCUIApplication()
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-disableAds"]
+        app.launch()
+
+        let mode = app.buttons["home.mode.block"]
+        if !mode.waitForExistence(timeout: 15) { app.swipeUp() }
+        XCTAssertTrue(mode.waitForExistence(timeout: 5), "Kedi Kutusu kartı görünmedi")
+        mode.tap()
+        let start = app.buttons["block.start"]
+        XCTAssertTrue(start.waitForExistence(timeout: 10), "Başla düğmesi görünmedi")
+        start.tap()
+        let board = app.descendants(matching: .any)["block.board"]
+        XCTAssertTrue(board.waitForExistence(timeout: 10), "Tahta görünmedi")
+        // Her parçayı tahtanın farklı yerlerine sürükle
+        for (index, spot) in [(0, CGVector(dx: 0.3, dy: 0.4)), (1, CGVector(dx: 0.7, dy: 0.6)), (2, CGVector(dx: 0.5, dy: 0.9))] {
+            let piece = app.descendants(matching: .any)["block.piece.\(index)"]
+            guard piece.exists else { continue }
+            piece.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+                .press(forDuration: 0.1, thenDragTo: board.coordinate(withNormalizedOffset: spot))
+            sleep(1)
+        }
+        app.buttons["block.pause"].tap()
+        XCTAssertTrue(app.buttons["pause.continue"].waitForExistence(timeout: 5))
+        app.buttons["pause.continue"].tap()
+        XCTAssertEqual(app.state, .runningForeground, "Uygulama çöktü")
+    }
+
     func testBirdSortIslandsAndMoves() {
         let app = XCUIApplication()
         app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-disableAds"]
