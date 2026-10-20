@@ -12,7 +12,8 @@ struct BirdSortBoardView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let layout = BirdSortBoardLayout(size: proxy.size, branches: viewModel.branchCount, capacity: viewModel.capacity)
+            let layout = BirdSortBoardLayout(size: proxy.size, branches: viewModel.branchCount, capacity: viewModel.capacity,
+                                             branchAspect: Self.aspect(of: branchImage))
             ZStack(alignment: .topLeading) {
                 ForEach(0..<viewModel.branchCount, id: \.self) { index in
                     branch(index, layout: layout)
@@ -36,9 +37,10 @@ struct BirdSortBoardView: View {
         let isHinted = hint?.source == index || hint?.target == index
         return Image(branchImage)
             .resizable()
-            .scaledToFit()
-            .frame(width: frame.width, height: frame.height, alignment: .center)
+            .frame(width: frame.width, height: frame.height)
             .scaleEffect(x: isLeft ? 1 : -1)
+            // Arka plandan ayrışsın: hafif koyu gölge
+            .shadow(color: .black.opacity(0.35), radius: 3, y: 2)
             .shadow(color: isSelected ? Color.white.opacity(0.95) : (isHinted ? Color(hex: "#FFD54A") : .clear), radius: 8)
             .shadow(color: isHinted ? Color(hex: "#FFD54A").opacity(0.9) : .clear, radius: 14)
             .modifier(BirdSortShake(amount: viewModel.shaking == index ? CGFloat(viewModel.shakeCount) : 0))
@@ -60,6 +62,11 @@ struct BirdSortBoardView: View {
             .accessibilityIdentifier("birds.branch.\(index)")
     }
 
+    static func aspect(of name: String) -> CGFloat {
+        guard let image = UIImage(named: name), image.size.height > 0 else { return 3 }
+        return image.size.width / image.size.height
+    }
+
     private func bird(_ token: BirdToken, layout: BirdSortBoardLayout) -> some View {
         let isLeft = token.branch % 2 == 0
         let size = layout.birdSize
@@ -78,34 +85,44 @@ struct BirdSortBoardView: View {
     }
 }
 
-/// Dal ve kuş konumları.
+/// Dal ve kuş konumları. Dallar ekranın kenarından başlar (gövde ucu kenarın biraz dışında) ve
+/// ortaya doğru uzanır; kuşlar dalın üst yüzeyine basar.
 struct BirdSortBoardLayout {
     let size: CGSize
     let branches: Int
     let capacity: Int
+    /// Dal görselinin en/boy oranı.
+    var branchAspect: CGFloat = 3
 
     var rows: Int { max((branches + 1) / 2, 1) }
     var rowHeight: CGFloat { size.height / CGFloat(rows) }
     var sideWidth: CGFloat { size.width / 2 }
 
+    /// Dal genişliği: yarım ekrandan biraz uzun; gövdenin kesik ucu ekran kenarının dışında kalır.
+    var branchWidth: CGFloat { sideWidth * 1.04 }
+    var branchHeight: CGFloat { min(branchWidth / branchAspect, rowHeight * 0.62) }
+    private var overhang: CGFloat { sideWidth * 0.06 }
+
+    /// Kuşların dizildiği bölüm: gövdeden sonra, ucun biraz gerisine kadar.
+    private var perchStart: CGFloat { sideWidth * 0.1 }
+    private var perchLength: CGFloat { sideWidth * 0.82 }
+
     /// Kuş boyu: dalın uzunluğuna ve satır yüksekliğine sığar.
     var birdSize: CGFloat {
-        let along = (sideWidth * 0.78) / CGFloat(capacity)
-        return min(along * 1.38, rowHeight * 0.82, 80)
+        let along = perchLength / CGFloat(capacity)
+        return min(along * 1.38, rowHeight * 0.8, 82)
     }
 
     /// Dalın üst yüzeyi (kuşların ayak bastığı çizgi).
     func perchY(row: Int) -> CGFloat {
-        CGFloat(row) * rowHeight + rowHeight * 0.74
+        CGFloat(row) * rowHeight + rowHeight * 0.68
     }
 
     func branchFrame(_ index: Int) -> CGRect {
         let row = index / 2
-        let width = sideWidth * 0.98
-        let height = min(rowHeight * 0.5, width * 0.36)
-        let y = perchY(row: row) - height * 0.32
-        let x = index % 2 == 0 ? 0 : size.width - width
-        return CGRect(x: x, y: y, width: width, height: height)
+        let y = perchY(row: row) - branchHeight * 0.36
+        let x = index % 2 == 0 ? -overhang : size.width - branchWidth + overhang
+        return CGRect(x: x, y: y, width: branchWidth, height: branchHeight)
     }
 
     func hitFrame(_ index: Int) -> CGRect {
@@ -116,9 +133,9 @@ struct BirdSortBoardLayout {
     /// Yuva 0 gövde tarafı; uç tarafa doğru dizilir.
     func birdPoint(branch: Int, slot: Int) -> CGPoint {
         let row = branch / 2
-        let step = (sideWidth * 0.78) / CGFloat(capacity)
-        let fromTrunk = sideWidth * 0.12 + step * (CGFloat(slot) + 0.5)
-        let x = branch % 2 == 0 ? fromTrunk : size.width - fromTrunk
+        let step = perchLength / CGFloat(capacity)
+        let fromEdge = perchStart + step * (CGFloat(slot) + 0.5)
+        let x = branch % 2 == 0 ? fromEdge : size.width - fromEdge
         return CGPoint(x: x, y: perchY(row: row) - birdSize * 0.42)
     }
 }

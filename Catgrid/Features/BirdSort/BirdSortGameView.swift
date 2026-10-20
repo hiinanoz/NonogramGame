@@ -35,6 +35,22 @@ struct BirdSortGameScreen: View {
     private var island: BirdSortIsland { BirdSortIsland(index: viewModel.level.island) }
 
     var body: some View {
+        GeometryReader { screen in
+            screenContent(dockHeight: max(118, screen.size.height * 0.15))
+        }
+        .background {
+            // Zemin biraz soluk: dallar ve kuşlar öne çıksın
+            Image("birdsort-sea")
+                .resizable()
+                .scaledToFill()
+                .saturation(0.8)
+                .overlay(theme.isDark ? Color.black.opacity(0.42) : Color.white.opacity(0.32))
+                .ignoresSafeArea()
+        }
+    }
+
+    /// Üst çubuk, dallar ve alttaki menü alanı (ekranın yaklaşık %15'i; kedi ve yardımcılar).
+    private func screenContent(dockHeight: CGFloat) -> some View {
         VStack(spacing: 0) {
             topBar
             ZStack {
@@ -44,19 +60,12 @@ struct BirdSortGameScreen: View {
                         .tint(.white)
                 } else {
                     BirdSortBoardView(viewModel: viewModel, branchImage: island.branchImage)
-                        .padding(.horizontal, 2)
+                        .padding(.vertical, 6)
                         .accessibilityIdentifier("birds.board")
                 }
             }
             .frame(maxHeight: .infinity)
-            dock
-        }
-        .background {
-            Image("birdsort-sea")
-                .resizable()
-                .scaledToFill()
-                .overlay(Color.black.opacity(theme.isDark ? 0.35 : 0.06))
-                .ignoresSafeArea()
+            dock(height: dockHeight)
         }
         .overlay {
             if isPaused && !viewModel.isWon {
@@ -161,7 +170,7 @@ struct BirdSortGameScreen: View {
 
     // MARK: - Alt bölüm: kedi ve yardımcılar
 
-    private var dock: some View {
+    private func dock(height: CGFloat) -> some View {
         HStack(alignment: .bottom, spacing: 0) {
             boosterButton(symbol: "arrow.uturn.backward", title: Text("Undo"), badge: nil, enabled: viewModel.canUndo) {
                 audio.play(.tap)
@@ -175,8 +184,8 @@ struct BirdSortGameScreen: View {
             }
             .accessibilityIdentifier("birds.branch.add")
             BirdSortCatView(mood: viewModel.catMood)
-                .frame(width: 118, height: 82)
-                .padding(.horizontal, 4)
+                .frame(width: height * 1.25, height: height * 0.92)
+                .padding(.horizontal, 2)
             boosterButton(symbol: "lightbulb.fill", title: Text("Hint"),
                           badge: store.isPremium ? nil : birds.progress.hints,
                           enabled: viewModel.session != nil && !viewModel.isWon) {
@@ -189,16 +198,20 @@ struct BirdSortGameScreen: View {
                 Text("Moves")
                     .font(.caption2.weight(.semibold))
             }
-            .foregroundStyle(.white)
-            .shadow(color: .black.opacity(0.35), radius: 2, y: 1)
+            .foregroundStyle(Color(hex: "#7A4B25"))
             .frame(maxWidth: .infinity)
             .padding(.bottom, 6)
         }
         .padding(.horizontal, 8)
-        .padding(.top, 4)
-        .padding(.bottom, 4)
+        .padding(.bottom, 2)
+        .frame(height: height, alignment: .bottom)
+        .frame(maxWidth: .infinity)
         .background(
-            LinearGradient(colors: [.clear, Color.black.opacity(0.18)], startPoint: .top, endPoint: .bottom)
+            // Menü alanı: dallar bunun üstünden başlar
+            UnevenRoundedRectangle(topLeadingRadius: 26, topTrailingRadius: 26, style: .continuous)
+                .fill(LinearGradient(colors: [Color(hex: "#FFF6E6").opacity(0.96), Color(hex: "#F6E2C2").opacity(0.98)],
+                                     startPoint: .top, endPoint: .bottom))
+                .shadow(color: .black.opacity(0.15), radius: 8, y: -2)
                 .ignoresSafeArea(edges: .bottom)
         )
     }
@@ -232,8 +245,7 @@ struct BirdSortGameScreen: View {
                     }
                 title
                     .font(.caption2.weight(.bold))
-                    .foregroundStyle(.white)
-                    .shadow(color: .black.opacity(0.35), radius: 2, y: 1)
+                    .foregroundStyle(Color(hex: "#7A4B25"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }

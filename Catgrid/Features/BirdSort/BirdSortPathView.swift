@@ -26,13 +26,18 @@ struct BirdSortPathView: View {
                 ScrollView(showsIndicators: false) {
                     // Her yol görseli kendi 10 bölümüyle bir parça; kaydırma parçaya göre yapılır
                     // (konumlanmış tek tek düğmelere kaydırma güvenilir değil)
+                    // Görseller alt alta (kaydırma bunlara göre); yol ve bölümler hepsinin üstünde,
+                    // zeminle birlikte kayar
                     VStack(spacing: 0) {
                         ForEach(0..<tileCount, id: \.self) { tile in
-                            tileView(tile, range: range, birds: birds, width: width, tileHeight: tileHeight)
+                            Image(island.pathImage)
+                                .resizable()
+                                .frame(width: width, height: tileHeight)
                                 .id(tile)
-                                // Parçanın altına taşan bölüm düğmesi alttaki görselin üstünde kalsın
-                                .zIndex(Double(tileCount - tile))
                         }
+                    }
+                    .overlay(alignment: .topLeading) {
+                        levelLayer(range: range, birds: birds, width: width, tileHeight: tileHeight)
                     }
                 }
                 .scrollBounceBehavior(.basedOnSize)
@@ -79,25 +84,28 @@ struct BirdSortPathView: View {
         }
     }
 
-    /// Bir yol parçası: görsel ve üstündeki bölümler (parça 0 en üstte).
-    private func tileView(_ tile: Int, range: ClosedRange<Int>, birds: BirdSortModel, width: CGFloat, tileHeight: CGFloat) -> some View {
-        ZStack(alignment: .topLeading) {
-            Image(island.pathImage)
-                .resizable()
-                .frame(width: width, height: tileHeight)
+    /// Bölümleri sırayla bağlayan yol ve bölüm düğmeleri (içeriğin tamamı boyunca).
+    private func levelLayer(range: ClosedRange<Int>, birds: BirdSortModel, width: CGFloat, tileHeight: CGFloat) -> some View {
+        let points: [CGPoint] = range.map { number in
+            let spot = spot(of: number - range.lowerBound)
+            return CGPoint(x: spot.node.x * width, y: (CGFloat(spot.tile) + spot.node.y) * tileHeight)
+        }
+        // Yol sıradaki bölüme kadar canlı; ada bittiyse tamamı
+        let current = birds.currentLevel
+        let reached: Int = current > range.upperBound || birds.completed(inIsland: island.index) == range.count
+            ? points.count - 1 : (range.contains(current) ? current - range.lowerBound : 0)
+        return ZStack(alignment: .topLeading) {
+            BirdSortRoad(points: points, reached: reached)
             ForEach(Array(range), id: \.self) { number in
-                let spot = spot(of: number - range.lowerBound)
-                if spot.tile == tile {
-                    BirdSortLevelNode(number: number, stars: birds.stars(for: number),
-                                      isUnlocked: birds.isUnlocked(number), isCurrent: birds.currentLevel == number,
-                                      tint: island.tint) {
-                        router.push(.birdGame(level: number))
-                    }
-                    .position(x: spot.node.x * width, y: spot.node.y * tileHeight)
+                BirdSortLevelNode(number: number, stars: birds.stars(for: number),
+                                  isUnlocked: birds.isUnlocked(number), isCurrent: birds.currentLevel == number,
+                                  tint: island.tint) {
+                    router.push(.birdGame(level: number))
                 }
+                .position(points[number - range.lowerBound])
             }
         }
-        .frame(width: width, height: tileHeight)
+        .frame(width: width, height: tileHeight * CGFloat(tileCount), alignment: .topLeading)
     }
 
     /// `index`: adadaki 0'dan başlayan bölüm sırası. Alttaki parçadan başlar, her parçada aşağıdan
@@ -169,6 +177,43 @@ struct BirdSortLevelNode: View {
         .onAppear {
             guard isCurrent, !reduceMotion else { return }
             withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) { pulse = true }
+        }
+    }
+}
+
+/// Bölümleri birbirine bağlayan kum rengi yol (Kedi Bulmaca haritasındaki gibi): koyu kenar, açık
+/// dolgu ve ortada basamak taşları. Geçilen kısım daha canlı, ilerisi soluk.
+struct BirdSortRoad: View {
+    let points: [CGPoint]
+    /// Açılmış son bölüme kadar olan nokta sayısı (o noktaya kadar yol canlı).
+    let reached: Int
+
+    var body: some View {
+        ZStack {
+            road(points)
+                .opacity(0.55)
+            road(Array(points.prefix(reached + 1)))
+        }
+        .shadow(color: .black.opacity(0.15), radius: 3, y: 2)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private func road(_ points: [CGPoint]) -> some View {
+        let path = Path { path in
+            guard let first = points.first else { return }
+            path.move(to: first)
+            for (start, end) in zip(points, points.dropFirst()) {
+                let dy = end.y - start.y
+                path.addCurve(to: end,
+                              control1: CGPoint(x: start.x, y: start.y + dy * 0.55),
+                              control2: CGPoint(x: end.x, y: end.y - dy * 0.55))
+            }
+        }
+        return ZStack {
+            path.stroke(Color(hex: "#B8956A").opacity(0.7), style: StrokeStyle(lineWidth: 24, lineCap: .round, lineJoin: .round))
+            path.stroke(Color(hex: "#F6E8CC"), style: StrokeStyle(lineWidth: 18, lineCap: .round, lineJoin: .round))
+            path.stroke(Color(hex: "#D9BF8F"), style: StrokeStyle(lineWidth: 7, lineCap: .round, dash: [1, 14]))
         }
     }
 }
