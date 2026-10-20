@@ -59,7 +59,7 @@ struct BirdSortGameScreen: View {
                         .controlSize(.large)
                         .tint(.white)
                 } else {
-                    BirdSortBoardView(viewModel: viewModel, branchImage: island.branchImage)
+                    BirdSortBoardView(viewModel: viewModel, branchImage: island.branchImage, branchSurface: island.branchSurface)
                         .padding(.vertical, 6)
                         .accessibilityIdentifier("birds.board")
                 }
@@ -157,6 +157,20 @@ struct BirdSortGameScreen: View {
             .background(Capsule().fill(.white.opacity(0.92)))
             .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
             Spacer(minLength: 0)
+            HStack(spacing: 4) {
+                Image(systemName: "arrow.left.arrow.right")
+                    .font(.caption.weight(.bold))
+                Text(verbatim: "\(viewModel.moves)")
+                    .font(.subheadline.weight(.heavy).monospacedDigit())
+            }
+            .foregroundStyle(theme.textPrimary)
+            .padding(.horizontal, 10)
+            .frame(height: 38)
+            .background(Capsule().fill(.white.opacity(0.92)))
+            .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(Text("Moves"))
+            .accessibilityValue(Text(verbatim: "\(viewModel.moves)"))
             ModePauseButton {
                 guard viewModel.session != nil, !viewModel.isWon else { return }
                 Haptics.selection()
@@ -171,36 +185,32 @@ struct BirdSortGameScreen: View {
     // MARK: - Alt bölüm: kedi ve yardımcılar
 
     private func dock(height: CGFloat) -> some View {
-        HStack(alignment: .bottom, spacing: 0) {
-            boosterButton(symbol: "arrow.uturn.backward", title: Text("Undo"), badge: nil, enabled: viewModel.canUndo) {
-                audio.play(.tap)
-                viewModel.undo()
-            }
-            .accessibilityIdentifier("birds.undo")
-            boosterButton(symbol: "plus.rectangle.on.rectangle", title: Text("Branch"),
-                          badge: store.isPremium ? nil : birds.progress.extraBranches,
-                          enabled: viewModel.canAddBranch) {
-                addBranch()
-            }
-            .accessibilityIdentifier("birds.branch.add")
+        // Kedi görsellerinin kenarları boş: düğmeler kedinin boş sağ kenarına biraz biner
+        HStack(alignment: .bottom, spacing: -height * 0.22) {
+            // Kedi solda ve büyük: menü alanının üstüne taşar
             BirdSortCatView(mood: viewModel.catMood)
-                .frame(width: height * 1.25, height: height * 0.92)
-                .padding(.horizontal, 2)
-            boosterButton(symbol: "lightbulb.fill", title: Text("Hint"),
-                          badge: store.isPremium ? nil : birds.progress.hints,
-                          enabled: viewModel.session != nil && !viewModel.isWon) {
-                showHint()
+                .frame(width: height * 1.7, height: height * 1.13, alignment: .bottom)
+                .padding(.leading, -height * 0.2)
+            HStack(alignment: .bottom, spacing: 0) {
+                boosterButton(symbol: "arrow.uturn.backward", title: Text("Undo"), badge: nil, enabled: viewModel.canUndo) {
+                    audio.play(.tap)
+                    viewModel.undo()
+                }
+                .accessibilityIdentifier("birds.undo")
+                boosterButton(symbol: "plus.rectangle.on.rectangle", title: Text("Branch"),
+                              badge: store.isPremium ? nil : birds.progress.extraBranches,
+                              enabled: viewModel.canAddBranch) {
+                    addBranch()
+                }
+                .accessibilityIdentifier("birds.branch.add")
+                boosterButton(symbol: "lightbulb.fill", title: Text("Hint"),
+                              badge: store.isPremium ? nil : birds.progress.hints,
+                              enabled: viewModel.session != nil && !viewModel.isWon) {
+                    showHint()
+                }
+                .accessibilityIdentifier("birds.hint")
             }
-            .accessibilityIdentifier("birds.hint")
-            VStack(spacing: 2) {
-                Text(verbatim: "\(viewModel.moves)")
-                    .font(.title3.weight(.heavy).monospacedDigit())
-                Text("Moves")
-                    .font(.caption2.weight(.semibold))
-            }
-            .foregroundStyle(Color(hex: "#7A4B25"))
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, 6)
+            .padding(.bottom, 10)
         }
         .padding(.horizontal, 8)
         .padding(.bottom, 2)

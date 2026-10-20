@@ -9,11 +9,13 @@ struct BirdSortBoardView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let viewModel: BirdSortGameViewModel
     let branchImage: String
+    /// Dalın üst yüzeyi (bkz. `BirdSortIsland.branchSurface`).
+    var branchSurface: [CGFloat] = []
 
     var body: some View {
         GeometryReader { proxy in
             let layout = BirdSortBoardLayout(size: proxy.size, branches: viewModel.branchCount, capacity: viewModel.capacity,
-                                             branchAspect: Self.aspect(of: branchImage))
+                                             branchAspect: Self.aspect(of: branchImage), surface: branchSurface)
             ZStack(alignment: .topLeading) {
                 ForEach(0..<viewModel.branchCount, id: \.self) { index in
                     branch(index, layout: layout)
@@ -77,7 +79,8 @@ struct BirdSortBoardView: View {
             point = CGPoint(x: isLeft ? -size * 2 : layout.size.width + size * 2, y: -size * 2 - CGFloat(token.slot) * size * 0.4)
         }
         return BirdSprite(species: token.species, phase: token.phase, isAnimated: !reduceMotion, seed: token.id)
-            .frame(width: size, height: size)
+            // Ayaklar karenin altında: geniş kuşlar da dala basar
+            .frame(width: size, height: size, alignment: .bottom)
             .scaleEffect(x: isLeft ? 1 : -1)
             .position(point)
             .allowsHitTesting(false)
@@ -93,6 +96,8 @@ struct BirdSortBoardLayout {
     let capacity: Int
     /// Dal görselinin en/boy oranı.
     var branchAspect: CGFloat = 3
+    /// Dal görselinde tahtanın üst yüzeyi (gövdeden uca 10 nokta, görselin %10'u ile %95'i arası).
+    var surface: [CGFloat] = []
 
     var rows: Int { max((branches + 1) / 2, 1) }
     var rowHeight: CGFloat { size.height / CGFloat(rows) }
@@ -136,7 +141,21 @@ struct BirdSortBoardLayout {
         let step = perchLength / CGFloat(capacity)
         let fromEdge = perchStart + step * (CGFloat(slot) + 0.5)
         let x = branch % 2 == 0 ? fromEdge : size.width - fromEdge
-        return CGPoint(x: x, y: perchY(row: row) - birdSize * 0.42)
+        // Kuşun ayakları dalın o noktadaki üst yüzeyine (biraz içine) basar
+        let frame = branchFrame(branch)
+        let along = (fromEdge + overhang) / branchWidth
+        let feet = frame.minY + surfaceY(at: along) * branchHeight + birdSize * 0.05
+        return CGPoint(x: x, y: feet - birdSize / 2)
+    }
+
+    /// Dal görselinin `fraction` (0…1) noktasında tahtanın üstü; ölçü yoksa ortalama değer.
+    private func surfaceY(at fraction: CGFloat) -> CGFloat {
+        guard surface.count > 1 else { return 0.48 }
+        let position = (min(max(fraction, 0.1), 0.95) - 0.1) / 0.85 * CGFloat(surface.count - 1)
+        let lower = Int(position.rounded(.down))
+        let upper = min(lower + 1, surface.count - 1)
+        let t = position - CGFloat(lower)
+        return surface[lower] * (1 - t) + surface[upper] * t
     }
 }
 

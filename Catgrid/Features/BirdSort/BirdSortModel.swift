@@ -191,6 +191,19 @@ struct BirdSortIsland: Identifiable, Hashable {
         ["branch-2", "branch-1", "branch-5", "branch-3", "branch-4", "branch-11"][index]
     }
 
+    /// Dal görselinde tahtanın üst yüzeyi (görselin boyuna oranı), gövdeden uca 10 noktada
+    /// (görselin %10'undan %95'ine). Kuşların ayakları bu çizgiye basar.
+    var branchSurface: [CGFloat] {
+        [
+            [0.36, 0.44, 0.50, 0.57, 0.62, 0.62, 0.60, 0.54, 0.46, 0.42],
+            [0.38, 0.44, 0.49, 0.53, 0.57, 0.58, 0.55, 0.49, 0.44, 0.42],
+            [0.24, 0.27, 0.30, 0.35, 0.42, 0.43, 0.38, 0.33, 0.30, 0.30],
+            [0.30, 0.32, 0.36, 0.42, 0.50, 0.52, 0.50, 0.45, 0.42, 0.42],
+            [0.38, 0.46, 0.50, 0.56, 0.62, 0.64, 0.58, 0.52, 0.46, 0.44],
+            [0.36, 0.36, 0.36, 0.38, 0.42, 0.45, 0.40, 0.35, 0.33, 0.32],
+        ][index]
+    }
+
     /// Yol görselindeki bölüm noktaları (yukarıdan aşağı, görselin oranı olarak). Görsel alt alta
     /// eklenir; her görselde 10 bölüm.
     var pathNodes: [CGPoint] {
