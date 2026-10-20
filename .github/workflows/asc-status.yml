@@ -1,0 +1,24 @@
+name: App Store durumu
+
+# Elle başlatılır (GitHub → Actions → "App Store durumu" → Run workflow) ya da bu araç değişince.
+# Yalnızca okur: sürümler, inceleme gönderimleri, abonelikler ve Game Center durumunu raporlar.
+on:
+  push:
+    branches: [claude/friendly-mendel-o10jvo]
+    paths:
+      - Tools/asc_review_status.py
+      - .github/workflows/asc-status.yml
+  workflow_dispatch:
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet pyjwt cryptography
+      - run: python3 Tools/asc_review_status.py
