@@ -60,7 +60,7 @@ struct BirdSortHubView: View {
                 .foregroundStyle(theme.textPrimary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Capsule().fill(.white.opacity(0.92)))
+                .background(Capsule().fill(theme.surface.opacity(0.95)))
                 .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
             }
         }
@@ -187,7 +187,7 @@ struct BirdSortRoundButton: View {
                 .font(.body.weight(.bold))
                 .foregroundStyle(theme.textPrimary.opacity(isEnabled ? 1 : 0.35))
                 .frame(width: 40, height: 40)
-                .background(Circle().fill(.white.opacity(0.94)))
+                .background(Circle().fill(theme.surface.opacity(0.95)))
                 .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
                 .overlay(alignment: .topTrailing) {
                     if let badge {
@@ -216,7 +216,7 @@ struct BirdSortTitleCapsule: View {
             .lineLimit(1)
             .padding(.horizontal, 14)
             .padding(.vertical, 6)
-            .background(Capsule().fill(.white.opacity(0.92)))
+            .background(Capsule().fill(theme.surface.opacity(0.95)))
             .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
     }
 }

@@ -89,7 +89,7 @@ struct CatHubView: View {
                         .font(.body.weight(.bold))
                         .foregroundStyle(theme.textPrimary)
                         .frame(width: 38, height: 38)
-                        .background(Circle().fill(.white.opacity(0.92)))
+                        .background(Circle().fill(theme.surface.opacity(0.95)))
                         .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
                 }
                 .accessibilityLabel(Text("Back"))
@@ -101,7 +101,7 @@ struct CatHubView: View {
                     .foregroundStyle(theme.textPrimary)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 6)
-                    .background(Capsule().fill(.white.opacity(0.92)))
+                    .background(Capsule().fill(theme.surface.opacity(0.95)))
                     .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
             }
         }

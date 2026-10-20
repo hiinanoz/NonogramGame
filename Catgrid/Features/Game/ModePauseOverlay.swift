@@ -64,7 +64,7 @@ struct ModePauseButton: View {
                 .font(.subheadline.weight(.bold))
                 .foregroundStyle(theme.textPrimary)
                 .frame(width: 38, height: 38)
-                .background(Circle().fill(.white.opacity(0.94)))
+                .background(Circle().fill(theme.surface.opacity(0.95)))
                 .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
         }
         .buttonStyle(PressableButtonStyle())

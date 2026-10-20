@@ -78,7 +78,7 @@ struct BirdSortPathView: View {
                 .foregroundStyle(theme.textPrimary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(Capsule().fill(.white.opacity(0.92)))
+                .background(Capsule().fill(theme.surface.opacity(0.95)))
                 .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
             }
         }

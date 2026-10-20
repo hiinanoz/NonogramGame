@@ -154,7 +154,7 @@ struct BirdSortGameScreen: View {
             .foregroundStyle(theme.textPrimary)
             .padding(.horizontal, 16)
             .padding(.vertical, 5)
-            .background(Capsule().fill(.white.opacity(0.92)))
+            .background(Capsule().fill(theme.surface.opacity(0.95)))
             .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
             Spacer(minLength: 0)
             HStack(spacing: 4) {
@@ -166,7 +166,7 @@ struct BirdSortGameScreen: View {
             .foregroundStyle(theme.textPrimary)
             .padding(.horizontal, 10)
             .frame(height: 38)
-            .background(Capsule().fill(.white.opacity(0.92)))
+            .background(Capsule().fill(theme.surface.opacity(0.95)))
             .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
             .accessibilityElement(children: .combine)
             .accessibilityLabel(Text("Moves"))
