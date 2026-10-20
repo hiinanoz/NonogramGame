@@ -45,6 +45,7 @@ enum LoopingCatAnimation {
         case peekCat: 300.0 / 338.0
         case crushCat: 360.0 / 296.0
         case sortCat: 360.0 / 247.0
+        case blockCat: 360.0 / 242.0
         default: 360.0 / 194.0
         }
     }
