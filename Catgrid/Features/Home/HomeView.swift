@@ -46,6 +46,8 @@ struct HomeView: View {
         }
         // Birkaç bulmacadan sonra bir kez: günlük hatırlatma ister misin?
         .task {
+            // Açılış animasyonu bitmeden pencere açılmasın (sayfalar animasyonun üstüne çıkar)
+            if !ThinksSplash.isSkipped { try? await Task.sleep(for: .seconds(3.3)) }
             // Güncellemeden sonra önce "Yenilikler"; o gün hatırlatma sorulmaz
             if WhatsNew.shouldShow(isReturningPlayer: isReturningPlayer) {
                 try? await Task.sleep(for: .seconds(0.6))

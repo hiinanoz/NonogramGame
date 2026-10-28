@@ -10,17 +10,28 @@ struct CatgridApp: App {
     @State private var ads = AdCoordinator.live()
     @State private var store = StoreManager()
     @State private var reminders = ReminderManager()
+    /// Açılışta 3 saniyelik THiNKS animasyonu; uygulama arkasında hazırlanır.
+    @State private var isShowingSplash = !ThinksSplash.isSkipped
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(model)
-                .environment(themeManager)
-                .environment(router)
-                .environment(audio)
-                .environment(ads)
-                .environment(store)
-                .environment(reminders)
+            ZStack {
+                RootView()
+                    .environment(model)
+                    .environment(themeManager)
+                    .environment(router)
+                    .environment(audio)
+                    .environment(ads)
+                    .environment(store)
+                    .environment(reminders)
+                if isShowingSplash {
+                    ThinksSplashView {
+                        withAnimation(.easeOut(duration: 0.35)) { isShowingSplash = false }
+                    }
+                    .transition(.opacity)
+                    .zIndex(1)
+                }
+            }
         }
     }
 }
