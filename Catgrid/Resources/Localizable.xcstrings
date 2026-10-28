@@ -24718,7 +24718,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@を%lld個集めよう"
+            "value": "%2$@を%1$lld個集めよう"
           }
         },
         "de": {
@@ -24748,7 +24748,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ %lld개 모으기"
+            "value": "%2$@ %1$lld개 모으기"
           }
         }
       }

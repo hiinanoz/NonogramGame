@@ -8,6 +8,8 @@ Kontroller:
     Birden fazlası varsa Xcode çoğul kuralını yanlış argümana uygulayabilir; sayı nesne (%@)
     gibi okunur ve uygulama EXC_BAD_ACCESS ile çöker.
   - Her çevirinin biçim argümanları (%@, %lld...) anahtardakilerle aynı türde ve sayıda olmalı.
+    Çeviri argümanların sırasını değiştiriyorsa sıra numarası yazılmalı (%2$@ ... %1$lld);
+    yoksa sayı nesne gibi okunur ve uygulama çöker.
   - Her anahtarın tüm dillerde (tr, ja, de, fr, es, pt-BR, ko) çevirisi olmalı.
 """
 import json
@@ -18,11 +20,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LANGUAGES = ["tr", "ja", "de", "fr", "es", "pt-BR", "ko"]
 CATALOGS = [ROOT / "Catgrid/Resources/Localizable.xcstrings", ROOT / "Catgrid/Resources/InfoPlist.xcstrings"]
-SPEC = re.compile(r"%(?:\d+\$)?(lld|ld|d|@|f|%)")
+SPEC = re.compile(r"%(?:(\d+)\$)?(lld|ld|d|@|f|%)")
 
 
 def specs(text):
-    return sorted(s for s in SPEC.findall(text) if s != "%")
+    """Argümanlar, karşılık geldikleri sıraya göre: [(sıra, tür), ...]."""
+    found = [(position, kind) for position, kind in SPEC.findall(text) if kind != "%"]
+    return sorted((int(position) if position else index, kind) for index, (position, kind) in enumerate(found, 1))
 
 
 def values(localization):
