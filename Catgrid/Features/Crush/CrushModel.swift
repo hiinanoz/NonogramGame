@@ -188,6 +188,18 @@ final class CrushModel {
         save()
     }
 
+    #if DEBUG
+    /// Ekran görüntüleri için: ilk bölümler kazanılmış, tanıtım görülmüş (yalnızca bellekte).
+    func seedDemoProgress(completed: Int) {
+        for (index, level) in levels.prefix(completed).enumerated() {
+            let stars = index % 4 == 1 ? 2 : 3
+            _ = progress.record(levelID: level.id, score: level.starScores[min(stars, level.starScores.count) - 1],
+                                stars: stars, catalog: catalog)
+        }
+        markIntroSeen()
+    }
+    #endif
+
     func markIntroSeen() {
         hasSeenIntro = true
         defaults.set(true, forKey: Keys.introSeen)

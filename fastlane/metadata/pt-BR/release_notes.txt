@@ -1,0 +1,8 @@
+Três novos modos de jogo!
+
+• Meow Crush: 300 fases de combinar três na Torre dos Gatos
+• Miau Sort: organize os pássaros nos galhos, 450 fases em seis ilhas
+• Bloco do Gato: preencha o tabuleiro 8×8 com blocos e bata seu recorde
+• Pausar e continuar: as partidas seguem de onde você parou
+• Novos placares do Game Center para os novos modos
+• Nova animação de abertura, início mais rápido e várias pequenas melhorias

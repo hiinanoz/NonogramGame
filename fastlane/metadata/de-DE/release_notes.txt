@@ -1,0 +1,8 @@
+Drei neue Spielmodi!
+
+• Meow Crush: 300 Match-3-Level im Katzenturm
+• Miau Sort: Sortiere Vögel auf ihren Ästen, 450 Level auf sechs Inseln
+• Katzenblock: Fülle das 8×8-Feld mit Blöcken und jage deinen Rekord
+• Pausieren und fortsetzen: Spiele gehen dort weiter, wo du aufgehört hast
+• Neue Game-Center-Ranglisten für die neuen Modi
+• Neue Startanimation, schnellerer Start und viele kleine Verbesserungen

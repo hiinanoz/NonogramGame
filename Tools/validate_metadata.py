@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent / "fastlane/metadata"
 LOCALES = ["en-US", "tr", "ja", "de-DE", "fr-FR", "es-ES", "pt-BR", "ko"]
-LIMITS = {"name": 30, "subtitle": 30, "promotional_text": 170, "keywords": 100, "description": 4000}
+LIMITS = {"name": 30, "subtitle": 30, "promotional_text": 170, "keywords": 100, "description": 4000, "release_notes": 4000}
 URLS = ["privacy_url", "support_url", "marketing_url"]
 
 errors = []

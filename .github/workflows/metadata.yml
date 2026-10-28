@@ -2,7 +2,7 @@ name: App Store metinlerini yükle
 
 # Elle başlatılır: GitHub → Actions → "App Store metinlerini yükle" → Run workflow.
 # fastlane/metadata/<dil>/ altındaki ad, alt başlık, açıklama, anahtar kelimeler, tanıtım
-# metni ve bağlantıları App Store Connect'teki 1.0.0 sürümüne 8 dilde yazar.
+# metni ve bağlantıları App Store Connect'teki --app_version sürümüne ("Yenilikler" dahil) 8 dilde yazar.
 # Derleme yüklemez, incelemeye göndermez. Sırlar: ASC_KEY_ID, ASC_ISSUER_ID, ASC_PRIVATE_KEY.
 on:
   workflow_dispatch:
@@ -57,7 +57,7 @@ jobs:
             --api_key_path ~/asc_key.json \
             --app_identifier com.catgridcollection.nonogram \
             --platform ios \
-            --app_version 1.1.0 \
+            --app_version 1.2.0 \
             --metadata_path fastlane/metadata \
             --screenshots_path fastlane/screenshots \
             --skip_binary_upload true \

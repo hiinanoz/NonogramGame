@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 def contact_sheet(root):
-    """Her dil için 5 görüntüyü küçültüp yan yana koyar: <root>/_preview/<dil>.jpg (PIL'siz, sips ile)."""
+    """Her dilin görüntülerini küçültüp yan yana koyar: <root>/_preview/<dil>.jpg (PIL'siz, sips ile)."""
     import subprocess
     preview = root / "_preview"
     preview.mkdir(exist_ok=True)

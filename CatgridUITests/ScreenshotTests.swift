@@ -22,29 +22,62 @@ final class ScreenshotTests: XCTestCase {
         app.launchArguments += ["-AppleLanguages", "(\(language))", "-AppleLocale", locale, "-screenshots", "-disableAds"]
         app.launch()
 
-        // 1. Ana sayfa: üç mod, hareketli kediler, koleksiyon rafı
+        // 1. Ana sayfa: beş mod, hareketli kediler, koleksiyon rafı
         let cats = app.buttons["home.mode.cats"]
         XCTAssertTrue(cats.waitForExistence(timeout: 20))
         settle(3)
         capture("01_home")
 
-        // 2. Kedi Bulmaca serüven haritası (kalınan bölüm ortada)
-        cats.tap()
+        // 2. Miyav Crush: Kedi Kulesi'ndeki sıradaki bölüm
+        tapHomeMode(app, "home.mode.crush")
+        let crushPlay = app.buttons["crush.hub.play"]
+        XCTAssertTrue(crushPlay.waitForExistence(timeout: 20))
+        settle(1.5)
+        crushPlay.tap()
+        _ = app.descendants(matching: .any)["crush.board"].waitForExistence(timeout: 20)
+        settle(3)
+        capture("02_crush")
+        goHome(app)
+
+        // 3. Miyav Sort: sıradaki bölümün dalları
+        tapHomeMode(app, "home.mode.birds")
+        let birdsPlay = app.buttons["birds.hub.play"]
+        XCTAssertTrue(birdsPlay.waitForExistence(timeout: 20))
+        settle(1.5)
+        birdsPlay.tap()
+        _ = app.descendants(matching: .any)["birds.board"].waitForExistence(timeout: 30)
+        settle(3)
+        capture("03_sort")
+        goHome(app)
+
+        // 4. Kedi Kutusu: yarısı dolu, devam eden oyun
+        tapHomeMode(app, "home.mode.block")
+        let blockContinue = app.buttons["block.continue"]
+        XCTAssertTrue(blockContinue.waitForExistence(timeout: 20))
+        settle(1)
+        blockContinue.tap()
+        _ = app.descendants(matching: .any)["block.board"].waitForExistence(timeout: 20)
+        settle(2)
+        capture("04_block")
+        goHome(app)
+
+        // 5. Kedi Bulmaca serüven haritası (kalınan bölüm ortada)
+        tapHomeMode(app, "home.mode.cats")
         let play = app.buttons["hub.continue"]
         XCTAssertTrue(play.waitForExistence(timeout: 20))
         settle(2)
-        capture("02_cat_map")
+        capture("05_cat_map")
 
-        // 3. Kedi Bulmaca oyunu: kedilerin yarısı bulunmuş
+        // 6. Kedi Bulmaca oyunu: kedilerin yarısı bulunmuş
         play.tap()
         let catBoard = app.descendants(matching: .any)["cat.board"]
         _ = catBoard.waitForExistence(timeout: 20)
         settle(2)
-        capture("03_cat_game")
+        capture("06_cat_game")
         goBack(app)
         goBack(app)
 
-        // 4. Nonogram: yarısı çözülmüş bölüm
+        // 7. Nonogram: yarısı çözülmüş bölüm
         let collectionMode = app.buttons["home.mode.collection"]
         XCTAssertTrue(collectionMode.waitForExistence(timeout: 20))
         collectionMode.tap()
@@ -57,20 +90,20 @@ final class ScreenshotTests: XCTestCase {
         }
         XCTAssertTrue(board.waitForExistence(timeout: 30))
         settle(2.5)
-        capture("04_nonogram")
+        capture("07_nonogram")
         goBack(app)
         goBack(app)
 
-        // 5. Günlük bulmaca: takvim ve seri
+        // 8. Günlük bulmaca: takvim ve seri
         let daily = app.buttons["home.daily"]
         XCTAssertTrue(daily.waitForExistence(timeout: 20))
         daily.tap()
         _ = app.buttons["daily.play"].waitForExistence(timeout: 20)
         settle(2)
-        capture("05_daily")
+        capture("08_daily")
         goBack(app)
 
-        // 6. Kart koleksiyonu
+        // 9. Kart koleksiyonu
         // Geri dönüş animasyonu bitmeden dokunulursa kaçabilir: ekran açılana kadar yeniden dene
         let collection = app.buttons["home.collection"]
         XCTAssertTrue(collection.waitForExistence(timeout: 20))
@@ -82,7 +115,38 @@ final class ScreenshotTests: XCTestCase {
         }
         XCTAssertTrue(card.exists, "Koleksiyon ekranı açılmadı")
         settle(1.5)
-        capture("06_collection")
+        capture("09_collection")
+    }
+
+    /// Ana sayfadaki mod kartına dokunur (gerekirse kartı görünür yapmak için kaydırır).
+    private func tapHomeMode(_ app: XCUIApplication, _ identifier: String) {
+        let button = app.buttons[identifier]
+        XCTAssertTrue(button.waitForExistence(timeout: 20), "\(identifier) yok")
+        for _ in 0..<3 where !button.isHittable {
+            app.swipeUp()
+            settle(0.6)
+        }
+        button.tap()
+    }
+
+    /// Oyundan ana sayfaya: Crush duraklatma penceresinden haritaya, Sort ve Kedi Kutusu kendi
+    /// geri düğmeleriyle çıkar (oyun kaydedilir), sonra mod sayfasından geri dönülür.
+    private func goHome(_ app: XCUIApplication) {
+        let home = app.buttons["home.mode.cats"]
+        let backs = ["birds.game.back", "block.back", "crush.hub.back", "birds.path.back", "birds.hub.back", "block.hub.back"]
+        for _ in 0..<5 where !(home.exists && home.isHittable) {
+            if app.buttons["crush.pause"].exists {
+                app.buttons["crush.pause"].tap()
+                if app.buttons["pause.map"].waitForExistence(timeout: 5) { app.buttons["pause.map"].tap() }
+            } else if let back = backs.lazy.map({ app.buttons[$0] }).first(where: { $0.exists && $0.isHittable }) {
+                back.tap()
+            }
+            settle(1.2)
+        }
+        for _ in 0..<2 where !home.isHittable {
+            app.swipeDown()
+            settle(0.5)
+        }
     }
 
     private func capture(_ name: String) {

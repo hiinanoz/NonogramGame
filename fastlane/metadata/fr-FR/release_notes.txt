@@ -1,0 +1,8 @@
+Trois nouveaux modes de jeu !
+
+• Meow Crush : 300 niveaux de match-3 dans la Tour des Chats
+• Miaou Sort : trie les oiseaux sur leurs branches, 450 niveaux sur six îles
+• Bloc Chat : remplis le plateau 8×8 de blocs et bats ton record
+• Pause et reprise : les parties reprennent là où tu t'étais arrêté
+• Nouveaux classements Game Center pour les nouveaux modes
+• Nouvelle animation de lancement, démarrage plus rapide et plein de petites améliorations

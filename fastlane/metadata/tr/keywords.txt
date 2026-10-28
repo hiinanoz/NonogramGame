@@ -1,1 +1,1 @@
-zeka oyunu,resim bulmaca,griddlers,mantık,yavru,rahatlatıcı,sayı boyama,günlük,kart,beyin
+zeka oyunu,resim bulmaca,griddlers,mantık,yavru,rahatlatıcı,eşleştirme,kuş sıralama,blok bulmaca

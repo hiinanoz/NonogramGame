@@ -1,7 +1,7 @@
 name: Ekran görüntüleri
 
 # Elle başlatılır: GitHub → Actions → "Ekran görüntüleri" → Run workflow.
-# 6,9" iPhone simülatöründe 8 dilde 5'er App Store ekran görüntüsü çeker. Sonuç, çalıştırma
+# 6,9" iPhone simülatöründe 8 dilde 9'ar App Store ekran görüntüsü çeker. Sonuç, çalıştırma
 # sayfasında "screenshots" adlı indirilebilir dosya olarak durur. "upload" seçilirse
 # App Store Connect'e de yüklenir (mevcutların yerine).
 on:
@@ -84,7 +84,7 @@ jobs:
 
       - name: store-screenshots dalına kaydet
         run: |
-          # Önizleme: her dilin 5 görüntüsü küçültülüp yan yana (inceleme için)
+          # Önizleme: her dilin görüntüleri küçültülüp yan yana (inceleme için)
           rm -rf /tmp/shots && cp -R fastlane/screenshots /tmp/shots
           python3 Tools/collect_screenshots.py --contact-sheet /tmp/shots
           # Yalnızca görüntüler: derleme klasörleri dala karışmasın diye ayrı, boş bir depodan gönderilir
@@ -113,7 +113,7 @@ jobs:
                     open(os.path.expanduser("~/asc_key.json"), "w"))
           PY
           fastlane deliver --api_key_path ~/asc_key.json --app_identifier com.catgridcollection.nonogram \
-            --platform ios --app_version 1.1.0 --screenshots_path fastlane/screenshots \
+            --platform ios --app_version 1.2.0 --screenshots_path fastlane/screenshots \
             --skip_binary_upload true --skip_metadata true --skip_screenshots false --overwrite_screenshots true \
             --run_precheck_before_submit false --submit_for_review false --force true
           rm -f ~/asc_key.json

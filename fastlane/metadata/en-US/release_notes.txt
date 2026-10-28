@@ -1,0 +1,8 @@
+Three new game modes!
+
+• Meow Crush: match cat treats in 300 levels across the Cat Tower
+• Meow Sort: sort the birds on their branches in 450 levels across six islands
+• Cat Block: fill the 8×8 board with blocks and chase your best score
+• Pause and resume: games continue where you left off
+• New Game Center leaderboards for the new modes
+• A new launch animation, faster start-up and many small improvements

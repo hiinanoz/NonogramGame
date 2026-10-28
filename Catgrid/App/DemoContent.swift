@@ -36,6 +36,36 @@ enum DemoContent {
 
         seedDaily(model, now: now)
         seedCats(model)
+        seedModes(model)
+    }
+
+    /// Miyav Crush ve Miyav Sort: ilk bölümler 1-3 yıldızla bitmiş (tanıtım kartları görülmüş).
+    /// Kedi Kutusu: rekor ve yarım kalmış, yarısı dolu bir oyun ("Devam et").
+    @MainActor
+    private static func seedModes(_ model: AppModel) {
+        model.crush.seedDemoProgress(completed: 13)
+        let birds = model.birds
+        birds.markIntroSeen()
+        for level in 1...20 {
+            birds.recordWin(level: level, stars: level % 5 == 2 ? 2 : 3, moves: 20)
+        }
+
+        let blocks = model.blocks
+        _ = blocks.report(score: 12_540)
+        var game = CatBlockGame(seed: 7)
+        // Satır ya da sütun tamamlamadan ~yarısı dolu tahta: her taş alttan başlayarak ilk boş yere
+        for _ in 0..<12 {
+            guard let slot = game.tray.indices.first(where: { game.tray[$0] != nil }), let piece = game.tray[slot] else { break }
+            let size = CatBlockGame.size
+            let spot = (0..<(size * size)).reversed().lazy.map { ($0 / size, $0 % size) }.first { row, column in
+                guard game.canPlace(piece, row: row, column: column) else { return false }
+                var trial = game
+                return trial.place(trayIndex: slot, row: row, column: column)?.lineCount == 0
+            }
+            guard let (row, column) = spot else { break }
+            game.place(trayIndex: slot, row: row, column: column)
+        }
+        blocks.saveGame(game)
     }
 
     /// Son 6 günün günlük bulmacası çözülmüş (seri); bugünkü oynanmayı bekliyor.

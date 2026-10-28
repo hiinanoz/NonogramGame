@@ -8,8 +8,19 @@ Du Siamois et du Persan au Maine Coon, en passant par le Van turc et le Bobtail 
 COLLECTIONNE LES CARTES DE RACE
 Termine toutes les grilles d'une race pour gagner sa carte à collectionner, avec son origine, son espérance de vie, son pelage, ses traits de caractère et une anecdote amusante. Retourne la carte pour en savoir plus sur la race.
 
-NOUVEAU : PUZZLE CHAT
+PUZZLE CHAT
 Place un chat dans chaque couleur, chaque ligne et chaque colonne, sans que deux chats se touchent. 335 niveaux sur quatre cartes d'aventure au fil des saisons, du jardin printanier au conte d'hiver. En mode facile, les cases autour de chaque chat trouvé sont barrées pour toi ; en mode difficile, tout est entre tes pattes.
+
+NOUVEAU : MEOW CRUSH
+Associe au moins trois friandises pour chat, crée des pelotes rayées et des bonus, et remplis les objectifs de chaque niveau. 300 niveaux dans les quatre immeubles de la Tour des Chats, avec des chats endormis dans chaque appartement.
+
+NOUVEAU : MIAOU SORT
+Trie les oiseaux pour qu'il n'y ait qu'une espèce par branche. Une branche complète s'envole et le petit chat en bas se réjouit. 450 niveaux sur six îles.
+
+NOUVEAU : BLOC CHAT
+Pose des blocs pastel sur un plateau 8×8 et efface les lignes et colonnes pleines. Enchaîne les combos, vide tout le plateau et bats ton record.
+
+Pause à tout moment : Meow Crush, Miaou Sort et Bloc Chat reprennent là où tu t'étais arrêté.
 
 GRILLE DU JOUR
 Un nouveau nonogramme expert chaque jour. Garde ta série, rattrape les jours manqués et gagne des badges hebdomadaires.
