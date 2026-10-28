@@ -20,8 +20,9 @@ enum LoopingCatAnimation {
     static let sortCat = "sort-cat-loop"
     static let blockCat = "block-cat-loop"
 
-    /// Videonun kare hızı.
-    static let frameRate: Double = 24
+    /// Animasyonların kare hızı (videolar 24 kare/sn çekildi, uygulama boyutu için her ikinci
+    /// kare saklanır).
+    static let frameRate: Double = 12
     /// Kareler ekrandaki boyutun en fazla bu katı çözülür (yumuşak çizimlerde 2x yeterli,
     /// bellek azalır).
     static let maxPixelScale: CGFloat = 2
