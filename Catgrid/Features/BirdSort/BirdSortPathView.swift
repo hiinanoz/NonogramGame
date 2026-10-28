@@ -24,20 +24,20 @@ struct BirdSortPathView: View {
             let tileHeight: CGFloat = width * aspect
             ScrollViewReader { reader in
                 ScrollView(showsIndicators: false) {
-                    // Her yol görseli kendi 10 bölümüyle bir parça; kaydırma parçaya göre yapılır
-                    // (konumlanmış tek tek düğmelere kaydırma güvenilir değil)
                     // Görseller alt alta (kaydırma bunlara göre); yol ve bölümler hepsinin üstünde,
                     // zeminle birlikte kayar
                     VStack(spacing: 0) {
-                        ForEach(0..<tileCount, id: \.self) { tile in
+                        ForEach(0..<tileCount, id: \.self) { _ in
                             Image(island.pathImage)
                                 .resizable()
                                 .frame(width: width, height: tileHeight)
-                                .id(tile)
                         }
                     }
                     .overlay(alignment: .topLeading) {
                         levelLayer(range: range, birds: birds, width: width, tileHeight: tileHeight)
+                    }
+                    .overlay(alignment: .topLeading) {
+                        scrollMarkers(range: range, width: width, tileHeight: tileHeight)
                     }
                 }
                 .scrollBounceBehavior(.basedOnSize)
@@ -48,10 +48,9 @@ struct BirdSortPathView: View {
                     // Kaldığı bölüm; ada bittiyse ya da henüz gelinmediyse ilk bölüm
                     let current = birds.currentLevel
                     let target = range.contains(current) ? current : range.lowerBound
-                    let spot = spot(of: target - range.lowerBound)
-                    try? await Task.sleep(for: .milliseconds(60))
-                    // Parçanın bölüm noktası ekranda aynı orandaki yere gelir: bölüm hep görünür
-                    reader.scrollTo(spot.tile, anchor: UnitPoint(x: 0.5, y: spot.node.y))
+                    try? await Task.sleep(for: .milliseconds(80))
+                    // Bölümün işaretçisi ekranın ortasına gelir
+                    reader.scrollTo(Self.markerID(target), anchor: .center)
                 }
             }
         }
@@ -107,6 +106,28 @@ struct BirdSortPathView: View {
         }
         .frame(width: width, height: tileHeight * CGFloat(tileCount), alignment: .topLeading)
     }
+
+    /// Her bölümün tam yerinde 1 noktalık görünmez işaretçi. Konum hizalama kılavuzlarıyla
+    /// verilir (gerçek yerleşim çerçevesi o noktada olur), böylece kaydırma bölümü tam ortalar.
+    private func scrollMarkers(range: ClosedRange<Int>, width: CGFloat, tileHeight: CGFloat) -> some View {
+        ZStack(alignment: .topLeading) {
+            ForEach(Array(range), id: \.self) { number in
+                let spot = spot(of: number - range.lowerBound)
+                let x: CGFloat = spot.node.x * width
+                let y: CGFloat = (CGFloat(spot.tile) + spot.node.y) * tileHeight
+                Color.clear
+                    .frame(width: 1, height: 1)
+                    .alignmentGuide(.leading) { _ in -x }
+                    .alignmentGuide(.top) { _ in -y }
+                    .id(Self.markerID(number))
+            }
+        }
+        .frame(width: width, height: tileHeight * CGFloat(tileCount), alignment: .topLeading)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private static func markerID(_ number: Int) -> String { "level-\(number)" }
 
     /// `index`: adadaki 0'dan başlayan bölüm sırası. Alttaki parçadan başlar, her parçada aşağıdan
     /// yukarı (görselin noktaları yukarıdan aşağı verildiğinden ters sırada).

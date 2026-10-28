@@ -326,6 +326,7 @@ struct CatBlockGameScreen: View {
         withAnimation(.default) { shake += 1 }
         isNewBest = game.score > startingBest && game.score > 0
         blocks.report(score: game.score)
+        model.reportToGameCenter()
         isOver = true
     }
 

@@ -184,6 +184,9 @@ final class AppModel {
             .dailyStreak: dailyStreak,
             .nonogramsSolved: progress.stats.solvedCount,
             .catLevelsSolved: cats.levels.filter { cats.isSolved($0) }.count,
+            .crushLevels: crush.completedCount,
+            .sortLevels: birds.completedCount,
+            .blockBest: blocks.bestScore,
         ])
     }
 

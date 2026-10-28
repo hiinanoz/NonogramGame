@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Game Center'ı App Store Connect'te kurar: uygulamanın Game Center kaydı, üç sıralama listesi
-ve 8 dildeki adları; düzenlenebilir sürümde Game Center'ı açar. Tekrar çalıştırmak güvenlidir.
+"""Game Center'ı App Store Connect'te kurar: uygulamanın Game Center kaydı, altı sıralama listesi
+ve 8 dildeki adları (altı liste); düzenlenebilir sürümde Game Center'ı açar. Tekrar çalıştırmak güvenlidir.
 
 Kullanım (iş akışında):  ASC_KEY_ID=… ASC_ISSUER_ID=… ASC_PRIVATE_KEY=… python3 Tools/asc_gamecenter.py [--report]
 
@@ -41,6 +41,36 @@ LEADERBOARDS = {
         "es-ES": ("Niveles de Puzle Gatuno", " niveles", " nivel"),
         "pt-BR": ("Fases do Quebra-Gato", " fases", " fase"),
         "ko": ("고양이 퍼즐 레벨", "레벨", "레벨"),
+    }),
+    "catgrid.crush.levels": ("Meow Crush levels", "DESC", "MOST_RECENT_SCORE", {
+        "en-US": ("Meow Crush Levels", " levels", " level"),
+        "tr": ("Miyav Crush Bölümleri", " bölüm", " bölüm"),
+        "ja": ("ニャンクラッシュ クリア数", "ステージ", "ステージ"),
+        "de-DE": ("Meow Crush Level", " Level", " Level"),
+        "fr-FR": ("Niveaux Meow Crush", " niveaux", " niveau"),
+        "es-ES": ("Niveles de Meow Crush", " niveles", " nivel"),
+        "pt-BR": ("Fases do Meow Crush", " fases", " fase"),
+        "ko": ("야옹 크러시 레벨", "레벨", "레벨"),
+    }),
+    "catgrid.sort.levels": ("Meow Sort levels", "DESC", "MOST_RECENT_SCORE", {
+        "en-US": ("Meow Sort Levels", " levels", " level"),
+        "tr": ("Miyav Sort Bölümleri", " bölüm", " bölüm"),
+        "ja": ("ニャンソート クリア数", "ステージ", "ステージ"),
+        "de-DE": ("Miau Sort Level", " Level", " Level"),
+        "fr-FR": ("Niveaux Miaou Sort", " niveaux", " niveau"),
+        "es-ES": ("Niveles de Miau Sort", " niveles", " nivel"),
+        "pt-BR": ("Fases do Miau Sort", " fases", " fase"),
+        "ko": ("냥 정렬 레벨", "레벨", "레벨"),
+    }),
+    "catgrid.block.best": ("Cat Block best score", "DESC", "BEST_SCORE", {
+        "en-US": ("Cat Block Best Score", " points", " point"),
+        "tr": ("Kedi Kutusu Rekoru", " puan", " puan"),
+        "ja": ("ネコブロック ベストスコア", "点", "点"),
+        "de-DE": ("Katzenblock Rekord", " Punkte", " Punkt"),
+        "fr-FR": ("Record Bloc Chat", " points", " point"),
+        "es-ES": ("Récord de Bloque Gatuno", " puntos", " punto"),
+        "pt-BR": ("Recorde do Bloco do Gato", " pontos", " ponto"),
+        "ko": ("고양이 블록 최고 점수", "점", "점"),
     }),
 }
 

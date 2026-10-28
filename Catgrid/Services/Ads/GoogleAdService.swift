@@ -4,7 +4,8 @@ import GoogleMobileAds
 import UIKit
 import UserMessagingPlatform
 
-/// Google Mobile Ads 11.5 (Xcode 15.2 ile çalışan son sürüm) ile geçiş ve ödüllü reklamlar.
+/// Google Mobile Ads 13 ile geçiş ve ödüllü reklamlar. (11.5 sürümünde yeni iPhone ekranlarında
+/// reklamın kapatma düğmesi ekranın kenarından taşıyordu.)
 @MainActor
 @Observable
 final class GoogleAdService: NSObject, AdService {
@@ -12,8 +13,8 @@ final class GoogleAdService: NSObject, AdService {
     private(set) var isPrivacyOptionsRequired = false
 
     private let configuration: AdConfiguration
-    private var interstitial: GADInterstitialAd?
-    private var rewarded: GADRewardedAd?
+    private var interstitial: InterstitialAd?
+    private var rewarded: RewardedAd?
     private var isStarted = false
     private var dismissContinuation: CheckedContinuation<Void, Never>?
     /// Teşhis için son durumlar (reklam yüklenemezse AdMob'un hata mesajı).
@@ -43,9 +44,9 @@ final class GoogleAdService: NSObject, AdService {
             return
         }
         // Her yaşa uygun, sakin bir kedi oyunu: yalnızca genel izleyici reklamları
-        GADMobileAds.sharedInstance().requestConfiguration.maxAdContentRating = .general
+        MobileAds.shared.requestConfiguration.maxAdContentRating = .general
         await withCheckedContinuation { continuation in
-            GADMobileAds.sharedInstance().start { _ in continuation.resume() }
+            MobileAds.shared.start { _ in continuation.resume() }
         }
         startStatus = "SDK started"
         loadInterstitial()
@@ -86,7 +87,7 @@ final class GoogleAdService: NSObject, AdService {
 
     private func loadInterstitial() {
         interstitialStatus = "loading"
-        GADInterstitialAd.load(withAdUnitID: configuration.interstitialUnitID, request: GADRequest()) { [weak self] ad, error in
+        InterstitialAd.load(with: configuration.interstitialUnitID, request: Request()) { [weak self] ad, error in
             Task { @MainActor in
                 guard let self else { return }
                 self.interstitial = ad
@@ -105,7 +106,7 @@ final class GoogleAdService: NSObject, AdService {
 
     private func loadRewarded() {
         rewardedStatus = "loading"
-        GADRewardedAd.load(withAdUnitID: configuration.rewardedUnitID, request: GADRequest()) { [weak self] ad, error in
+        RewardedAd.load(with: configuration.rewardedUnitID, request: Request()) { [weak self] ad, error in
             Task { @MainActor in
                 guard let self else { return }
                 self.rewarded = ad
@@ -143,7 +144,7 @@ final class GoogleAdService: NSObject, AdService {
         interstitial = nil
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             dismissContinuation = continuation
-            ad.present(fromRootViewController: root)
+            ad.present(from: root)
         }
         loadInterstitial()
         return true
@@ -156,7 +157,7 @@ final class GoogleAdService: NSObject, AdService {
         var earned = false
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             dismissContinuation = continuation
-            ad.present(fromRootViewController: root) { earned = true }
+            ad.present(from: root) { earned = true }
         }
         loadRewarded()
         return earned
@@ -168,12 +169,12 @@ final class GoogleAdService: NSObject, AdService {
     }
 }
 
-extension GoogleAdService: GADFullScreenContentDelegate {
-    nonisolated func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+extension GoogleAdService: FullScreenContentDelegate {
+    nonisolated func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
         Task { @MainActor in self.finishPresentation() }
     }
 
-    nonisolated func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+    nonisolated func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         Task { @MainActor in self.finishPresentation() }
     }
 }

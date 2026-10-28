@@ -13,7 +13,7 @@ packages:
   # 11.5.0: Xcode 15.2 ile çalışan son sürüm. 11.6.0+ MarketplaceKit kullanır ve Xcode 15.3 ister
   GoogleMobileAds:
     url: https://github.com/googleads/swift-package-manager-google-mobile-ads
-    exactVersion: 11.5.0
+    exactVersion: 13.11.0
   GoogleUserMessagingPlatform:
     url: https://github.com/googleads/swift-package-manager-google-user-messaging-platform
     majorVersion: 2.1.0

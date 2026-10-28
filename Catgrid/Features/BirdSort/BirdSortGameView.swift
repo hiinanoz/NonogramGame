@@ -284,6 +284,7 @@ struct BirdSortGameScreen: View {
             birds.clearSavedGame()
             let outcome = birds.recordWin(level: levelNumber, stars: viewModel.stars, moves: viewModel.moves)
             reward = outcome.reward
+            model.reportToGameCenter()
             ads.puzzleCompleted(isTutorial: levelNumber <= 2)
         }
     }

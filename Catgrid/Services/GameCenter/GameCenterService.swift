@@ -15,6 +15,12 @@ final class GameCenterService: NSObject {
         case nonogramsSolved = "catgrid.nonogram.solved"
         /// Bitirilen Kedi Bulmaca bölümü sayısı
         case catLevelsSolved = "catgrid.cats.levels"
+        /// Geçilen Miyav Crush bölümü sayısı
+        case crushLevels = "catgrid.crush.levels"
+        /// Geçilen Miyav Sort bölümü sayısı
+        case sortLevels = "catgrid.sort.levels"
+        /// Kedi Kutusu en yüksek skoru
+        case blockBest = "catgrid.block.best"
     }
 
     private var lastSubmitted: [Leaderboard: Int] = [:]
