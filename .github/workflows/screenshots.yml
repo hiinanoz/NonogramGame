@@ -71,10 +71,11 @@ jobs:
               -destination "id=$DEVICE_ID" -derivedDataPath build/dd \
               -only-testing:CatgridUITests/ScreenshotTests \
               -resultBundlePath "results/$1.xcresult" > "results/$1.log" 2>&1 \
-              || { tail -40 "results/$1.log"; exit 1; }
+              || { tail -40 "results/$1.log"; FAILED="$FAILED $1"; }
             xcrun xcresulttool export attachments --path "results/$1.xcresult" --output-path "results/$1"
           done
           python3 Tools/collect_screenshots.py results fastlane/screenshots
+          echo "FAILED=$FAILED" >> "$GITHUB_ENV"
 
       - name: Başlık ve çerçeve ekle
         run: |
@@ -87,6 +88,11 @@ jobs:
           # Önizleme: her dilin görüntüleri küçültülüp yan yana (inceleme için)
           rm -rf /tmp/shots && cp -R fastlane/screenshots /tmp/shots
           python3 Tools/collect_screenshots.py --contact-sheet /tmp/shots
+          # Teşhis: simülatörde uygulama çöktüyse çökme raporları ve test kayıtları
+          mkdir -p /tmp/shots/_diagnostics
+          cp results/*.log /tmp/shots/_diagnostics/ 2>/dev/null || true
+          find ~/Library/Logs/DiagnosticReports -name "Catgrid*" -newer build.log -exec cp {} /tmp/shots/_diagnostics/ \; 2>/dev/null || true
+          ls /tmp/shots/_diagnostics
           # Yalnızca görüntüler: derleme klasörleri dala karışmasın diye ayrı, boş bir depodan gönderilir
           REMOTE=$(git remote get-url origin)
           AUTH=$(git config --get http.https://github.com/.extraheader)
@@ -97,6 +103,12 @@ jobs:
           git add -A
           git commit -qm "App Store ekran görüntüleri (${GITHUB_SHA::7})"
           git -c http.https://github.com/.extraheader="$AUTH" push -f "$REMOTE" store-screenshots
+
+      - name: Başarısız dil varsa durdur
+        if: env.FAILED != ''
+        run: |
+          echo "Başarısız diller:$FAILED"
+          exit 1
 
       - uses: actions/upload-artifact@v4
         with:

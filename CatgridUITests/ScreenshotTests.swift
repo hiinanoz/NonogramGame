@@ -34,8 +34,12 @@ final class ScreenshotTests: XCTestCase {
         XCTAssertTrue(crushPlay.waitForExistence(timeout: 20))
         settle(1.5)
         crushPlay.tap()
-        _ = app.descendants(matching: .any)["crush.board"].waitForExistence(timeout: 20)
+        // Bölüm hedef kartı kapanır, taşlar yerine oturur
+        let crushStart = app.buttons["crush.intro.play"]
+        if crushStart.waitForExistence(timeout: 20) { crushStart.tap() }
+        XCTAssertTrue(app.descendants(matching: .any)["crush.board"].waitForExistence(timeout: 20))
         settle(3)
+        XCTAssertEqual(app.state, .runningForeground, "Miyav Crush açılırken uygulama kapandı")
         capture("02_crush")
         goHome(app)
 

@@ -163,7 +163,9 @@ def main(root):
             continue
         shots = sorted(folder.glob("*.png"))
         if len(shots) != len(captions):
-            sys.exit(f"{locale}: {len(shots)} görüntü var, {len(captions)} başlık bekleniyordu")
+            # Test o dilde yarıda kaldıysa iş akışı sonradan durur; teşhis için diğerleri işlenir
+            print(f"✗ {locale}: {len(shots)} görüntü var, {len(captions)} başlık bekleniyordu")
+            continue
         for shot, caption in zip(shots, captions):
             frame(shot, caption, locale)
             total += 1

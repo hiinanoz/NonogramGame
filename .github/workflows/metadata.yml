@@ -45,7 +45,7 @@ jobs:
           mkdir -p fastlane/screenshots
           git --work-tree=fastlane/screenshots checkout FETCH_HEAD -- .
           git reset -q
-          rm -rf fastlane/screenshots/_preview
+          rm -rf fastlane/screenshots/_preview fastlane/screenshots/_diagnostics
           find fastlane/screenshots -name "*.png" | sort | head -60
 
       - name: fastlane deliver
