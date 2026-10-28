@@ -22,37 +22,27 @@ struct BirdSortPathView: View {
             let width: CGFloat = proxy.size.width
             let aspect: CGFloat = Self.aspect(of: island.pathImage)
             let tileHeight: CGFloat = width * aspect
-            ScrollViewReader { reader in
-                ScrollView(showsIndicators: false) {
-                    // Görseller alt alta (kaydırma bunlara göre); yol ve bölümler hepsinin üstünde,
-                    // zeminle birlikte kayar
-                    VStack(spacing: 0) {
-                        ForEach(0..<tileCount, id: \.self) { _ in
-                            Image(island.pathImage)
-                                .resizable()
-                                .frame(width: width, height: tileHeight)
-                        }
-                    }
-                    .overlay(alignment: .topLeading) {
-                        levelLayer(range: range, birds: birds, width: width, tileHeight: tileHeight)
-                    }
-                    .overlay(alignment: .topLeading) {
-                        scrollMarkers(range: range, width: width, tileHeight: tileHeight)
+            let viewport: CGFloat = proxy.size.height
+            let content: CGFloat = tileHeight * CGFloat(tileCount)
+            ScrollView(showsIndicators: false) {
+                // Görseller alt alta; yol ve bölümler hepsinin üstünde, zeminle birlikte kayar
+                VStack(spacing: 0) {
+                    ForEach(0..<tileCount, id: \.self) { _ in
+                        Image(island.pathImage)
+                            .resizable()
+                            .frame(width: width, height: tileHeight)
                     }
                 }
-                .scrollBounceBehavior(.basedOnSize)
-                // Kaydırma hesaplanana kadar alttan (1. bölüm) başlar
-                .defaultScrollAnchor(.bottom)
-                .task(id: tileHeight) {
-                    guard tileHeight > 0 else { return }
-                    // Kaldığı bölüm; ada bittiyse ya da henüz gelinmediyse ilk bölüm
-                    let current = birds.currentLevel
-                    let target = range.contains(current) ? current : range.lowerBound
-                    try? await Task.sleep(for: .milliseconds(80))
-                    // Bölümün işaretçisi ekranın ortasına gelir
-                    reader.scrollTo(Self.markerID(target), anchor: .center)
+                .overlay(alignment: .topLeading) {
+                    levelLayer(range: range, birds: birds, width: width, tileHeight: tileHeight)
                 }
             }
+            .scrollBounceBehavior(.basedOnSize)
+            // Açılışta kaldığı bölüm (ada bittiyse ya da henüz gelinmediyse ilk bölüm) ekranın
+            // ortasında: ilk kaydırma konumu bölümün içerikteki yerinden hesaplanır
+            .defaultScrollAnchor(UnitPoint(x: 0.5, y: centeringAnchor(range: range, birds: birds, width: width,
+                                                                       tileHeight: tileHeight, viewport: viewport,
+                                                                       content: content)))
         }
         // Harita üst menünün altından başlar (tam sayfa değil)
         .background(theme.background.ignoresSafeArea())
@@ -107,27 +97,17 @@ struct BirdSortPathView: View {
         .frame(width: width, height: tileHeight * CGFloat(tileCount), alignment: .topLeading)
     }
 
-    /// Her bölümün tam yerinde 1 noktalık görünmez işaretçi. Konum hizalama kılavuzlarıyla
-    /// verilir (gerçek yerleşim çerçevesi o noktada olur), böylece kaydırma bölümü tam ortalar.
-    private func scrollMarkers(range: ClosedRange<Int>, width: CGFloat, tileHeight: CGFloat) -> some View {
-        ZStack(alignment: .topLeading) {
-            ForEach(Array(range), id: \.self) { number in
-                let spot = spot(of: number - range.lowerBound)
-                let x: CGFloat = spot.node.x * width
-                let y: CGFloat = (CGFloat(spot.tile) + spot.node.y) * tileHeight
-                Color.clear
-                    .frame(width: 1, height: 1)
-                    .alignmentGuide(.leading) { _ in -x }
-                    .alignmentGuide(.top) { _ in -y }
-                    .id(Self.markerID(number))
-            }
-        }
-        .frame(width: width, height: tileHeight * CGFloat(tileCount), alignment: .topLeading)
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
+    /// Kaydırma bağlantı noktası: içeriğin `a` oranındaki noktası ekranın `a` oranına gelir. Hedef
+    /// bölümün ekranın ortasına gelmesi için a = (y − ekran/2) / (içerik − ekran).
+    private func centeringAnchor(range: ClosedRange<Int>, birds: BirdSortModel, width: CGFloat,
+                                 tileHeight: CGFloat, viewport: CGFloat, content: CGFloat) -> CGFloat {
+        guard content > viewport, tileHeight > 0 else { return 1 }
+        let current = birds.currentLevel
+        let target = range.contains(current) ? current : range.lowerBound
+        let spot = spot(of: target - range.lowerBound)
+        let y: CGFloat = (CGFloat(spot.tile) + spot.node.y) * tileHeight
+        return min(max((y - viewport / 2) / (content - viewport), 0), 1)
     }
-
-    private static func markerID(_ number: Int) -> String { "level-\(number)" }
 
     /// `index`: adadaki 0'dan başlayan bölüm sırası. Alttaki parçadan başlar, her parçada aşağıdan
     /// yukarı (görselin noktaları yukarıdan aşağı verildiğinden ters sırada).
@@ -165,7 +145,7 @@ struct BirdSortLevelNode: View {
                     Circle().strokeBorder(.white, lineWidth: 3)
                     if isUnlocked {
                         Text(verbatim: "\(number)")
-                            .font(.system(size: number >= 100 ? 15 : 17, weight: .heavy, design: .rounded))
+                            .font(.system(size: isCurrent ? 22 : (number >= 100 ? 15 : 17), weight: .heavy, design: .rounded))
                             .foregroundStyle(.white)
                             .shadow(color: .black.opacity(0.25), radius: 1, y: 1)
                     } else {
@@ -174,8 +154,9 @@ struct BirdSortLevelNode: View {
                             .foregroundStyle(.white.opacity(0.9))
                     }
                 }
-                .frame(width: 46, height: 46)
-                .scaleEffect(isCurrent && pulse ? 1.1 : 1)
+                // Sıradaki bölüm daha büyük ve nefes alır
+                .frame(width: isCurrent ? 60 : 46, height: isCurrent ? 60 : 46)
+                .scaleEffect(isCurrent && pulse ? 1.12 : 1)
                 .shadow(color: isCurrent ? tint.opacity(0.8) : .black.opacity(0.25), radius: isCurrent ? 8 : 3, y: 2)
                 if stars > 0 {
                     HStack(spacing: 0) {
