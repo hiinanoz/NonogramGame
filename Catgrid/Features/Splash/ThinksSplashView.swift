@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - THiNKS açılış animasyonu (3 sn)
+// MARK: - THiNKS açılış animasyonu (2,75 sn + yarım sn bekleme)
 // Video / Lottie yok: her kare kodla çizilir → uygulamaya ~0 KB asset ekler.
 // iOS 15+ (Canvas + TimelineView). Siyah zemin, beyaz logo:
 // Açılış ekranı (LaunchBackground) da siyah: sistem açılışından animasyona geçişte renk sıçramaz.
@@ -8,31 +8,53 @@ import SwiftUI
 
 struct ThinksSplashView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    var duration: Double = 3.0
+    /// Animasyon 2,75 sn'de tamamlanır; son hâli yarım saniye ekranda kalır, sonra kararır.
+    var duration: Double = 3.25
     var onFinish: () -> Void = {}
 
-    @State private var start = Date()
+    @State private var clock = SplashClock()
     @State private var finished = false
 
     var body: some View {
         TimelineView(.animation(minimumInterval: nil, paused: finished)) { timeline in
-            let t = min(max(timeline.date.timeIntervalSince(start), 0), duration)
+            // Saat ilk çizilen karede başlar: açılışta ana iş parçacığı meşgulse animasyon
+            // atlanmadan baştan oynar
+            let t = clock.elapsed(at: timeline.date)
             Canvas { ctx, size in
-                ThinksSplash.draw(&ctx, size: size, t: t)
+                ThinksSplash.draw(&ctx, size: size, t: min(t, duration))
+            }
+            .onChange(of: t >= length) { _, done in
+                if done { finish() }
             }
         }
         .background(Color.black)
         .ignoresSafeArea()
-        .onAppear { start = Date() }
-        .task {
-            // "Hareketi Azalt" açıksa animasyon kısa tutulur
-            let length = reduceMotion ? min(duration, 1.2) : duration
-            try? await Task.sleep(nanoseconds: UInt64(length * 1_000_000_000))
-            finished = true
-            onFinish()
+        .onAppear {
+            // Yedek: kareler herhangi bir nedenle akmazsa da açılış kapanır. Ana kuyruk
+            // zamanlayıcısı; Swift'in iş havuzundaki yoğunluk bunu geciktiremez.
+            DispatchQueue.main.asyncAfter(deadline: .now() + length + 1.5) { finish() }
         }
         .accessibilityElement()
         .accessibilityLabel(Text(verbatim: "THiNKS"))
+    }
+
+    /// "Hareketi Azalt" açıksa animasyon kısa tutulur.
+    private var length: Double { reduceMotion ? min(duration, 1.2) : duration }
+
+    private func finish() {
+        guard !finished else { return }
+        finished = true
+        onFinish()
+    }
+}
+
+/// Animasyonun başlangıç anı. Görünüm durumu değil: ilk karede kaydedilir, yeniden çizim tetiklemez.
+private final class SplashClock {
+    private var start: Date?
+
+    func elapsed(at date: Date) -> Double {
+        if start == nil { start = date }
+        return max(date.timeIntervalSince(start ?? date), 0)
     }
 }
 

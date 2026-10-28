@@ -61,7 +61,7 @@ struct RootView: View {
         // Onay formu, izleme izni ve reklam SDK'sı; ekran çizildikten sonra
         .task {
             // Onay formu ve izleme izni açılış animasyonunun üstüne çıkmasın
-            if !ThinksSplash.isSkipped { try? await Task.sleep(for: .seconds(3.4)) }
+            if !ThinksSplash.isSkipped { try? await Task.sleep(for: .seconds(3.7)) }
             await ads.start()
             // Game Center girişi, onay ve izleme pencereleri kapandıktan sonra (üst üste binmesin)
             try? await Task.sleep(for: .seconds(1.5))

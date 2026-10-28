@@ -72,10 +72,23 @@ enum LoopingCatAnimation {
     /// Yalnızca ilk kare: kedi ekrana hemen gelir, hareket kareler hazır olunca başlar.
     static func decodeFirstFrame(_ name: String, maxPixelSize: Int) async -> CGImage? {
         guard let url = url(name) else { return nil }
-        return await Task.detached(priority: .userInitiated) {
+        return await decode(on: firstFrameQueue) {
             guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
             return decodeFrame(source, at: 0, maxPixelSize: maxPixelSize)
-        }.value
+        }
+    }
+
+    /// Çözme işleri Swift'in ortak iş havuzunda değil, kendi kuyruklarında yapılır: bütün
+    /// kareleri çözmek saniyeler sürer ve havuzu doldurunca uygulamanın diğer `Task.sleep` /
+    /// `await` beklemeleri (açılış animasyonunun bitişi gibi) o iş bitene kadar sıra bekliyordu.
+    /// İlk kareler hızlı kuyrukta (kedi ekrana hemen gelsin); bütün kareler arka planda, tek tek.
+    static let firstFrameQueue = DispatchQueue(label: "catgrid.cat-frames.first", qos: .userInitiated)
+    static let framesQueue = DispatchQueue(label: "catgrid.cat-frames.all", qos: .utility)
+
+    static func decode<T: Sendable>(on queue: DispatchQueue, _ work: @escaping @Sendable () -> T) async -> T {
+        await withCheckedContinuation { continuation in
+            queue.async { continuation.resume(returning: work()) }
+        }
     }
 }
 
@@ -114,11 +127,13 @@ final class LoopingFrameStore {
         } else {
             let size = (maxPixelSize + 31) / 32 * 32
             let url = LoopingCatAnimation.url(name)
-            task = Task.detached(priority: .userInitiated) { () -> [CGImage] in
-                guard let url, let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return [] }
-                // Kareler sırayla çözülür (her kare bağımsız; sıralı okuma en hızlısı)
-                return (0..<CGImageSourceGetCount(source)).compactMap {
-                    LoopingCatAnimation.decodeFrame(source, at: $0, maxPixelSize: size)
+            task = Task {
+                await LoopingCatAnimation.decode(on: LoopingCatAnimation.framesQueue) { () -> [CGImage] in
+                    guard let url, let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return [] }
+                    // Kareler sırayla çözülür (her kare bağımsız; sıralı okuma en hızlısı)
+                    return (0..<CGImageSourceGetCount(source)).compactMap {
+                        LoopingCatAnimation.decodeFrame(source, at: $0, maxPixelSize: size)
+                    }
                 }
             }
             tasks[key] = task
