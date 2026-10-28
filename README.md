@@ -13,7 +13,7 @@ iOS 17.2 simülatöründe çalıştırır (`.github/workflows/ci.yml`).
 Xcode projesi [XcodeGen](https://github.com/yonaskolb/XcodeGen) ile `project.yml`'den üretilir.
 
 ```bash
-git clone https://github.com/uyelikposya/NonogramGame
+git clone https://github.com/hiinanoz/NonogramGame
 cd NonogramGame
 ./ProjeyiAc.command
 ```
