@@ -129,24 +129,13 @@ final class ScreenshotTests: XCTestCase {
         button.tap()
     }
 
-    /// Oyundan ana sayfaya: Crush duraklatma penceresinden haritaya, Sort ve Kedi Kutusu kendi
-    /// geri düğmeleriyle çıkar (oyun kaydedilir), sonra mod sayfasından geri dönülür.
+    /// Ana sayfaya dönmenin en sağlam yolu: uygulamayı yeniden açmak. Örnek ilerleme her açılışta
+    /// aynı şekilde yeniden kurulur (bellekte), açılış animasyonu `-screenshots` ile atlanır.
     private func goHome(_ app: XCUIApplication) {
-        let home = app.buttons["home.mode.cats"]
-        let backs = ["birds.game.back", "block.back", "crush.hub.back", "birds.path.back", "birds.hub.back", "block.hub.back"]
-        for _ in 0..<5 where !(home.exists && home.isHittable) {
-            if app.buttons["crush.pause"].exists {
-                app.buttons["crush.pause"].tap()
-                if app.buttons["pause.map"].waitForExistence(timeout: 5) { app.buttons["pause.map"].tap() }
-            } else if let back = backs.lazy.map({ app.buttons[$0] }).first(where: { $0.exists && $0.isHittable }) {
-                back.tap()
-            }
-            settle(1.2)
-        }
-        for _ in 0..<2 where !home.isHittable {
-            app.swipeDown()
-            settle(0.5)
-        }
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.buttons["home.mode.cats"].waitForExistence(timeout: 30))
+        settle(1.5)
     }
 
     private func capture(_ name: String) {
