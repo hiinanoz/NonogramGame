@@ -75,7 +75,7 @@ jobs:
       - name: Son derlemeyi sürüme bağla
         if: inputs.attach_build
         run: |
-          pip install --quiet pyjwt cryptography || pip3 install --quiet --break-system-packages pyjwt cryptography
+          python3 -m pip install --quiet --break-system-packages pyjwt cryptography
           python3 Tools/asc_attach_build.py 1.2.0
 
       - name: Anahtarı sil

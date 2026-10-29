@@ -1,0 +1,26 @@
+name: Derlemeyi sürüme bağla
+
+# Elle başlatılır: GitHub → Actions → "Derlemeyi sürüme bağla" → Run workflow.
+# App Store Connect'teki sürüme (ör. 1.2.0) o sürümün en son derlemesini seçer.
+# İncelemeye GÖNDERMEZ. Derleme hâlâ işleniyorsa bitmesini bekler.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Sürüm"
+        type: string
+        default: "1.2.0"
+
+jobs:
+  attach:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet pyjwt cryptography
+      - run: python3 Tools/asc_attach_build.py "${{ inputs.version }}"
+      - run: python3 Tools/asc_review_status.py
