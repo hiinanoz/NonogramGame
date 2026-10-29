@@ -1,0 +1,286 @@
+Command line invocation:
+    /Applications/Xcode_26.3.app/Contents/Developer/usr/bin/xcodebuild test-without-building -project Catgrid.xcodeproj -scheme Catgrid -destination id=4C675116-265D-488F-BFFA-836A4545674C -derivedDataPath build/dd "-only-testing:CatgridUITests/ScreenshotTests" -resultBundlePath results/en-US.xcresult
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  GoogleMobileAds: https://github.com/googleads/swift-package-manager-google-mobile-ads @ 13.11.0
+  NonogramKit: /Users/runner/work/NonogramGame/NonogramGame/Packages/NonogramKit
+  GoogleUserMessagingPlatform: https://github.com/googleads/swift-package-manager-google-user-messaging-platform @ 2.7.0
+
+Writing result bundle at path:
+	/Users/runner/work/NonogramGame/NonogramGame/results/en-US.xcresult
+
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:iOS Simulator, arch:arm64, id:4C675116-265D-488F-BFFA-836A4545674C, OS:26.2, name:iPhone 17 Pro Max }
+{ platform:iOS Simulator, arch:x86_64, id:4C675116-265D-488F-BFFA-836A4545674C, OS:26.2, name:iPhone 17 Pro Max }
+2026-10-29 00:00:54.225784+0000 CatgridUITests-Runner[14472:44456] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-10-29 00:01:03.801.
+Test Suite 'CatgridUITests.xctest' started at 2026-10-29 00:01:03.802.
+Test Suite 'ScreenshotTests' started at 2026-10-29 00:01:03.802.
+Test Case '-[CatgridUITests.ScreenshotTests testCaptureStoreScreenshots]' started.
+    t =     0.00s Start Test at 2026-10-29 00:01:03.803
+    t =     1.11s Set Up
+    t =     1.13s Open com.catgridcollection.nonogram
+    t =     1.13s     Launch com.catgridcollection.nonogram
+    t =    15.83s         Setting up automation session
+    t =    21.21s         Wait for com.catgridcollection.nonogram to idle
+    t =    28.26s Waiting 20.0s for "home.mode.cats" Button to exist
+    t =    29.32s     Checking `Expect predicate `existsNoRetry == 1` for object "home.mode.cats" Button`
+    t =    29.33s         Checking existence of `"home.mode.cats" Button`
+    t =    35.14s Added attachment named 'en_01_home'
+    t =    35.17s Waiting 20.0s for "home.mode.crush" Button to exist
+    t =    36.18s     Checking `Expect predicate `existsNoRetry == 1` for object "home.mode.crush" Button`
+    t =    36.18s         Checking existence of `"home.mode.crush" Button`
+    t =    37.77s Find the "home.mode.crush" Button
+    t =    39.30s Find the "home.mode.crush" Button
+    t =    39.67s Find the "home.mode.crush" Button
+    t =    40.13s Tap "home.mode.crush" Button
+    t =    40.13s     Wait for com.catgridcollection.nonogram to idle
+    t =    40.14s     Find the "home.mode.crush" Button
+    t =    40.39s     Check for interrupting elements affecting "home.mode.crush" Button
+    t =    40.78s     Synthesize event
+    t =    41.30s     Wait for com.catgridcollection.nonogram to idle
+    t =    47.02s Waiting 20.0s for "crush.hub.play" Button to exist
+    t =    48.05s     Checking `Expect predicate `existsNoRetry == 1` for object "crush.hub.play" Button`
+    t =    48.05s         Checking existence of `"crush.hub.play" Button`
+    t =    50.01s Tap "crush.hub.play" Button
+    t =    50.01s     Wait for com.catgridcollection.nonogram to idle
+    t =    50.04s     Find the "crush.hub.play" Button
+    t =    50.32s     Check for interrupting elements affecting "crush.hub.play" Button
+    t =    50.53s     Synthesize event
+    t =    50.90s     Wait for com.catgridcollection.nonogram to idle
+    t =    52.02s Waiting 20.0s for "crush.intro.play" Button to exist
+    t =    53.06s     Checking `Expect predicate `existsNoRetry == 1` for object "crush.intro.play" Button`
+    t =    53.06s         Checking existence of `"crush.intro.play" Button`
+    t =    53.22s Tap "crush.intro.play" Button
+    t =    53.22s     Wait for com.catgridcollection.nonogram to idle
+    t =    53.22s     Find the "crush.intro.play" Button
+    t =    53.31s     Check for interrupting elements affecting "crush.intro.play" Button
+    t =    53.35s     Synthesize event
+    t =    53.67s     Wait for com.catgridcollection.nonogram to idle
+    t =    53.68s Waiting 20.0s for "crush.board" Any to exist
+    t =    54.75s     Checking `Expect predicate `existsNoRetry == 1` for object "crush.board" Any`
+    t =    54.75s         Checking existence of `"crush.board" Any`
+    t =    58.09s Added attachment named 'en_02_crush'
+    t =    58.09s Terminate com.catgridcollection.nonogram:15351
+    t =    59.15s Open com.catgridcollection.nonogram
+    t =    59.15s     Launch com.catgridcollection.nonogram
+    t =    61.12s         Setting up automation session
+    t =    67.04s         Wait for com.catgridcollection.nonogram to idle
+    t =    72.13s Waiting 30.0s for "home.mode.cats" Button to exist
+    t =    73.15s     Checking `Expect predicate `existsNoRetry == 1` for object "home.mode.cats" Button`
+    t =    73.15s         Checking existence of `"home.mode.cats" Button`
+    t =    75.03s Waiting 20.0s for "home.mode.birds" Button to exist
+    t =    76.08s     Checking `Expect predicate `existsNoRetry == 1` for object "home.mode.birds" Button`
+    t =    76.08s         Checking existence of `"home.mode.birds" Button`
+    t =    76.42s Find the "home.mode.birds" Button
+    t =    76.66s Find the "home.mode.birds" Button
+    t =    77.02s Find the "home.mode.birds" Button
+    t =    77.25s Tap "home.mode.birds" Button
+    t =    77.25s     Wait for com.catgridcollection.nonogram to idle
+    t =    77.26s     Find the "home.mode.birds" Button
+    t =    77.45s     Check for interrupting elements affecting "home.mode.birds" Button
+    t =    77.69s     Synthesize event
+    t =    78.02s     Wait for com.catgridcollection.nonogram to idle
+    t =    78.20s Waiting 20.0s for "birds.hub.play" Button to exist
+    t =    79.26s     Checking `Expect predicate `existsNoRetry == 1` for object "birds.hub.play" Button`
+    t =    79.26s         Checking existence of `"birds.hub.play" Button`
+    t =    80.84s Tap "birds.hub.play" Button
+    t =    80.84s     Wait for com.catgridcollection.nonogram to idle
+    t =    80.85s     Find the "birds.hub.play" Button
+    t =    80.95s     Check for interrupting elements affecting "birds.hub.play" Button
+    t =    81.00s     Synthesize event
+    t =    81.34s     Wait for com.catgridcollection.nonogram to idle
+    t =    81.83s Waiting 30.0s for "birds.board" Any to exist
+    t =    82.86s     Checking `Expect predicate `existsNoRetry == 1` for object "birds.board" Any`
+    t =    82.86s         Checking existence of `"birds.board" Any`
+    t =    86.43s Added attachment named 'en_03_sort'
+    t =    86.44s Terminate com.catgridcollection.nonogram:17056
+    t =    87.45s Open com.catgridcollection.nonogram
+    t =    87.45s     Launch com.catgridcollection.nonogram
+    t =    88.23s         Setting up automation session
+    t =    92.61s         Wait for com.catgridcollection.nonogram to idle
+    t =    97.17s Waiting 30.0s for "home.mode.cats" Button to exist
+    t =    98.23s     Checking `Expect predicate `existsNoRetry == 1` for object "home.mode.cats" Button`
+    t =    98.23s         Checking existence of `"home.mode.cats" Button`
+    t =   100.11s Waiting 20.0s for "home.mode.block" Button to exist
+    t =   101.18s     Checking `Expect predicate `existsNoRetry == 1` for object "home.mode.block" Button`
+    t =   101.20s         Checking existence of `"home.mode.block" Button`
+    t =   101.54s Find the "home.mode.block" Button
+    t =   101.85s Find the "home.mode.block" Button
+    t =   102.10s Find the "home.mode.block" Button
+    t =   102.40s Tap "home.mode.block" Button
+    t =   102.40s     Wait for com.catgridcollection.nonogram to idle
+    t =   102.41s     Find the "home.mode.block" Button
+    t =   102.59s     Check for interrupting elements affecting "home.mode.block" Button
+    t =   102.76s     Synthesize event
+    t =   103.12s     Wait for com.catgridcollection.nonogram to idle
+    t =   103.35s Waiting 20.0s for "block.continue" Button to exist
+    t =   104.38s     Checking `Expect predicate `existsNoRetry == 1` for object "block.continue" Button`
+    t =   104.39s         Checking existence of `"block.continue" Button`
+    t =   105.46s Tap "block.continue" Button
+    t =   105.46s     Wait for com.catgridcollection.nonogram to idle
+    t =   105.46s     Find the "block.continue" Button
+    t =   105.50s     Check for interrupting elements affecting "block.continue" Button
+    t =   105.55s     Synthesize event
+    t =   106.24s     Wait for com.catgridcollection.nonogram to idle
+    t =   106.29s Waiting 20.0s for "block.board" Any to exist
+    t =   107.32s     Checking `Expect predicate `existsNoRetry == 1` for object "block.board" Any`
+    t =   107.32s         Checking existence of `"block.board" Any`
+    t =   109.71s Added attachment named 'en_04_block'
+    t =   109.71s Terminate com.catgridcollection.nonogram:18194
+    t =   110.72s Open com.catgridcollection.nonogram
+    t =   110.72s     Launch com.catgridcollection.nonogram
+    t =   111.15s         Setting up automation session
+    t =   115.19s         Wait for com.catgridcollection.nonogram to idle
+    t =   120.68s Waiting 30.0s for "home.mode.cats" Button to exist
+    t =   121.68s     Checking `Expect predicate `existsNoRetry == 1` for object "home.mode.cats" Button`
+    t =   121.68s         Checking existence of `"home.mode.cats" Button`
+    t =   123.44s Waiting 20.0s for "home.mode.cats" Button to exist
+    t =   124.48s     Checking `Expect predicate `existsNoRetry == 1` for object "home.mode.cats" Button`
+    t =   124.48s         Checking existence of `"home.mode.cats" Button`
+    t =   124.67s Find the "home.mode.cats" Button
+    t =   124.94s Find the "home.mode.cats" Button
+    t =   125.25s Find the "home.mode.cats" Button
+    t =   125.56s Tap "home.mode.cats" Button
+    t =   125.56s     Wait for com.catgridcollection.nonogram to idle
+    t =   125.57s     Find the "home.mode.cats" Button
+    t =   125.71s     Check for interrupting elements affecting "home.mode.cats" Button
+    t =   125.91s     Synthesize event
+    t =   126.28s     Wait for com.catgridcollection.nonogram to idle
+    t =   127.28s Waiting 20.0s for "hub.continue" Button to exist
+    t =   128.37s     Checking `Expect predicate `existsNoRetry == 1` for object "hub.continue" Button`
+    t =   128.37s         Checking existence of `"hub.continue" Button`
+    t =   131.29s Added attachment named 'en_05_cat_map'
+    t =   131.30s Tap "hub.continue" Button
+    t =   131.30s     Wait for com.catgridcollection.nonogram to idle
+    t =   131.30s     Find the "hub.continue" Button
+    t =   131.61s     Check for interrupting elements affecting "hub.continue" Button
+    t =   131.84s     Synthesize event
+    t =   132.18s     Wait for com.catgridcollection.nonogram to idle
+    t =   133.31s Waiting 20.0s for "cat.board" Any to exist
+    t =   134.35s     Checking `Expect predicate `existsNoRetry == 1` for object "cat.board" Any`
+    t =   134.35s         Checking existence of `"cat.board" Any`
+    t =   136.68s Added attachment named 'en_06_cat_game'
+    t =   136.68s Waiting 5.0s for Button (Element at index 0) to exist
+    t =   137.73s     Checking `Expect predicate `existsNoRetry == 1` for object Button (Element at index 0)`
+    t =   137.73s         Checking existence of `Button (Element at index 0)`
+    t =   137.78s Tap Button (Element at index 0)
+    t =   137.78s     Wait for com.catgridcollection.nonogram to idle
+    t =   137.79s     Find the Button (Element at index 0)
+    t =   137.82s     Check for interrupting elements affecting "BackButton" Button
+    t =   137.87s     Synthesize event
+    t =   138.19s     Wait for com.catgridcollection.nonogram to idle
+    t =   139.23s Waiting 5.0s for Button (Element at index 0) to exist
+    t =   140.28s     Checking `Expect predicate `existsNoRetry == 1` for object Button (Element at index 0)`
+    t =   140.28s         Checking existence of `Button (Element at index 0)`
+    t =   140.54s Tap Button (Element at index 0)
+    t =   140.54s     Wait for com.catgridcollection.nonogram to idle
+    t =   140.55s     Find the Button (Element at index 0)
+    t =   140.85s     Check for interrupting elements affecting "cat.hub.back" Button
+    t =   141.11s     Synthesize event
+    t =   141.44s     Wait for com.catgridcollection.nonogram to idle
+    t =   142.49s Waiting 20.0s for "home.mode.collection" Button to exist
+    t =   143.53s     Checking `Expect predicate `existsNoRetry == 1` for object "home.mode.collection" Button`
+    t =   143.53s         Checking existence of `"home.mode.collection" Button`
+    t =   143.73s Tap "home.mode.collection" Button
+    t =   143.73s     Wait for com.catgridcollection.nonogram to idle
+    t =   143.74s     Find the "home.mode.collection" Button
+    t =   143.95s     Check for interrupting elements affecting "home.mode.collection" Button
+    t =   144.10s     Synthesize event
+    t =   144.46s     Wait for com.catgridcollection.nonogram to idle
+    t =   144.63s Waiting 20.0s for "hub.continue" Button to exist
+    t =   145.65s     Checking `Expect predicate `existsNoRetry == 1` for object "hub.continue" Button`
+    t =   145.65s         Checking existence of `"hub.continue" Button`
+    t =   145.71s Tap "hub.continue" Button
+    t =   145.71s     Wait for com.catgridcollection.nonogram to idle
+    t =   145.71s     Find the "hub.continue" Button
+    t =   145.76s     Check for interrupting elements affecting "hub.continue" Button
+    t =   145.80s     Synthesize event
+    t =   146.10s     Wait for com.catgridcollection.nonogram to idle
+    t =   146.34s Waiting 20.0s for "game.board" Any to exist
+    t =   147.42s     Checking `Expect predicate `existsNoRetry == 1` for object "game.board" Any`
+    t =   147.42s         Checking existence of `"game.board" Any`
+    t =   147.83s Waiting 30.0s for "game.board" Any to exist
+    t =   148.86s     Checking `Expect predicate `existsNoRetry == 1` for object "game.board" Any`
+    t =   148.86s         Checking existence of `"game.board" Any`
+    t =   151.83s Added attachment named 'en_07_nonogram'
+    t =   151.83s Waiting 5.0s for Button (Element at index 0) to exist
+    t =   152.85s     Checking `Expect predicate `existsNoRetry == 1` for object Button (Element at index 0)`
+    t =   152.85s         Checking existence of `Button (Element at index 0)`
+    t =   152.91s Tap Button (Element at index 0)
+    t =   152.91s     Wait for com.catgridcollection.nonogram to idle
+    t =   152.91s     Find the Button (Element at index 0)
+    t =   152.96s     Check for interrupting elements affecting "BackButton" Button
+    t =   153.05s     Synthesize event
+    t =   153.37s     Wait for com.catgridcollection.nonogram to idle
+    t =   154.56s Waiting 5.0s for Button (Element at index 0) to exist
+    t =   155.60s     Checking `Expect predicate `existsNoRetry == 1` for object Button (Element at index 0)`
+    t =   155.60s         Checking existence of `Button (Element at index 0)`
+    t =   155.64s Tap Button (Element at index 0)
+    t =   155.64s     Wait for com.catgridcollection.nonogram to idle
+    t =   155.64s     Find the Button (Element at index 0)
+    t =   155.68s     Check for interrupting elements affecting "BackButton" Button
+    t =   155.73s     Synthesize event
+    t =   156.07s     Wait for com.catgridcollection.nonogram to idle
+    t =   157.07s Waiting 20.0s for "home.daily" Button to exist
+    t =   158.10s     Checking `Expect predicate `existsNoRetry == 1` for object "home.daily" Button`
+    t =   158.10s         Checking existence of `"home.daily" Button`
+    t =   158.23s Tap "home.daily" Button
+    t =   158.23s     Wait for com.catgridcollection.nonogram to idle
+    t =   158.23s     Find the "home.daily" Button
+    t =   158.60s     Check for interrupting elements affecting "home.daily" Button
+    t =   158.81s     Synthesize event
+    t =   159.17s     Wait for com.catgridcollection.nonogram to idle
+    t =   159.48s Waiting 20.0s for "daily.play" Button to exist
+    t =   160.51s     Checking `Expect predicate `existsNoRetry == 1` for object "daily.play" Button`
+    t =   160.51s         Checking existence of `"daily.play" Button`
+    t =   163.06s Added attachment named 'en_08_daily'
+    t =   163.06s Waiting 5.0s for Button (Element at index 0) to exist
+    t =   164.10s     Checking `Expect predicate `existsNoRetry == 1` for object Button (Element at index 0)`
+    t =   164.10s         Checking existence of `Button (Element at index 0)`
+    t =   164.22s Tap Button (Element at index 0)
+    t =   164.22s     Wait for com.catgridcollection.nonogram to idle
+    t =   164.23s     Find the Button (Element at index 0)
+    t =   164.32s     Check for interrupting elements affecting "BackButton" Button
+    t =   164.40s     Synthesize event
+    t =   164.73s     Wait for com.catgridcollection.nonogram to idle
+    t =   165.78s Waiting 20.0s for "home.collection" Button to exist
+    t =   166.83s     Checking `Expect predicate `existsNoRetry == 1` for object "home.collection" Button`
+    t =   166.83s         Checking existence of `"home.collection" Button`
+    t =   168.08s Checking existence of `"collection.card.siamese" Button`
+    t =   168.30s Checking existence of `"home.collection" Button`
+    t =   168.53s Tap "home.collection" Button
+    t =   168.53s     Wait for com.catgridcollection.nonogram to idle
+    t =   168.54s     Find the "home.collection" Button
+    t =   168.72s     Check for interrupting elements affecting "home.collection" Button
+    t =   168.86s     Synthesize event
+    t =   169.24s     Wait for com.catgridcollection.nonogram to idle
+    t =   169.41s Waiting 8.0s for "collection.card.siamese" Button to exist
+    t =   170.43s     Checking `Expect predicate `existsNoRetry == 1` for object "collection.card.siamese" Button`
+    t =   170.43s         Checking existence of `"collection.card.siamese" Button`
+    t =   170.51s Checking existence of `"collection.card.siamese" Button`
+    t =   170.62s Checking existence of `"collection.card.siamese" Button`
+    t =   170.69s Checking existence of `"collection.card.siamese" Button`
+    t =   172.63s Added attachment named 'en_09_collection'
+    t =   172.64s Tear Down
+Test Case '-[CatgridUITests.ScreenshotTests testCaptureStoreScreenshots]' passed (173.548 seconds).
+Test Suite 'ScreenshotTests' passed at 2026-10-29 00:03:57.352.
+	 Executed 1 test, with 0 failures (0 unexpected) in 173.548 (173.550) seconds
+Test Suite 'CatgridUITests.xctest' passed at 2026-10-29 00:03:57.353.
+	 Executed 1 test, with 0 failures (0 unexpected) in 173.548 (173.551) seconds
+Test Suite 'Selected tests' passed at 2026-10-29 00:03:57.353.
+	 Executed 1 test, with 0 failures (0 unexpected) in 173.548 (173.552) seconds
+2026-10-29 00:04:57.593 xcodebuild[12672:39824] [MT] IDETestOperationsObserverDebug: 269.852 elapsed -- Testing started completed.
+2026-10-29 00:04:57.595 xcodebuild[12672:39824] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-29 00:04:57.595 xcodebuild[12672:39824] [MT] IDETestOperationsObserverDebug: 269.852 sec, +269.852 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/runner/work/NonogramGame/NonogramGame/results/en-US.xcresult
+
+** TEST EXECUTE SUCCEEDED **
+
+Testing started
