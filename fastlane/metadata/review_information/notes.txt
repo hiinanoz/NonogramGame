@@ -1,26 +1,31 @@
 Thank you for reviewing Catgrid Collection: Nonogram.
 
-ABOUT THE PREVIOUS REJECTION (Guideline 5.6)
-An earlier build mistakenly contained a hidden developer screen for checking ad loading status. It has been completely removed, together with its code. The app has no hidden, remote-controlled or review-only features. It has no server, no remote configuration and no feature flags: every puzzle, card and mode is bundled in the binary and works offline, identically for every user, region and date. Some content unlocks only by playing (described below). The steps below reach every feature in a few minutes, without purchasing.
+WHAT'S NEW IN 1.2.0
+Three new game modes on the home screen: Meow Crush, Meow Sort and Cat Block (steps 4-6 below). Games in these modes can be paused and resumed later. New Game Center leaderboards for the new modes, and a short launch animation.
+
+The app has no hidden, remote-controlled or review-only features. No server, remote configuration or feature flags: all content is bundled and works offline, identically for everyone. The steps below reach every feature in a few minutes, without purchasing.
 
 HOW TO REACH EVERY FEATURE
 - No account or login. Progress is stored on the device.
-- Home screen shows the three game modes: Cat Puzzle (large card), Daily Puzzle and Card Collection.
+- Home screen shows the game modes: Cat Puzzle (large card), Daily Puzzle, Card Collection, Meow Crush, Meow Sort and Cat Block.
 1. Cat Puzzle: tap the Cat Puzzle card. A seasonal adventure map opens; tap Play. Rule: place one cat in every color, row and column; cats may not touch. Tap a cell to mark X, double-tap to place a cat. Level 1 is a short guided tutorial. The Easy/Hard switch (top right of the game) controls automatic X's. 335 levels, unlocked in order.
 2. Daily Puzzle: tap Daily Puzzle, then Play. One new nonogram per day; the last 10 days can also be played from the calendar.
-3. Card Collection (nonograms): tap Card Collection, then Continue. Muffin's School teaches nonograms; it can be skipped with "Skip tutorial". Cat breeds unlock in order: each next breed opens once half of the previous breed's puzzles are solved. Finishing all puzzles of a breed awards its collectible card (shown in Collection and on the home screen).
-4. Sharing: after solving a puzzle, or when viewing a card, tap the share button (top right).
-5. Game Center: the Game Center sign-in appears after launch; leaderboards are in Settings → Game Center Leaderboards.
-6. Animated cats on the home screen can be petted by stroking them (purr/meow sound).
+3. Card Collection (nonograms): tap Card Collection, then Continue. Cat breeds unlock in order: each next breed opens once half of the previous breed's puzzles are solved. Finishing all puzzles of a breed awards its collectible card.
+4. Meow Crush (match-3): tap Meow Crush, then Play. Swap neighbouring treats to match 3 or more and reach the level goal within the moves. 300 levels in the Cat Tower, unlocked in order. A level uses one of 5 lives (refilled over time); boosters are at the bottom of the game. The pause button (top right) saves the game.
+5. Meow Sort: tap Meow Sort, then Play. Tap a branch, then another branch, to move the top birds; finish when every branch holds one kind of bird. 450 levels on six islands, unlocked in order. Undo, Hint and Extra Branch are at the bottom; the pause button saves the game.
+6. Cat Block: tap Cat Block, then Start. Drag the three blocks onto the 8x8 board to fill and clear rows and columns; the game ends when no block fits. Best score is shown on the start page. The pause button saves the game.
+7. Sharing: after solving a puzzle, or when viewing a card, tap the share button (top right).
+8. Game Center: the Game Center sign-in appears after launch; leaderboards are in Settings → Game Center Leaderboards.
+9. Animated cats on the home screen can be petted by stroking them (purr/meow sound).
 
 SCREENSHOTS
-Screenshots show the real app with sample progress (some levels and breeds already played). The same screens are reached by playing as described above. No Premium-only content is shown in the screenshots.
+Screenshots show the real app with sample progress (some levels and breeds already played). No Premium-only content is shown in the screenshots.
 
 CATGRID PREMIUM (OPTIONAL SUBSCRIPTION)
-Auto-renewable, monthly or yearly. Removes ads and unlocks 9 Golden Puzzles per breed plus Golden Cards. Open it from the home screen banner, from Settings → Premium, or from the "Golden Puzzles" teaser at the bottom of a breed's level screen. Restore Purchases and Manage Subscription are in Settings → Premium. As a free sample, the Golden Puzzles of British Shorthair unlock for everyone once that breed is finished.
+Auto-renewable, monthly or yearly. Removes ads and unlocks 9 Golden Puzzles per breed plus Golden Cards; in the new modes it gives unlimited lives (Meow Crush), unlimited hints and extra branches (Meow Sort) and one free board clear per game (Cat Block). Open it from the home screen banner, from Settings → Premium, or from the "Golden Puzzles" teaser at the bottom of a breed's level screen. Restore Purchases and Manage Subscription are in Settings → Premium. As a free sample, the Golden Puzzles of British Shorthair unlock for everyone once that breed is finished.
 
 ADS
-Google AdMob. Interstitials appear only between puzzles (after every 2 solved puzzles, at least 90 seconds apart), never during play, never in tutorials. Rewarded ads are optional (extra paw or extra time after losing). In the EEA/UK the Google consent form appears on first launch, followed by the App Tracking Transparency prompt.
+Google AdMob. Interstitials appear only between puzzles (after every 2 solved puzzles, at least 90 seconds apart), never during play, never in tutorials. Rewarded ads are always optional: extra paw or extra time after losing, an extra life or booster in Meow Crush, a hint or extra branch in Meow Sort, and one board clear per game in Cat Block. In the EEA/UK the Google consent form appears on first launch, followed by the App Tracking Transparency prompt.
 
 LINKS
 Privacy Policy, Terms of Use (Apple standard EULA) and Support are in Settings → About and on the subscription screen.
