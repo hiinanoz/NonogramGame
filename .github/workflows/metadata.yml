@@ -11,11 +11,15 @@ on:
         description: "Ekran görüntülerini de yükle (fastlane/screenshots varsa)"
         type: boolean
         default: false
+      attach_build:
+        description: "Sürümün en son derlemesini sürüme bağla (incelemeye göndermez)"
+        type: boolean
+        default: false
 
 jobs:
   deliver:
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 75
     env:
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
@@ -67,6 +71,12 @@ jobs:
             --submit_for_review false \
             --automatic_release false \
             --force true
+
+      - name: Son derlemeyi sürüme bağla
+        if: inputs.attach_build
+        run: |
+          pip install --quiet pyjwt cryptography || pip3 install --quiet --break-system-packages pyjwt cryptography
+          python3 Tools/asc_attach_build.py 1.2.0
 
       - name: Anahtarı sil
         if: always()
