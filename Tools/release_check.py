@@ -45,6 +45,12 @@ for url in re.findall(r'URL\(string: "(https://[^"]+github\.io[^"]+)"\)', links)
 if 'appStoreID = ""' in links:
     notes.append("AppLinks.appStoreID boş: App Store Connect'te uygulama oluşunca rakam kimliği gir (zorunlu değil)")
 
+# Sıradaki güncelleme için not alınan, henüz yapılmamış işler (hatırlatma; yüklemeyi durdurmaz)
+todo = ROOT / "Planning/Guncelleme-Listesi.md"
+if todo.exists():
+    for item in re.findall(r"^- \[ \] \*{0,2}(.+?)(?:\*\*|$)", todo.read_text(), re.M):
+        notes.append(f"Güncelleme listesi: {item.strip()}")
+
 for problem in problems:
     print(f"✗ {problem}")
 for note in notes:

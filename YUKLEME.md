@@ -53,7 +53,5 @@ Derleme numarası her çalıştırmada otomatik artar. Sürüm numarası (`1.0.0
 
 ## Sıradaki yüklemede hatırlanacaklar
 
-- [ ] App Store Connect'te her dil için **Privacy Policy URL**, **Support URL** ve **Marketing URL** alanlarını
-  güncelle: `https://hii.othinks.com/catgrid/privacy`, `https://hii.othinks.com/catgrid/support`,
-  `https://hii.othinks.com/catgrid`. Uygulamadaki linkler ve `fastlane/metadata` metinleri zaten güncellendi;
-  açıklamadaki gizlilik satırı yeni sürümle birlikte değişir.
+Liste: [Planning/Guncelleme-Listesi.md](Planning/Guncelleme-Listesi.md). Açık maddeler
+`python3 Tools/release_check.py` çıktısında da görünür.
