@@ -41,6 +41,36 @@ final class CatBlockTests: XCTestCase {
         }
     }
 
+    /// Acemi oyuncu (satır tamamlayan hamleyi görür, yoksa ilk bulduğu yere koyar) başlangıçta
+    /// büyük çoğunlukla 300 puanı geçmeli: oyunun başında küçük ve yardımcı parçalar gelir.
+    func testBeginnerPassesEarlyScores() {
+        var scores: [Int] = []
+        for seed in 1...20 as ClosedRange<UInt64> {
+            var game = CatBlockGame(seed: seed)
+            var steps = 0
+            while !game.isOver, game.score < 300, steps < 3000, let (index, row, column) = beginnerMove(in: game) {
+                game.place(trayIndex: index, row: row, column: column)
+                steps += 1
+            }
+            scores.append(game.score)
+        }
+        let passed = scores.filter { $0 >= 300 }.count
+        XCTAssertGreaterThanOrEqual(passed, 17, "300 puanı geçen oyun: \(passed)/20 · \(scores.sorted())")
+    }
+
+    func testDifficultyFollowsScore() {
+        var game = CatBlockGame(seed: 1)
+        XCTAssertEqual(game.ease, 1)
+        XCTAssertEqual(game.challenge, 0)
+        // Puan arttıkça kolaylık azalır
+        var steps = 0
+        while !game.isOver, game.score < 2000, steps < 5000, let (index, row, column) = firstMove(in: game) {
+            game.place(trayIndex: index, row: row, column: column)
+            steps += 1
+        }
+        if game.score >= 2000 { XCTAssertEqual(game.ease, 0) }
+    }
+
     func testLineClearScoringAndCombo() throws {
         var game = CatBlockGame(seed: 3)
         // Tahtayı elle hazırlamak için ilk satırı 1'lik ve 2'lik parçalarla doldurmak yerine
@@ -72,6 +102,20 @@ final class CatBlockTests: XCTestCase {
         XCTAssertEqual(restored.score, game.score)
         XCTAssertTrue(restored.usedBoardClear)
         XCTAssertEqual(restored.tray, game.tray)
+    }
+
+    /// Önce satır/sütun temizleyen bir hamle arar, yoksa ilk sığan yer.
+    private func beginnerMove(in game: CatBlockGame) -> (Int, Int, Int)? {
+        for (index, piece) in game.tray.enumerated() {
+            guard let piece else { continue }
+            for r in 0..<CatBlockGame.size {
+                for c in 0..<CatBlockGame.size where game.canPlace(piece, row: r, column: c) {
+                    var trial = game
+                    if (trial.place(trayIndex: index, row: r, column: c)?.lineCount ?? 0) > 0 { return (index, r, c) }
+                }
+            }
+        }
+        return firstMove(in: game)
     }
 
     private func firstMove(in game: CatBlockGame) -> (Int, Int, Int)? {

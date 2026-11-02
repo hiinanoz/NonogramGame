@@ -144,33 +144,71 @@ public struct CatBlockGame: Codable, Sendable {
 
     // MARK: - Yeni parçalar
 
-    /// Üç yeni parça. Tahta doldukça küçük parçalar biraz daha sık gelir; üçünden en az biri
-    /// (mümkünse) tahtaya sığar, böylece oyun şansa bağlı çok erken bitmez.
+    /// Başlangıç kolaylığı: 500 puana kadar tam (1), 2000 puanda biter (0).
+    var ease: Double {
+        min(max((2000 - Double(score)) / 1500, 0), 1)
+    }
+
+    /// Uzun oyunda zorlaşma: 5000 puanda başlar, 10000 puanda tam (1).
+    var challenge: Double {
+        min(max((Double(score) - 5000) / 5000, 0), 1)
+    }
+
+    /// Üç yeni parça. Zorluk puana bağlı:
+    /// - Başta (kolaylık) çoğunlukla küçük parçalar gelir, üçü de tahtaya sığar ve sık sık bir
+    ///   satır/sütun tamamlayan "yardımcı" parça gelir; oyuncu baştan pes etmez.
+    /// - 500-2000 puan arasında yardım azalır, sonra normal oyun; 5000'den sonra büyük parçalar
+    ///   biraz daha sık gelir.
+    /// - Her durumda tahta doldukça küçük parçalar daha sık gelir; üçünden en az biri (mümkünse)
+    ///   tahtaya sığar.
     private mutating func refillTray() {
         var pieces: [CatBlockPiece] = []
         let filled = Double(cells.compactMap { $0 }.count) / Double(cells.count)
         for _ in 0..<Self.trayCount {
             pieces.append(makePiece(filled: filled))
         }
-        if !pieces.contains(where: canPlaceAnywhere) {
-            // Sığan bir parça bulunur (küçükten büyüğe)
-            let fitting = CatBlockShape.all.sorted { $0.cells.count < $1.cells.count }.first { shape in
-                canPlaceAnywhere(CatBlockPiece(id: 0, shape: shape, color: 0))
+        let ease = self.ease
+        if ease > 0 {
+            // Kolaylık sürerken sığmayan parçalar sığan küçük parçalarla değişir
+            if ease >= 0.3 {
+                for index in pieces.indices where !canPlaceAnywhere(pieces[index]) {
+                    if let fitting = smallestFittingShape() {
+                        pieces[index] = CatBlockPiece(id: takeID(), shape: fitting, color: randomColor())
+                    }
+                }
             }
-            if let fitting {
+            // Yardımcı parça: bir satırı ya da sütunu tamamlar
+            if chance(0.7 * ease), let helper = lineCompletingShape() {
                 pieces[Int(random.next() % UInt64(Self.trayCount))] = CatBlockPiece(
-                    id: takeID(), shape: fitting, color: Int(random.next() % UInt64(CatBlockPiece.colorCount)))
+                    id: takeID(), shape: helper, color: randomColor())
             }
+        }
+        if !pieces.contains(where: canPlaceAnywhere), let fitting = smallestFittingShape() {
+            pieces[Int(random.next() % UInt64(Self.trayCount))] = CatBlockPiece(
+                id: takeID(), shape: fitting, color: randomColor())
         }
         tray = pieces
     }
 
     private mutating func makePiece(filled: Double) -> CatBlockPiece {
         let shapes = CatBlockShape.all
-        // Ağırlık: büyük parçalar tahta doldukça seyrekleşir
+        let ease = self.ease
+        let challenge = self.challenge
+        // Ağırlık: büyük parçalar tahta doldukça ve oyunun başında seyrekleşir, uzun oyunda sıklaşır
         let weights: [Double] = shapes.map { shape in
             let size = Double(shape.cells.count)
-            return shape.weight * (size >= 5 ? max(0.25, 1 - filled * 1.2) : 1)
+            var weight = shape.weight * (size >= 5 ? max(0.25, 1 - filled * 1.2) : 1)
+            if size <= 3 {
+                weight *= 1 + 1.5 * ease
+            } else if size >= 9 {
+                weight *= 1 - 0.9 * ease
+            } else if size >= 5 {
+                weight *= 1 - 0.7 * ease
+            }
+            if size >= 5 {
+                weight *= 1 + 0.5 * challenge
+            }
+            return weight
         }
         let total = weights.reduce(0, +)
         var pick = Double(random.next() % 1_000_000) / 1_000_000 * total
@@ -182,7 +220,45 @@ public struct CatBlockGame: Codable, Sendable {
                 break
             }
         }
-        return CatBlockPiece(id: takeID(), shape: chosen, color: Int(random.next() % UInt64(CatBlockPiece.colorCount)))
+        return CatBlockPiece(id: takeID(), shape: chosen, color: randomColor())
+    }
+
+    private func smallestFittingShape() -> CatBlockShape? {
+        CatBlockShape.all.sorted { $0.cells.count < $1.cells.count }.first { shape in
+            canPlaceAnywhere(CatBlockPiece(id: 0, shape: shape, color: 0))
+        }
+    }
+
+    /// Bir yere konunca en az bir satır ya da sütunu tamamlayan şekil (en büyüğü; yoksa `nil`).
+    private func lineCompletingShape() -> CatBlockShape? {
+        var best: CatBlockShape?
+        for shape in CatBlockShape.all where shape.cells.count > (best?.cells.count ?? 0) {
+            let piece = CatBlockPiece(id: 0, shape: shape, color: 0)
+            outer: for row in 0..<Self.size {
+                for column in 0..<Self.size where canPlace(piece, row: row, column: column) && completesLine(shape, row: row, column: column) {
+                    best = shape
+                    break outer
+                }
+            }
+        }
+        return best
+    }
+
+    private func completesLine(_ shape: CatBlockShape, row: Int, column: Int) -> Bool {
+        let placed = Set(shape.cells.map { (row + $0.row) * Self.size + column + $0.column })
+        func full(_ indices: [Int]) -> Bool { indices.allSatisfy { cells[$0] != nil || placed.contains($0) } }
+        let rows = Set(shape.cells.map { row + $0.row })
+        let columns = Set(shape.cells.map { column + $0.column })
+        return rows.contains { r in full((0..<Self.size).map { r * Self.size + $0 }) }
+            || columns.contains { c in full((0..<Self.size).map { $0 * Self.size + c }) }
+    }
+
+    private mutating func chance(_ probability: Double) -> Bool {
+        Double(random.next() % 1_000_000) / 1_000_000 < probability
+    }
+
+    private mutating func randomColor() -> Int {
+        Int(random.next() % UInt64(CatBlockPiece.colorCount))
     }
 
     private mutating func takeID() -> Int {
