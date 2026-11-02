@@ -18,7 +18,9 @@ struct CrushBoardView: View {
     var body: some View {
         let board = viewModel.board
         GeometryReader { proxy in
-            let cell = min(proxy.size.width / CGFloat(board.columns), proxy.size.height / CGFloat(board.rows))
+            // Küçük tahtalar (ilk bölümler) aşırı büyük karelerle çizilmesin
+            let cell = min(proxy.size.width / CGFloat(board.columns), proxy.size.height / CGFloat(board.rows),
+                           proxy.size.width / 7)
             let size = CGSize(width: cell * CGFloat(board.columns), height: cell * CGFloat(board.rows))
             ZStack(alignment: .topLeading) {
                 CrushBoardBackground(board: board, cell: cell)
@@ -28,6 +30,9 @@ struct CrushBoardView: View {
                 CrushEffectsLayer(viewModel: viewModel, cell: cell)
                     .frame(width: size.width, height: size.height)
                 popups(cell: cell)
+                if viewModel.guidesFirstMove, let hint = viewModel.hint {
+                    CrushSwapHint(swap: hint, cell: cell)
+                }
             }
             .frame(width: size.width, height: size.height)
             .contentShape(Rectangle())
@@ -300,5 +305,30 @@ struct CrushEffectsLayer: View {
             // Pofuduk tüy: yumuşak daire
             piece.fill(Path(ellipseIn: CGRect(x: -size / 2, y: -size / 2, width: size, height: size)), with: .color(particle.color))
         }
+    }
+}
+
+/// İlk bölümde ilk hamle: el, ipucundaki eşyayı komşusuna doğru kaydırır.
+private struct CrushSwapHint: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let swap: CrushSwap
+    let cell: CGFloat
+    @State private var progress: CGFloat = 0
+
+    private func center(_ position: GridPosition) -> CGPoint {
+        CGPoint(x: (CGFloat(position.column) + 0.5) * cell, y: (CGFloat(position.row) + 0.5) * cell)
+    }
+
+    var body: some View {
+        let from = center(swap.from)
+        let to = center(swap.to)
+        PawPointer(bobs: false)
+            .position(x: from.x + (to.x - from.x) * progress + 14, y: from.y + (to.y - from.y) * progress + 24)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+            .onAppear {
+                guard !reduceMotion else { return }
+                withAnimation(.easeInOut(duration: 1.0).delay(0.2).repeatForever(autoreverses: false)) { progress = 1 }
+            }
     }
 }

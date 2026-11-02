@@ -42,9 +42,22 @@ public struct CrushCatalog: Sendable {
 /// Tahta şekilleri. "." oynanabilir, " " delik.
 public enum CrushShape: String, CaseIterable, Sendable {
     case square8, square9, catHead, diamond, heart, ring, plus, hourglass, paw
+    /// İlk bölümlerin küçük tahtaları (kolay başlangıç).
+    case square5, square6, square7, smallHeart
 
     public var lines: [String] {
         switch self {
+        case .square5: Array(repeating: ".....", count: 5)
+        case .square6: Array(repeating: "......", count: 6)
+        case .square7: Array(repeating: ".......", count: 7)
+        case .smallHeart: [
+            " .. .. ",
+            ".......",
+            ".......",
+            ".......",
+            " ..... ",
+            "  ...  ",
+        ]
         case .square8: Array(repeating: "........", count: 8)
         case .square9: Array(repeating: ".........", count: 9)
         case .catHead: [

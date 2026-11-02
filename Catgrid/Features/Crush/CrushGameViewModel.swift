@@ -109,6 +109,8 @@ final class CrushGameViewModel {
     private(set) var selected: GridPosition?
     /// Bir süre hamle yapılmazsa yanıp sönen ipucu.
     private(set) var hint: CrushSwap?
+    /// İlk bölümde ilk hamle: ipucu hemen gösterilir ve el işareti kaydırmayı gösterir.
+    var guidesFirstMove = false
     /// Kazanınca kalan hamlelerin ödüle dönüşmesi bitti.
     private(set) var isFinished = false
     private(set) var frenzyMoves = 0
@@ -172,6 +174,7 @@ final class CrushGameViewModel {
                 await animateSwap(swap)
                 isBusy = false
             case .success(let turn):
+                guidesFirstMove = false
                 await play(turn.move)
                 await finishTurn()
             }
@@ -468,7 +471,7 @@ final class CrushGameViewModel {
         hint = nil
         guard session.status == .playing else { return }
         idleTask = Task {
-            await delay(6)
+            await delay(guidesFirstMove ? 0.6 : 6)
             guard !Task.isCancelled, canPlay else { return }
             withAnimation { hint = session.hint() }
         }

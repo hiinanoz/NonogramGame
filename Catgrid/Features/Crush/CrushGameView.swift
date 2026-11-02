@@ -158,6 +158,8 @@ struct CrushGameView: View {
         }
         crush.markIntroSeen()
         isShowingIntro = false
+        // İlk bölüm ilk kez oynanıyorsa el, ilk kaydırmayı gösterir
+        viewModel.guidesFirstMove = number == 1 && crush.completedCount == 0
         viewModel.start()
     }
 

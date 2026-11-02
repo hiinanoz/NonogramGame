@@ -29,12 +29,63 @@ final class CrushBalanceTests: XCTestCase {
 
     static let shapes: [CrushShape] = [.square9, .catHead, .diamond, .heart, .ring, .plus, .hourglass, .paw, .square8]
 
+    /// Kolay başlangıç: ilk 40 bölüm küçük tahtalar ve az renkle başlar, yavaşça büyür.
+    static let openingCount = 40
+
+    static func openingTemplate(_ number: Int) -> Template {
+        let palette = Array(CrushColor.allCases)
+        func color(_ j: Int) -> CrushColor { palette[(number * 3 + j * 2) % 4] }
+        let shape: CrushShape
+        let colors: Int
+        let moves: Int
+        let goals: [Kind]
+        switch number {
+        case 1...3:
+            // 5×5 → 6×6, 4 renk, bol hamle, tek ve basit hedef
+            shape = number <= 2 ? .square5 : .square6
+            colors = 4
+            moves = 15
+            goals = number == 2 ? [.collect(color(0))] : [.score]
+        case 4...10:
+            shape = [.square6, .smallHeart, .square7][number % 3]
+            colors = number <= 7 ? 4 : 5
+            moves = 16 + number % 2
+            goals = [[.score], [.collect(color(0))], [.specials]][number % 3]
+        case 11...25:
+            shape = [.square7, .smallHeart, .square8, .square7, .heart][number % 5]
+            colors = 5
+            moves = 18 + [0, 2][number % 2]
+            switch number % 4 {
+            case 0: goals = [.score]
+            case 1: goals = [.collect(color(0))]
+            case 2: goals = [.specials]
+            default: goals = [.collect(color(0)), .collect(color(1))]
+            }
+        default:
+            // 26-40: mevcut şekillere geçiş
+            shape = shapes[(number * 4) % shapes.count]
+            colors = 5
+            moves = 20 + [0, 2, 4, 2][number % 4]
+            let palette5 = Array(CrushColor.allCases.prefix(5))
+            func c5(_ j: Int) -> CrushColor { palette5[(number * 3 + j * 2) % 5] }
+            switch number % 5 {
+            case 0: goals = [.score]
+            case 1: goals = [.collect(c5(0))]
+            case 2: goals = [.specials]
+            case 3: goals = [.collect(c5(0)), .collect(c5(1))]
+            default: goals = [.collect(c5(0)), .specials]
+            }
+        }
+        return Template(shape: shape, moves: moves, colors: colors, goals: goals)
+    }
+
     static func template(_ number: Int) -> Template {
+        if number <= openingCount { return openingTemplate(number) }
         let k = (number - 1) % CrushCatalog.levelsPerEpisode
         let episode = (number - 1) / CrushCatalog.levelsPerEpisode
         let isBoss = k % 15 == 14
         let isBreather = k % 10 == 0
-        let shape: CrushShape = number <= 2 ? .square8 : shapes[(number * 4 + episode) % shapes.count]
+        let shape: CrushShape = shapes[(number * 4 + episode) % shapes.count]
         let colors: Int
         if episode == 0 {
             colors = k < 40 || isBreather ? 5 : 6
@@ -45,10 +96,7 @@ final class CrushBalanceTests: XCTestCase {
         let palette = Array(CrushColor.allCases.prefix(colors))
         func color(_ j: Int) -> CrushColor { palette[(number * 3 + j * 2) % palette.count] }
         let goals: [Kind]
-        if number <= 3 {
-            let first: [[Kind]] = [[.score], [.collect(.yarn)], [.score]]
-            goals = first[number - 1]
-        } else if isBoss {
+        if isBoss {
             goals = [.collect(color(0)), .collect(color(1)), .specials]
         } else {
             switch k % 6 {
@@ -68,9 +116,18 @@ final class CrushBalanceTests: XCTestCase {
     /// Botun kazanma oranı hedefi: ilk bölümlerde neredeyse her zaman, sona doğru üçte iki;
     /// macera sonları (15, 30 …) biraz daha zor.
     static func targetWinRate(_ number: Int) -> Double {
-        if number <= 3 { return 0.99 }
+        // Kolay başlangıç: ilk 10 bölümü neredeyse herkes geçer, 40. bölüme kadar yavaşça zorlaşır
+        if number <= 10 { return 0.99 }
+        if number <= openingCount {
+            let t = Double(number - 10) / Double(openingCount - 10)
+            return 0.97 - t * (0.97 - legacyWinRate(openingCount + 1))
+        }
+        return legacyWinRate(number)
+    }
+
+    /// 41. bölümden sonrası (önceki ayar): %95'ten %62'ye; macera sonları biraz daha zor.
+    static func legacyWinRate(_ number: Int) -> Double {
         let k = (number - 1) % CrushCatalog.levelsPerEpisode
-        // Bütün oyun boyunca %95'ten %62'ye; her macera biraz daha kolay başlar
         var rate = 0.95 - 0.33 * Double(number - 1) / Double(levelCount - 1)
         rate += 0.05 * max(0, 1 - Double(k) / 20)
         if k % 15 == 14 { rate -= 0.08 }
@@ -149,9 +206,11 @@ final class CrushBalanceTests: XCTestCase {
         var output: [String] = []
         var report: [String] = []
         let only = Int(ProcessInfo.processInfo.environment["CRUSH_ONLY"] ?? "")
+        let upTo = Int(ProcessInfo.processInfo.environment["CRUSH_UPTO"] ?? "") ?? Self.levelCount
         for (index, template) in Self.templates.enumerated() {
             let number = index + 1
             if let only, only != number { continue }
+            if number > upTo { break }
             let goal = Self.targetWinRate(number)
 
             // 1. tur: hedefsiz oyun, bütün hamleler; her hedefin son sayacı
@@ -183,6 +242,17 @@ final class CrushBalanceTests: XCTestCase {
                 let candidate = targetsAt(quantile)
                 if rate(candidate) < goal - 0.015 { break }
                 targets = candidate
+            }
+            // Kolay başlangıçta hedefler küçük ve anlaşılır kalır (zincirleme patlamalar sayıları
+            // şişirmesin): bölüm numarasıyla yavaşça büyüyen üst sınır
+            if number <= Self.openingCount {
+                targets = zip(template.goals, targets).map { kind, target in
+                    switch kind {
+                    case .score: min(target, 1500 + 250 * number - (1500 + 250 * number) % 500)
+                    case .collect: min(target, 10 + 5 * (number / 3))
+                    case .specials: min(target, 1 + number / 8)
+                    }
+                }
             }
             if only != nil { print("targets \(targets) rate \(rate(targets))") }
             let goals: [CrushGoal] = zip(template.goals, targets).map { kind, target in
