@@ -1,8 +1,7 @@
-Trois nouveaux modes de jeu !
+Merci pour vos avis ! Avec cette mise à jour, chaque jeu s'apprend plus facilement et commence en douceur.
 
-• Meow Crush : 300 niveaux de match-3 dans la Tour des Chats
-• Miaou Sort : trie les oiseaux sur leurs branches, 450 niveaux sur six îles
-• Bloc Chat : remplis le plateau 8×8 de blocs et bats ton record
-• Pause et reprise : les parties reprennent là où tu t'étais arrêté
-• Nouveaux classements Game Center pour les nouveaux modes
-• Nouvelle animation de lancement, démarrage plus rapide et plein de petites améliorations
+• Puzzle Chat : choisis Croix, Chat ou Gomme sous le plateau et touche simplement ; premier niveau plus clair
+• L'école de Muffin : 6 courtes leçons au lieu de 11, moins de texte, plus de démonstrations
+• Meow Crush : les premiers niveaux commencent sur de petits plateaux et se corsent pas à pas
+• Bloc Chat : un début plus facile qui se corse quand ton score grimpe
+• Moins de pub : aucune pub interstitielle pendant les 12 premiers niveaux de chaque jour

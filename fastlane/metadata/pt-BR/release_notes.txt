@@ -1,8 +1,7 @@
-Três novos modos de jogo!
+Obrigado pelas avaliações! Com esta atualização, todos os jogos ficam mais fáceis de aprender e de começar.
 
-• Meow Crush: 300 fases de combinar três na Torre dos Gatos
-• Miau Sort: organize os pássaros nos galhos, 450 fases em seis ilhas
-• Bloco do Gato: preencha o tabuleiro 8×8 com blocos e bata seu recorde
-• Pausar e continuar: as partidas seguem de onde você parou
-• Novos placares do Game Center para os novos modos
-• Nova animação de abertura, início mais rápido e várias pequenas melhorias
+• Quebra-Gato: escolha Cruz, Gato ou Borracha abaixo do tabuleiro e é só tocar; primeira fase mais clara
+• Escola da Muffin: 6 lições curtas em vez de 11, menos texto, mais demonstração
+• Meow Crush: as primeiras fases começam em tabuleiros pequenos e ficam mais difíceis aos poucos
+• Bloco do Gato: um começo mais fácil que fica mais difícil conforme sua pontuação sobe
+• Menos anúncios: nenhum anúncio intersticial nas primeiras 12 fases de cada dia

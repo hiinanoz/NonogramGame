@@ -1,8 +1,7 @@
-Drei neue Spielmodi!
+Danke für eure Bewertungen! Mit diesem Update lassen sich alle Spiele leichter lernen und entspannter beginnen.
 
-• Meow Crush: 300 Match-3-Level im Katzenturm
-• Miau Sort: Sortiere Vögel auf ihren Ästen, 450 Level auf sechs Inseln
-• Katzenblock: Fülle das 8×8-Feld mit Blöcken und jage deinen Rekord
-• Pausieren und fortsetzen: Spiele gehen dort weiter, wo du aufgehört hast
-• Neue Game-Center-Ranglisten für die neuen Modi
-• Neue Startanimation, schnellerer Start und viele kleine Verbesserungen
+• Katzenrätsel: Kreuz, Katze oder Radierer unter dem Feld wählen und einfach tippen; klareres erstes Level
+• Muffins Schule: 6 statt 11 kurze Lektionen, weniger Text, mehr Zeigen
+• Meow Crush: die ersten Level beginnen auf kleinen Feldern und werden Schritt für Schritt schwerer
+• Katzenblock: leichterer Start, der mit deinem Punktestand schwerer wird
+• Weniger Werbung: in den ersten 12 Leveln jedes Tages keine Zwischenwerbung

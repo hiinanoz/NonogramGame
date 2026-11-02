@@ -1,14 +1,14 @@
 Thank you for reviewing Catgrid Collection: Nonogram.
 
-WHAT'S NEW IN 1.2.0
-Three new game modes on the home screen: Meow Crush, Meow Sort and Cat Block (steps 4-6 below). Games in these modes can be paused and resumed later. New Game Center leaderboards for the new modes, and a short launch animation.
+WHAT'S NEW IN 1.2.1
+Easier, more visual tutorials (Cat Puzzle tool picker, 6-lesson Muffin's School), an easier start in Meow Crush and Cat Block, and fewer interstitial ads.
 
 The app has no hidden, remote-controlled or review-only features. No server, remote configuration or feature flags: all content is bundled and works offline, identically for everyone. The steps below reach every feature in a few minutes, without purchasing.
 
 HOW TO REACH EVERY FEATURE
 - No account or login. Progress is stored on the device.
 - Home screen shows the game modes: Cat Puzzle (large card), Daily Puzzle, Card Collection, Meow Crush, Meow Sort and Cat Block.
-1. Cat Puzzle: tap the Cat Puzzle card. A seasonal adventure map opens; tap Play. Rule: place one cat in every color, row and column; cats may not touch. Tap a cell to mark X, double-tap to place a cat. Level 1 is a short guided tutorial. The Easy/Hard switch (top right of the game) controls automatic X's. 335 levels, unlocked in order.
+1. Cat Puzzle: tap the Cat Puzzle card. A seasonal adventure map opens; tap Play. Rule: place one cat in every color, row and column; cats may not touch. Pick a tool below the board (Cross, Cat, Eraser) and tap a cell; double-tap also places a cat. Level 1 is a short guided tutorial. The Easy/Hard switch (top right of the game) controls automatic X's. 335 levels, unlocked in order.
 2. Daily Puzzle: tap Daily Puzzle, then Play. One new nonogram per day; the last 10 days can also be played from the calendar.
 3. Card Collection (nonograms): tap Card Collection, then Continue. Cat breeds unlock in order: each next breed opens once half of the previous breed's puzzles are solved. Finishing all puzzles of a breed awards its collectible card.
 4. Meow Crush (match-3): tap Meow Crush, then Play. Swap neighbouring treats to match 3 or more and reach the level goal within the moves. 300 levels in the Cat Tower, unlocked in order. A level uses one of 5 lives (refilled over time); boosters are at the bottom of the game. The pause button (top right) saves the game.

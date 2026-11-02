@@ -1,8 +1,7 @@
-Üç yeni oyun modu!
+Yorumlarınız için teşekkürler! Bu güncellemeyle oyunları öğrenmek daha kolay, başlamak daha rahat.
 
-• Miyav Crush: Kedi Kulesi'nde 300 bölümlük eşleştirme macerası
-• Miyav Sort: altı adada 450 bölüm, kuşları dallarına göre sırala
-• Kedi Kutusu: 8×8 tahtayı bloklarla doldur, rekorunu geç
-• Ara ver ve devam et: oyunlar kaldığın yerden sürer
-• Yeni modlar için Game Center sıralamaları
-• Yeni açılış animasyonu, daha hızlı açılış ve birçok küçük iyileştirme
+• Kedi Bulmaca: tahtanın altından Çarpı, Kedi ya da Silgi'yi seç ve dokun; ilk bölüm daha anlaşılır
+• Muffin'in Okulu: 11 yerine 6 kısa ders, daha az yazı, daha çok gösterim
+• Miyav Crush: ilk bölümler küçük tahtalarla başlıyor, adım adım zorlaşıyor
+• Kedi Kutusu: daha kolay başlangıç, puan arttıkça zorlaşıyor
+• Daha az reklam: her gün ilk 12 bölümde geçiş reklamı yok
