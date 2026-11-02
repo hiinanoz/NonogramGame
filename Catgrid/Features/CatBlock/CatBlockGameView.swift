@@ -28,6 +28,7 @@ struct CatBlockGameScreen: View {
     @State private var dragIndex: Int?
     @State private var dragLocation: CGPoint = .zero
     @State private var boardFrame: CGRect = .zero
+    @State private var trayFrame: CGRect = .zero
 
     // Efektler
     @State private var bursts: [CatBlockBurst] = []
@@ -59,10 +60,22 @@ struct CatBlockGameScreen: View {
                 Spacer(minLength: 8)
                 tray(cell: cell)
                     .frame(height: cell * 3.4)
+                    .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(Self.space)) } action: { trayFrame = $0 }
                 Spacer(minLength: 12)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .topLeading) { draggedPiece(cell: cell) }
+            .overlay(alignment: .topLeading) {
+                // İlk oyunda: parçayı tahtaya sürüklemeyi gösteren el
+                if blocks.gamesPlayed == 0, game.piecesPlaced == 0, dragIndex == nil, !isPaused,
+                   !boardFrame.isEmpty, !trayFrame.isEmpty {
+                    CatBlockDragHint(
+                        from: CGPoint(x: trayFrame.minX + 12 + (trayFrame.width - 24) / 6, y: trayFrame.midY),
+                        to: CGPoint(x: boardFrame.midX, y: boardFrame.midY)
+                    )
+                    .transition(.opacity)
+                }
+            }
         }
         .coordinateSpace(.named(Self.space))
         .background(background.ignoresSafeArea())
@@ -605,5 +618,35 @@ struct CatBlockShake: GeometryEffect {
 
     func effectValue(size: CGSize) -> ProjectionTransform {
         ProjectionTransform(CGAffineTransform(translationX: 8 * sin(amount * .pi * 4), y: 0))
+    }
+}
+
+/// İlk oyunda parçanın tahtaya sürüklenişini gösteren el (dokunmayı engellemez).
+@MainActor
+struct CatBlockDragHint: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let from: CGPoint
+    let to: CGPoint
+    @State private var progress: CGFloat = 0
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            Text("Drag a piece onto the board")
+                .font(.headline.weight(.heavy))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(Capsule().fill(.black.opacity(0.55)))
+                .fixedSize()
+                .position(x: to.x, y: to.y)
+            PawPointer(bobs: false)
+                .position(x: from.x + (to.x - from.x) * progress + 14, y: from.y + (to.y - from.y) * progress + 24)
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+        .onAppear {
+            guard !reduceMotion else { return }
+            withAnimation(.easeInOut(duration: 1.4).delay(0.3).repeatForever(autoreverses: false)) { progress = 1 }
+        }
     }
 }
