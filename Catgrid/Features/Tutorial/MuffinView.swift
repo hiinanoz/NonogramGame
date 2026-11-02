@@ -196,15 +196,6 @@ extension TutorialLesson {
         }
     }
 
-    /// Kurala ek, oyunla ilgili küçük bir ipucu (ayarlar, yardımcı kedi).
-    var tip: LocalizedStringResource? {
-        switch self {
-        case .fullLines: "Tip: pick your favorite colors in Settings → Color Palette."
-        case .emptyLines: "Tip: you can turn the music off in Settings → Sound."
-        case .markWithCross: "Tip: like it calm or lively? Pick Calm or Energetic mode in Settings → Play Style."
-        case .crossReference: "Stuck? Pet the little cat below the board and it will show you a line to look at."
-        case .difficulty: "Tip: pause any time with the button at the top right."
-        default: nil
-        }
-    }
+    /// Kurala ek ipucu satırı: kaldırıldı (eğitimde yazı en aza indirildi).
+    var tip: LocalizedStringResource? { nil }
 }

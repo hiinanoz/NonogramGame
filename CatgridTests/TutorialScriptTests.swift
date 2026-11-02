@@ -17,7 +17,7 @@ final class TutorialScriptTests: XCTestCase {
 
     /// Patinin gösterdiği her hamleyi sırayla yapar (Kolay mod).
     func testScriptedLessonsSolveWithoutMistakes() throws {
-        for lesson in [TutorialLesson.firstSquare, .tapToFill, .fullLines, .emptyLines] {
+        for lesson in [TutorialLesson.firstSquare, .tapToFill, .emptyLines] {
             let puzzle = try puzzle(lesson)
             let script = try XCTUnwrap(TutorialScript.script(for: lesson, puzzle: puzzle), "\(lesson)")
             var game = NonogramGame(puzzle: puzzle, rules: .classic)

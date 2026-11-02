@@ -455,7 +455,12 @@ struct GameView: View {
     }
 
     private var guideHighlight: HintFinder.Hint? {
-        guidedTool == nil ? tutorialStep?.highlight : nil
+        guard guidedTool == nil else { return nil }
+        if let step = tutorialStep { return step.highlight }
+        // Senaryosuz derslerde çözülebilecek satır/sütun parlar: oyuncu nereye bakacağını görür
+        guard let lesson = viewModel.puzzle.lesson, lesson.highlightsNextLine,
+              game.status == .playing, !viewModel.isPaused else { return nil }
+        return HintFinder.bestHint(board: game.board, puzzle: viewModel.puzzle)
     }
 
     /// Zorluk dersine kadar zorluk değiştirilemez.

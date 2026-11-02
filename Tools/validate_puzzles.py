@@ -18,7 +18,7 @@ import re
 import sys
 from pathlib import Path
 
-MIN_PUZZLES = {"tutorial": 11, "breed": 16}
+MIN_PUZZLES = {"tutorial": 6, "breed": 16}
 LANGUAGES = ["en", "tr", "ja", "de", "fr", "es", "pt-BR", "ko"]
 PREMIUM_SIZES = ["8x8"] * 3 + ["10x10"] * 3 + ["12x12"] * 3
 HEX = re.compile(r"^#?[0-9A-Fa-f]{6}$")

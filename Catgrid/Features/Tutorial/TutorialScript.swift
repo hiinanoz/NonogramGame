@@ -135,10 +135,8 @@ struct TutorialScript {
             let emptyRows = (0..<rows).filter { puzzle.rowClues[$0].isEmpty }
             let fullRows = (0..<rows).filter { puzzle.rowClues[$0] == [columns] }
             let otherRows = (0..<rows).filter { !emptyRows.contains($0) && !fullRows.contains($0) }
-            let fullMessage: LocalizedStringResource =
-                "There's a row that's completely full. Let's pick Fill again and find the filled squares."
-            let blocksMessage: LocalizedStringResource =
-                "Numbers tell you how many squares sit side by side in a row or column. How can 2 squares together and 1 square alone fit?"
+            let fullMessage: LocalizedStringResource = "5 means the whole row is full. Pick Fill and swipe!"
+            let blocksMessage: LocalizedStringResource = "2 1 means: 2 squares together, a gap, then 1. Tap where I point."
             var steps = emptyRows.map { TutorialStep.swipeRow($0, columns: columns, tool: .cross) }
             for (index, row) in fullRows.enumerated() {
                 steps.append(TutorialStep.swipeRow(row, columns: columns, tool: .fill, message: index == 0 ? fullMessage : nil))
@@ -154,6 +152,14 @@ struct TutorialScript {
 }
 
 extension TutorialLesson {
+    /// Senaryosuz derslerde sıradaki çözülebilir satır/sütun parlasın mı?
+    var highlightsNextLine: Bool {
+        switch self {
+        case .multipleBlocks, .overlap, .edges, .crossReference: true
+        default: false
+        }
+    }
+
     /// Zorluk dersine kadar zorluk değiştirilemez, eğitim "Kolay" modda oynanır.
     var locksEasyMode: Bool {
         let all = TutorialLesson.allCases

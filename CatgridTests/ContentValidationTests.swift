@@ -113,8 +113,13 @@ final class ContentValidationTests: XCTestCase {
         XCTAssertEqual(Set(declared), Set(Self.languages))
     }
 
-    func testTutorialCoversEveryLesson() throws {
+    /// Yavru Okulu 6 ders: ilk kare, sıfır ve çarpı, boş/dolu satır, birden çok blok,
+    /// satır-sütun birlikte, canlar ve zorluk (sırayla).
+    func testTutorialHasSixShortLessons() throws {
         let tutorial = try XCTUnwrap(catalog.chapters.first { $0.kind == .tutorial })
-        XCTAssertEqual(Set(tutorial.puzzles.compactMap(\.lesson)), Set(TutorialLesson.allCases))
+        XCTAssertEqual(tutorial.puzzles.compactMap(\.lesson),
+                       [.firstSquare, .tapToFill, .emptyLines, .multipleBlocks, .crossReference, .difficulty])
+        // Son derste canlar devreye girer
+        XCTAssertEqual(tutorial.puzzles.last?.rulesOverride?.mistakeLimit, 3)
     }
 }

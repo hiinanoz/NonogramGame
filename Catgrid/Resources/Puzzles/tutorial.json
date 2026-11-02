@@ -47,30 +47,6 @@
       "lesson": "tapToFill"
     },
     {
-      "id": "tutorial-02",
-      "title": {
-        "en": "Window",
-        "tr": "Pencere",
-        "ja": "窓",
-        "de": "Fenster",
-        "fr": "Fenêtre",
-        "es": "Ventana",
-        "pt-BR": "Janela",
-        "ko": "창문"
-      },
-      "palette": {
-        "a": "#5B4636"
-      },
-      "pixels": [
-        "aaaaa",
-        "a.a.a",
-        "aaaaa",
-        "a.a.a",
-        "aaaaa"
-      ],
-      "lesson": "fullLines"
-    },
-    {
       "id": "tutorial-03",
       "title": {
         "en": "Fish",
@@ -93,30 +69,6 @@
         "....."
       ],
       "lesson": "emptyLines"
-    },
-    {
-      "id": "tutorial-04",
-      "title": {
-        "en": "Paw",
-        "tr": "Pati",
-        "ja": "肉球",
-        "de": "Pfote",
-        "fr": "Patte",
-        "es": "Patita",
-        "pt-BR": "Patinha",
-        "ko": "발바닥"
-      },
-      "palette": {
-        "a": "#D98C8C"
-      },
-      "pixels": [
-        "a.a.a",
-        ".....",
-        ".aaa.",
-        "aaaaa",
-        ".aaa."
-      ],
-      "lesson": "markWithCross"
     },
     {
       "id": "tutorial-05",
@@ -143,54 +95,6 @@
       "lesson": "multipleBlocks"
     },
     {
-      "id": "tutorial-06",
-      "title": {
-        "en": "Cat Face",
-        "tr": "Kedi Yüzü",
-        "ja": "猫の顔",
-        "de": "Katzengesicht",
-        "fr": "Tête de chat",
-        "es": "Cara de gato",
-        "pt-BR": "Carinha de Gato",
-        "ko": "고양이 얼굴"
-      },
-      "palette": {
-        "a": "#5B4636"
-      },
-      "pixels": [
-        "a...a",
-        "aa.aa",
-        "aaaaa",
-        "a.a.a",
-        ".aaa."
-      ],
-      "lesson": "overlap"
-    },
-    {
-      "id": "tutorial-07",
-      "title": {
-        "en": "Bone",
-        "tr": "Kemik",
-        "ja": "骨",
-        "de": "Knochen",
-        "fr": "Os",
-        "es": "Hueso",
-        "pt-BR": "Osso",
-        "ko": "뼈다귀"
-      },
-      "palette": {
-        "a": "#C8B79E"
-      },
-      "pixels": [
-        "a...a",
-        "aaaaa",
-        "..a..",
-        "aaaaa",
-        "a...a"
-      ],
-      "lesson": "edges"
-    },
-    {
       "id": "tutorial-08",
       "title": {
         "en": "Mouse",
@@ -215,33 +119,6 @@
       "lesson": "crossReference"
     },
     {
-      "id": "tutorial-09",
-      "title": {
-        "en": "Heart",
-        "tr": "Kalp",
-        "ja": "ハート",
-        "de": "Herz",
-        "fr": "Cœur",
-        "es": "Corazón",
-        "pt-BR": "Coração",
-        "ko": "하트"
-      },
-      "palette": {
-        "a": "#E5677A"
-      },
-      "pixels": [
-        ".a.a.",
-        "aaaaa",
-        "aaaaa",
-        ".aaa.",
-        "..a.."
-      ],
-      "lesson": "mistakesAndLives",
-      "rules": {
-        "mistakeLimit": 3
-      }
-    },
-    {
       "id": "tutorial-11",
       "title": {
         "en": "Cat Basket",
@@ -264,34 +141,10 @@
         "aaaaa",
         ".aaa."
       ],
-      "lesson": "difficulty"
-    },
-    {
-      "id": "tutorial-10",
-      "title": {
-        "en": "Kitty",
-        "tr": "Pisi",
-        "ja": "子猫",
-        "de": "Mieze",
-        "fr": "Minou",
-        "es": "Gatito",
-        "pt-BR": "Gatinho",
-        "ko": "야옹이"
-      },
-      "palette": {
-        "a": "#F2A65A"
-      },
-      "pixels": [
-        "a......a",
-        "aa....aa",
-        "aaaaaaaa",
-        "a.aaaa.a",
-        "aaaaaaaa",
-        ".aaaaaa.",
-        "..aaaa..",
-        "...aa..."
-      ],
-      "lesson": "graduation"
+      "lesson": "difficulty",
+      "rules": {
+        "mistakeLimit": 3
+      }
     }
   ]
 }

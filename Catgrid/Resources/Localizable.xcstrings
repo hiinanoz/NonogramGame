@@ -30640,6 +30640,374 @@
           }
         }
       }
+    },
+    "Hi, I'm Muffin! Tap the square I'm pointing at.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merhaba, ben Muffin! Gösterdiğim kareye dokun."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "こんにちは、マフィンだよ！指さしているマスをタップしてね。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hallo, ich bin Muffin! Tippe auf das Feld, auf das ich zeige."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salut, je suis Muffin ! Touche la case que je montre."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Hola, soy Muffin! Toca la casilla que señalo."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oi, eu sou a Muffin! Toque na casa que estou apontando."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "안녕, 나는 머핀이야! 내가 가리키는 칸을 탭해."
+          }
+        }
+      }
+    },
+    "0 means empty. Swipe X across the glowing line.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 boş demek. Parlayan çizgi boyunca X sürükle."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0は空っぽ。光っている列を×でなぞろう。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 heißt leer. Wisch X über die leuchtende Linie."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 veut dire vide. Glisse des X sur la ligne qui brille."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 significa vacío. Desliza X por la línea que brilla."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 quer dizer vazio. Deslize X pela linha que brilha."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0은 비어 있다는 뜻이에요. 빛나는 줄을 따라 X를 그어요."
+          }
+        }
+      }
+    },
+    "0 means empty: swipe X across it.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 boş demek: üzerine X sürükle."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0は空っぽ：×でなぞろう。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 heißt leer: wisch X darüber."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 veut dire vide : glisse des X dessus."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 significa vacío: desliza X encima."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 quer dizer vazio: deslize X por cima."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0은 비어 있다는 뜻: X를 그어요."
+          }
+        }
+      }
+    },
+    "1 1 1 = three single squares with gaps. Solve the glowing line!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 1 1 = aralarında boşluk olan üç tek kare. Parlayan çizgiyi çöz!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 1 1 ＝ すき間をあけた1マスが3つ。光っている列を解こう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 1 1 = drei einzelne Felder mit Lücken. Löse die leuchtende Linie!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 1 1 = trois cases seules séparées. Résous la ligne qui brille !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 1 1 = tres casillas sueltas con huecos. ¡Resuelve la línea que brilla!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 1 1 = três casas sozinhas com espaços. Resolva a linha que brilha!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 1 1 = 사이가 떨어진 한 칸 세 개. 빛나는 줄을 풀어요!"
+          }
+        }
+      }
+    },
+    "Rows and columns help each other. Solve the glowing line!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satırlar ve sütunlar birbirine yardım eder. Parlayan çizgiyi çöz!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行と列はお互いのヒント。光っている列を解こう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeilen und Spalten helfen einander. Löse die leuchtende Linie!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lignes et colonnes s'aident. Résous la ligne qui brille !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filas y columnas se ayudan. ¡Resuelve la línea que brilla!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Linhas e colunas se ajudam. Resolva a linha que brilha!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "행과 열은 서로 도와요. 빛나는 줄을 풀어요!"
+          }
+        }
+      }
+    },
+    "Each mistake costs a paw. The button by the timer switches Easy and Hard.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her hata bir patiye mal olur. Sürenin yanındaki düğme Kolay ve Zor arasında geçiş yapar."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ミスするたびに肉球が1つ減るよ。タイマー横のボタンで「かんたん」と「むずかしい」を切り替えられるよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeder Fehler kostet eine Pfote. Der Knopf neben der Zeit wechselt zwischen Leicht und Schwer."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque erreur coûte une patte. Le bouton près du chrono passe de Facile à Difficile."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cada error cuesta una pata. El botón junto al tiempo cambia entre Fácil y Difícil."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cada erro custa uma patinha. O botão ao lado do tempo alterna entre Fácil e Difícil."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "실수할 때마다 발바닥이 하나 줄어요. 타이머 옆 버튼으로 쉬움과 어려움을 바꿔요."
+          }
+        }
+      }
+    },
+    "5 means the whole row is full. Pick Fill and swipe!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5, satırın tamamı dolu demek. Doldur'u seç ve sürükle!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5は列が全部塗られているよ。「塗る」を選んでなぞろう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 heißt: die ganze Zeile ist voll. Wähl Füllen und wisch!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 veut dire que toute la ligne est pleine. Choisis Remplir et glisse !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 significa que toda la fila está llena. ¡Elige Rellenar y desliza!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 quer dizer que a linha inteira está cheia. Escolha Preencher e deslize!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5는 줄 전체가 칠해져 있다는 뜻. 채우기를 고르고 그어요!"
+          }
+        }
+      }
+    },
+    "2 1 means: 2 squares together, a gap, then 1. Tap where I point.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 1: yan yana 2 kare, bir boşluk, sonra 1 kare. Gösterdiğim yere dokun."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 1 は「2マス続き、すき間、1マス」。指さすところをタップしてね。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 1 heißt: 2 Felder zusammen, eine Lücke, dann 1. Tippe, wo ich zeige."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 1 veut dire : 2 cases collées, un espace, puis 1. Touche là où je montre."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 1 significa: 2 casillas juntas, un hueco y luego 1. Toca donde señalo."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 1 quer dizer: 2 casas juntas, um espaço e depois 1. Toque onde eu aponto."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 1은 붙은 2칸, 빈칸, 그리고 1칸이에요. 내가 가리키는 곳을 탭해요."
+          }
+        }
+      }
     }
   },
   "version": "1.0"
