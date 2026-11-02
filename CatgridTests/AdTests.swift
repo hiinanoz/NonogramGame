@@ -2,49 +2,70 @@ import XCTest
 @testable import Catgrid
 
 final class AdPolicyTests: XCTestCase {
-    func makePolicy() -> AdPolicy {
-        AdPolicy(defaults: UserDefaults(suiteName: "AdPolicyTests-\(UUID().uuidString)")!)
+    /// Kurulumdan iki gün sonra öğlen (kurulum günü kuralı devre dışı).
+    let day = Date(timeIntervalSinceReferenceDate: 86_400 * 2 + 43_200)
+    let installDay = Date(timeIntervalSinceReferenceDate: 43_200)
+
+    func makePolicy(installedAt: Date? = nil) -> AdPolicy {
+        AdPolicy(defaults: UserDefaults(suiteName: "AdPolicyTests-\(UUID().uuidString)")!,
+                 calendar: utc, now: installedAt ?? installDay)
+    }
+
+    var utc: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        return calendar
+    }
+
+    func complete(_ policy: AdPolicy, _ count: Int, at date: Date) {
+        for _ in 0..<count { policy.registerCompletion(isTutorial: false, now: date) }
     }
 
     func testTutorialNeverCountsTowardAds() {
         let policy = makePolicy()
-        for _ in 0..<10 { policy.registerCompletion(isTutorial: true) }
-        XCTAssertFalse(policy.isInterstitialDue())
+        for _ in 0..<30 { policy.registerCompletion(isTutorial: true, now: day) }
+        XCTAssertFalse(policy.isInterstitialDue(now: day))
     }
 
-    func testInterstitialEveryTwoBreedPuzzles() {
+    func testNoInterstitialOnInstallDay() {
         let policy = makePolicy()
-        policy.registerCompletion(isTutorial: false)
-        XCTAssertFalse(policy.isInterstitialDue())
-        policy.registerCompletion(isTutorial: false)
-        XCTAssertTrue(policy.isInterstitialDue())
-
-        policy.recordInterstitialShown()
-        XCTAssertFalse(policy.isInterstitialDue())
+        complete(policy, 40, at: installDay)
+        XCTAssertFalse(policy.isInterstitialDue(now: installDay))
     }
 
-    func testRespectsMinimumIntervalBetweenAds() {
+    func testFirstTwelveLevelsOfTheDayAreFreeThenEveryFour() {
         let policy = makePolicy()
-        let start = Date(timeIntervalSinceReferenceDate: 0)
-        policy.recordInterstitialShown(now: start)
-        policy.registerCompletion(isTutorial: false)
-        policy.registerCompletion(isTutorial: false)
+        complete(policy, AdPolicy.freeCompletionsPerDay, at: day)
+        XCTAssertFalse(policy.isInterstitialDue(now: day), "Günün ilk 12 bölümü reklamsız")
+        complete(policy, 3, at: day)
+        XCTAssertFalse(policy.isInterstitialDue(now: day))
+        complete(policy, 1, at: day)
+        XCTAssertTrue(policy.isInterstitialDue(now: day), "Sonra her 4 bölümde bir")
 
-        XCTAssertFalse(policy.isInterstitialDue(now: start.addingTimeInterval(30)))
-        XCTAssertTrue(policy.isInterstitialDue(now: start.addingTimeInterval(AdPolicy.minimumInterval)))
+        policy.recordInterstitialShown(now: day)
+        complete(policy, 4, at: day)
+        XCTAssertFalse(policy.isInterstitialDue(now: day.addingTimeInterval(60)), "En az 4 dakika ara")
+        XCTAssertTrue(policy.isInterstitialDue(now: day.addingTimeInterval(AdPolicy.minimumInterval)))
     }
 
-    func testPremiumPromoAfterSecondAdThenEveryThird() {
+    func testFreeLevelsResetEachDay() {
         let policy = makePolicy()
-        var promoAfter: [Int] = []
-        for ad in 1...8 {
-            policy.recordInterstitialShown()
-            if policy.isPremiumPromoDue {
-                promoAfter.append(ad)
-                policy.recordPremiumPromoShown()
-            }
-        }
-        XCTAssertEqual(promoAfter, [2, 5, 8])
+        complete(policy, 20, at: day)
+        let nextDay = day.addingTimeInterval(86_400)
+        XCTAssertEqual(policy.completionsToday(now: nextDay), 0)
+        complete(policy, 5, at: nextDay)
+        XCTAssertFalse(policy.isInterstitialDue(now: nextDay))
+    }
+
+    func testPremiumPromoOncePerDayAfterFreeLevels() {
+        let policy = makePolicy()
+        complete(policy, 11, at: day)
+        XCTAssertFalse(policy.isPremiumPromoDue(now: day))
+        complete(policy, 1, at: day)
+        XCTAssertTrue(policy.isPremiumPromoDue(now: day))
+        policy.recordPremiumPromoShown(now: day)
+        complete(policy, 10, at: day)
+        XCTAssertFalse(policy.isPremiumPromoDue(now: day), "Günde en fazla bir kez")
     }
 }
 
@@ -52,11 +73,16 @@ final class AdPolicyTests: XCTestCase {
 final class AdCoordinatorTests: XCTestCase {
     func testShowsInterstitialOnlyWhenDueThenContinues() async {
         let service = NoAdService()
-        let policy = AdPolicy(defaults: UserDefaults(suiteName: "AdCoordinatorTests-\(UUID().uuidString)")!)
-        let coordinator = AdCoordinator(service: service, policy: policy)
+        var clock = Date(timeIntervalSinceReferenceDate: 0)
+        let policy = AdPolicy(defaults: UserDefaults(suiteName: "AdCoordinatorTests-\(UUID().uuidString)")!, now: clock)
+        clock.addTimeInterval(86_400 * 3)
+        let coordinator = AdCoordinator(service: service, policy: policy, now: { clock })
+        coordinator.showsPremiumPromo = false
 
         var navigations = 0
-        coordinator.puzzleCompleted(isTutorial: false)
+        for _ in 0..<(AdPolicy.freeCompletionsPerDay + AdPolicy.interstitialEvery - 1) {
+            coordinator.puzzleCompleted(isTutorial: false)
+        }
         coordinator.continueAfterPuzzle { navigations += 1 }
         XCTAssertEqual(navigations, 1)
         XCTAssertEqual(service.interstitialsShown, 0)
@@ -70,26 +96,17 @@ final class AdCoordinatorTests: XCTestCase {
         await fulfillment(of: [shown], timeout: 2)
         XCTAssertEqual(navigations, 2)
         XCTAssertEqual(service.interstitialsShown, 1)
-        XCTAssertFalse(coordinator.isPremiumPromoPresented, "İlk reklamdan sonra tanıtım yok")
     }
 
-    func testPremiumPromoOpensAfterSecondAd() async {
+    func testPremiumPromoOpensAfterTheDaysFreeLevels() async {
         let service = NoAdService()
         let policy = AdPolicy(defaults: UserDefaults(suiteName: "Promo-\(UUID().uuidString)")!)
-        var clock = Date(timeIntervalSinceReferenceDate: 0)
-        let coordinator = AdCoordinator(service: service, policy: policy, now: { clock })
+        let coordinator = AdCoordinator(service: service, policy: policy)
 
-        for round in 1...2 {
-            coordinator.puzzleCompleted(isTutorial: false)
-            coordinator.puzzleCompleted(isTutorial: false)
-            let done = expectation(description: "reklam \(round)")
-            coordinator.continueAfterPuzzle { done.fulfill() }
-            await fulfillment(of: [done], timeout: 2)
-            clock.addTimeInterval(AdPolicy.minimumInterval)
-        }
-        // Tanıtım, devam eyleminden hemen sonra açılır
-        try? await Task.sleep(for: .milliseconds(50))
-        XCTAssertEqual(service.interstitialsShown, 2)
+        for _ in 0..<AdPolicy.freeCompletionsPerDay { coordinator.puzzleCompleted(isTutorial: false) }
+        coordinator.continueAfterPuzzle {}
+        try? await Task.sleep(for: .milliseconds(900))
+        XCTAssertEqual(service.interstitialsShown, 0)
         XCTAssertTrue(coordinator.isPremiumPromoPresented)
     }
 }

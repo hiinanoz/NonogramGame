@@ -33,7 +33,7 @@ final class AdCoordinator {
     /// Premium aboneyse bölümler arası reklam (ve Premium tanıtımı) gösterilmez.
     var interstitialsDisabled = false
 
-    /// Birkaç reklamdan sonra açılan Premium tanıtım ekranı (RootView sunar).
+    /// Günün reklamsız bölümleri bitince açılan Premium tanıtım ekranı (RootView sunar).
     var isPremiumPromoPresented = false
     var showsPremiumPromo = true
 
@@ -45,25 +45,37 @@ final class AdCoordinator {
     }
 
     func puzzleCompleted(isTutorial: Bool) {
-        policy.registerCompletion(isTutorial: isTutorial)
+        policy.registerCompletion(isTutorial: isTutorial, now: now())
     }
 
     /// Sonuç kartından ayrılırken çağrılır: sırası geldiyse önce geçiş reklamı, sonra `action`.
+    /// Günün reklamsız bölümleri bitince günde bir kez Premium tanıtımı açılır.
     func continueAfterPuzzle(_ action: @escaping () -> Void) {
-        guard !interstitialsDisabled, policy.isInterstitialDue(now: now()) else {
+        guard !interstitialsDisabled else {
             action()
             return
         }
+        guard policy.isInterstitialDue(now: now()) else {
+            action()
+            presentPremiumPromoIfDue()
+            return
+        }
         Task {
-            let shown = await service.showInterstitial()
-            if shown {
+            if await service.showInterstitial() {
                 policy.recordInterstitialShown(now: now())
             }
             action()
-            if shown, showsPremiumPromo, policy.isPremiumPromoDue {
-                policy.recordPremiumPromoShown()
-                isPremiumPromoPresented = true
-            }
+            presentPremiumPromoIfDue()
+        }
+    }
+
+    private func presentPremiumPromoIfDue() {
+        guard showsPremiumPromo, policy.isPremiumPromoDue(now: now()) else { return }
+        policy.recordPremiumPromoShown(now: now())
+        // Sonraki ekrana geçiş bitince açılır (geçişin ortasında sayfa açılmasın)
+        Task {
+            try? await Task.sleep(for: .milliseconds(600))
+            isPremiumPromoPresented = true
         }
     }
 

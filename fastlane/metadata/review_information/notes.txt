@@ -25,7 +25,7 @@ CATGRID PREMIUM (OPTIONAL SUBSCRIPTION)
 Auto-renewable, monthly or yearly. Removes ads and unlocks 9 Golden Puzzles per breed plus Golden Cards; in the new modes it gives unlimited lives (Meow Crush), unlimited hints and extra branches (Meow Sort) and one free board clear per game (Cat Block). Open it from the home screen banner, from Settings → Premium, or from the "Golden Puzzles" teaser at the bottom of a breed's level screen. Restore Purchases and Manage Subscription are in Settings → Premium. As a free sample, the Golden Puzzles of British Shorthair unlock for everyone once that breed is finished.
 
 ADS
-Google AdMob. Interstitials appear only between puzzles (after every 2 solved puzzles, at least 90 seconds apart), never during play, never in tutorials. Rewarded ads are always optional: extra paw or extra time after losing, an extra life or booster in Meow Crush, a hint or extra branch in Meow Sort, and one board clear per game in Cat Block. In the EEA/UK the Google consent form appears on first launch, followed by the App Tracking Transparency prompt.
+Google AdMob. Interstitials appear only between puzzles (none on the install day and none in the first 12 levels of each day; after that at most every 4 levels, at least 4 minutes apart), never during play, never in tutorials. Rewarded ads are always optional: extra paw or extra time after losing, an extra life or booster in Meow Crush, a hint or extra branch in Meow Sort, and one board clear per game in Cat Block. In the EEA/UK the Google consent form appears on first launch, followed by the App Tracking Transparency prompt.
 
 LINKS
 Privacy Policy, Terms of Use (Apple standard EULA) and Support are in Settings → About and on the subscription screen.

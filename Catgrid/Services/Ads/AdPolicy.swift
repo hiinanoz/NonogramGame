@@ -2,30 +2,42 @@ import Foundation
 
 /// Reklam gelir modeli (saf mantık, test edilebilir):
 ///
-/// - Eğitim (Yavru Okulu) bölümlerinde hiç reklam yok.
-/// - Kedi türü bulmacalarında her **2** çözümde bir geçiş reklamı; yalnızca oyuncu sonuç
-///   kartından ayrılırken (Sonraki Bulmaca / Bölümlere Dön) gösterilir, oyunun ortasında asla.
-/// - İki geçiş reklamı arasında en az **90 saniye**: hızlı çözülen küçük bulmacalarda bunaltmaz.
-/// - Ödüllü reklam yalnızca isteğe bağlı: canlar bitince "+1 pati" ya da süre bitince "+60 sn".
-/// - Premium tanıtımı: ilk kez **2.** geçiş reklamından sonra, ardından her **3** reklamda bir,
-///   reklam kapanıp oyuncu yerine geçtikten sonra (reklamın üstüne değil).
+/// - Eğitim bölümlerinde hiç reklam yok.
+/// - Uygulamanın kurulduğu gün hiç geçiş reklamı yok.
+/// - Her gün ilk **12** bölüm reklamsız; bu sürede yalnızca isteğe bağlı ödüllü reklamlar var.
+/// - Sonrasında her **4** bölümde bir geçiş reklamı; yalnızca oyuncu sonuç kartından ayrılırken
+///   gösterilir, oyunun ortasında asla. İki geçiş reklamı arasında en az **4 dakika**.
+/// - Ödüllü reklam yalnızca isteğe bağlı (ek can, ipucu, tahta temizleme gibi).
+/// - Premium tanıtımı: günün 12. bölümünden sonra, günde en fazla bir kez.
 final class AdPolicy {
-    static let interstitialEvery = 2
-    static let minimumInterval: TimeInterval = 90
-    static let firstPromoAfter = 2
-    static let promoEvery = 3
+    static let freeCompletionsPerDay = 12
+    static let interstitialEvery = 4
+    static let minimumInterval: TimeInterval = 4 * 60
 
     private enum Keys {
         static let completions = "ads.completionsSinceInterstitial"
         static let lastShown = "ads.lastInterstitialAt"
-        static let sincePromo = "ads.interstitialsSincePromo"
-        static let promosShown = "ads.premiumPromosShown"
+        static let firstSeen = "ads.firstSeenDay"
+        static let today = "ads.completionsDay"
+        static let completionsToday = "ads.completionsToday"
+        static let lastPromoDay = "ads.lastPremiumPromoDay"
     }
 
     private let defaults: UserDefaults
+    private let calendar: Calendar
 
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: UserDefaults = .standard, calendar: Calendar = .current, now: Date = Date()) {
         self.defaults = defaults
+        self.calendar = calendar
+        // Kurulum günü (güncellemeyle gelen oyuncular için de ilk açılış günü) reklamsız
+        if defaults.string(forKey: Keys.firstSeen) == nil {
+            defaults.set(dayKey(now), forKey: Keys.firstSeen)
+        }
+    }
+
+    private func dayKey(_ date: Date) -> String {
+        let parts = calendar.dateComponents([.year, .month, .day], from: date)
+        return "\(parts.year ?? 0)-\(parts.month ?? 0)-\(parts.day ?? 0)"
     }
 
     private(set) var completionsSinceInterstitial: Int {
@@ -38,40 +50,42 @@ final class AdPolicy {
         set { defaults.set(newValue, forKey: Keys.lastShown) }
     }
 
-    func registerCompletion(isTutorial: Bool) {
+    /// Bugün bitirilen (eğitim dışı) bölüm sayısı.
+    func completionsToday(now: Date = Date()) -> Int {
+        defaults.string(forKey: Keys.today) == dayKey(now) ? defaults.integer(forKey: Keys.completionsToday) : 0
+    }
+
+    func registerCompletion(isTutorial: Bool, now: Date = Date()) {
         guard !isTutorial else { return }
-        completionsSinceInterstitial += 1
+        let today = completionsToday(now: now)
+        defaults.set(dayKey(now), forKey: Keys.today)
+        defaults.set(today + 1, forKey: Keys.completionsToday)
+        // Günün reklamsız bölümleri sayaca girmez
+        if today >= Self.freeCompletionsPerDay {
+            completionsSinceInterstitial += 1
+        }
     }
 
     func isInterstitialDue(now: Date = Date()) -> Bool {
-        guard completionsSinceInterstitial >= Self.interstitialEvery else { return false }
+        guard defaults.string(forKey: Keys.firstSeen) != dayKey(now) else { return false }
+        guard completionsToday(now: now) > Self.freeCompletionsPerDay,
+              completionsSinceInterstitial >= Self.interstitialEvery else { return false }
         guard let last = lastInterstitialAt else { return true }
         return now.timeIntervalSince(last) >= Self.minimumInterval
-    }
-
-    private(set) var interstitialsSincePromo: Int {
-        get { defaults.integer(forKey: Keys.sincePromo) }
-        set { defaults.set(newValue, forKey: Keys.sincePromo) }
-    }
-
-    private(set) var premiumPromosShown: Int {
-        get { defaults.integer(forKey: Keys.promosShown) }
-        set { defaults.set(newValue, forKey: Keys.promosShown) }
     }
 
     func recordInterstitialShown(now: Date = Date()) {
         completionsSinceInterstitial = 0
         lastInterstitialAt = now
-        interstitialsSincePromo += 1
     }
 
-    /// Bu reklamdan sonra Premium tanıtımı gösterilmeli mi?
-    var isPremiumPromoDue: Bool {
-        interstitialsSincePromo >= (premiumPromosShown == 0 ? Self.firstPromoAfter : Self.promoEvery)
+    /// Premium tanıtımı gösterilmeli mi: günün reklamsız bölümleri bittiyse ve bugün gösterilmediyse.
+    func isPremiumPromoDue(now: Date = Date()) -> Bool {
+        completionsToday(now: now) >= Self.freeCompletionsPerDay
+            && defaults.string(forKey: Keys.lastPromoDay) != dayKey(now)
     }
 
-    func recordPremiumPromoShown() {
-        interstitialsSincePromo = 0
-        premiumPromosShown += 1
+    func recordPremiumPromoShown(now: Date = Date()) {
+        defaults.set(dayKey(now), forKey: Keys.lastPromoDay)
     }
 }

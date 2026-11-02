@@ -68,7 +68,7 @@ struct RootView: View {
             GameCenterService.shared.start { model.reportToGameCenter() }
         }
         .task { await store.start() }
-        // Birkaç reklamdan sonra Premium tanıtımı
+        // Günün reklamsız bölümlerinden sonra Premium tanıtımı (günde en fazla bir kez)
         .sheet(isPresented: $ads.isPremiumPromoPresented) {
             PremiumPaywall(isPromo: true)
                 .environment(\.appTheme, themeManager.theme(for: colorScheme))
