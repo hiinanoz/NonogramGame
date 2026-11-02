@@ -20,18 +20,31 @@ enum CatTutorialStep: Equatable {
         }
     }
 
-    var message: LocalizedStringResource {
+    /// Muffin'in kısa cümlesi. `catToolReady`: Kedi aracı seçili mi (değilse önce onu seçtirir).
+    func message(catToolReady: Bool) -> LocalizedStringResource {
         switch self {
         case .first:
-            "Every color hides one cat. Each row and column has one cat too, and cats never touch, not even diagonally. This color is a single square, so its cat is there. Double-tap it quickly to place the cat!"
+            catToolReady
+                ? "Now tap the glowing square!"
+                : "This color is just one square, so its cat is here. Pick the Cat tool below!"
         case .useHint:
-            "You found a cat! No other cat can be in its row, column or color, or right next to it. Tap ? below and I'll cross those squares out for you."
+            "You found a cat! Tap ? and I'll cross out the squares where no cat can be."
         case .second:
-            "Now this color has only one free square left. Find its cat!"
+            catToolReady
+                ? "This color has one free square left. Tap it!"
+                : "Pick the Cat tool and tap the glowing square."
         case .finder:
-            "Stuck? The cat button below shows where a cat is hiding. You get 6 Cat Finders and 6 hints; watch a short video for more."
+            "Stuck? The cat button shows where a cat is hiding."
         case .freePlay:
-            "You've got it! Tap once for X, tap an X again to clear it, double-tap for a cat, and swipe to place many X's. Find the rest of the cats!"
+            "Your turn! Shortcut: double-tap a square to place a cat."
+        }
+    }
+
+    /// Bu adımda Kedi aracıyla bir kareye dokunulmalı mı?
+    var needsCatTool: Bool {
+        switch self {
+        case .first, .second: true
+        default: false
         }
     }
 }
@@ -40,13 +53,19 @@ enum CatTutorialStep: Equatable {
 struct CatTutorialBanner: View {
     @Environment(\.appTheme) private var theme
     let step: CatTutorialStep
+    var catToolReady = false
     @State private var speech = 0
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 6) {
             MuffinView(pose: step == .freePlay ? .cheer : .point, speechID: speech)
                 .frame(width: 64, height: 96)
-            Text(step.message)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(step.message(catToolReady: catToolReady))
+                if step == .freePlay {
+                    DoubleTapDemo()
+                }
+            }
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(theme.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -55,6 +74,7 @@ struct CatTutorialBanner: View {
                 .background(SpeechBubble().fill(theme.surface).shadow(color: theme.cardShadow, radius: 8, y: 2))
         }
         .onChange(of: step) { _, _ in speech += 1 }
+        .onChange(of: catToolReady) { _, _ in speech += 1 }
         .animation(.snappy, value: step)
     }
 }
@@ -255,5 +275,45 @@ struct CatFailedOverlay: View {
             .card()
             .padding(20)
         }
+    }
+}
+
+/// Çift dokunuşu gösteren küçük animasyon: el iki kez dokunur, her dokunuşta halka yayılır,
+/// sonra karede kedi belirir.
+@MainActor
+struct DoubleTapDemo: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion)) { timeline in
+            let t = reduceMotion ? 1.6 : timeline.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 2.4)
+            let tap1 = t > 0.3 && t < 0.55
+            let tap2 = t > 0.7 && t < 0.95
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 6).fill(Color.orange.opacity(0.18)).frame(width: 36, height: 36)
+                    if t > 0.95 {
+                        Image(systemName: "cat.fill").font(.system(size: 20, weight: .bold)).foregroundStyle(.orange)
+                            .transition(.scale)
+                    }
+                    ForEach([0.3, 0.7], id: \.self) { start in
+                        let age = t - start
+                        if age > 0, age < 0.45 {
+                            Circle().stroke(Color.orange.opacity(1 - age / 0.45), lineWidth: 2)
+                                .frame(width: 10 + 50 * age, height: 10 + 50 * age)
+                        }
+                    }
+                    Image(systemName: "hand.point.up.left.fill")
+                        .font(.system(size: 22))
+                        .foregroundStyle(Color.accentColor)
+                        .offset(x: 12, y: (tap1 || tap2) ? 12 : 20)
+                }
+                .frame(width: 44, height: 44)
+                Text(verbatim: "× 2")
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(.orange)
+            }
+        }
+        .accessibilityHidden(true)
     }
 }

@@ -107,28 +107,31 @@ final class CatPuzzleTests: XCTestCase {
         }
     }
 
-    /// Sihirli silgi: X'i siler, kediye dokunmaz; boş kareye dokununca kapanır.
+    /// Araçlar: Silgi X'leri siler (açık kalır, boş kareyi işaretlemez); Kedi aracı tek dokunuşla kedi koyar.
     @MainActor
-    func testMagicEraserClearsCrossesOnly() throws {
+    func testToolsEraseCrossesAndPlaceCats() throws {
         let level = try XCTUnwrap(pack.levels.first)
         let viewModel = CatGameViewModel(level: level)
+        XCTAssertEqual(viewModel.tool, .cross)
         let blank = GridPosition(row: 0, column: level.solution[0] == 0 ? 1 : 0)
         viewModel.touchBegan(at: blank)
         viewModel.touchEnded()
         XCTAssertEqual(viewModel.game[blank], .cross)
 
-        viewModel.toggleEraser()
-        XCTAssertTrue(viewModel.isErasing)
+        viewModel.select(.eraser)
         viewModel.touchBegan(at: blank)
         viewModel.touchEnded()
         XCTAssertEqual(viewModel.game[blank], .blank)
-        XCTAssertTrue(viewModel.isErasing)
+        viewModel.touchBegan(at: blank)
+        viewModel.touchEnded()
+        XCTAssertEqual(viewModel.game[blank], .blank, "Silgi boş kareyi işaretlemez")
+        XCTAssertEqual(viewModel.tool, .eraser)
 
-        // Boş kareye dokunmak silgiyi kapatır ve kareyi işaretlemez
-        viewModel.touchBegan(at: blank)
+        viewModel.select(.cat)
+        let catCell = GridPosition(row: 0, column: level.solution[0])
+        viewModel.touchBegan(at: catCell)
         viewModel.touchEnded()
-        XCTAssertFalse(viewModel.isErasing)
-        XCTAssertEqual(viewModel.game[blank], .blank)
+        XCTAssertEqual(viewModel.game[catCell], .cat)
     }
 
     /// Tek dokunuş X, X'e tekrar dokunuş siler; hızlı çift dokunuş kedi koyar.

@@ -30226,6 +30226,420 @@
           }
         }
       }
+    },
+    "Cat": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kedi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ねこ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Katze"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chat"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gato"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gato"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고양이"
+          }
+        }
+      }
+    },
+    "Eraser": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Silgi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "消しゴム"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Radierer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gomme"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borrador"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borracha"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지우개"
+          }
+        }
+      }
+    },
+    "Now tap the glowing square!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şimdi parlayan kareye dokun!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光っているマスをタップしよう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe jetzt auf das leuchtende Feld!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touche maintenant la case qui brille !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Ahora toca la casilla que brilla!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agora toque na casa que brilha!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이제 빛나는 칸을 탭하세요!"
+          }
+        }
+      }
+    },
+    "This color is just one square, so its cat is here. Pick the Cat tool below!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu renk tek kare, kedisi burada. Aşağıdan Kedi aracını seç!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この色は1マスだけ。猫はここ！下の「ねこ」を選んでね。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Farbe ist nur ein Feld, also sitzt ihre Katze hier. Wähl unten das Katzen-Werkzeug!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cette couleur n'a qu'une case : son chat est ici. Choisis l'outil Chat en bas !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este color es una sola casilla: su gato está aquí. ¡Elige la herramienta Gato abajo!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta cor tem uma só casa: o gato está aqui. Escolha a ferramenta Gato abaixo!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 색은 한 칸뿐이라 고양이가 여기 있어요. 아래에서 고양이 도구를 고르세요!"
+          }
+        }
+      }
+    },
+    "You found a cat! Tap ? and I'll cross out the squares where no cat can be.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kediyi buldun! ?'e dokun, kedi olamayacak kareleri ben çarpılayayım."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "猫を見つけたね！？をタップすると、猫がいないマスに×を付けるよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Katze gefunden! Tippe auf ? und ich streiche die Felder, auf denen keine Katze sein kann."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu as trouvé un chat ! Touche ? et je barre les cases où aucun chat ne peut être."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Encontraste un gato! Toca ? y tacharé las casillas donde no puede haber gatos."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Você achou um gato! Toque em ? e eu marco as casas onde não pode haver gato."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고양이를 찾았어요! ?를 탭하면 고양이가 있을 수 없는 칸에 X를 표시해 줄게요."
+          }
+        }
+      }
+    },
+    "This color has one free square left. Tap it!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu rengin tek boş karesi kaldı. Ona dokun!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この色は空きマスが1つだけ。タップしよう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Farbe hat nur noch ein freies Feld. Tippe darauf!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il reste une seule case libre dans cette couleur. Touche-la !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A este color le queda una casilla libre. ¡Tócala!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta cor tem só uma casa livre. Toque nela!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 색은 빈칸이 하나 남았어요. 탭하세요!"
+          }
+        }
+      }
+    },
+    "Pick the Cat tool and tap the glowing square.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kedi aracını seç ve parlayan kareye dokun."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「ねこ」を選んで、光っているマスをタップしよう。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähl das Katzen-Werkzeug und tippe auf das leuchtende Feld."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisis l'outil Chat et touche la case qui brille."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige la herramienta Gato y toca la casilla que brilla."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha a ferramenta Gato e toque na casa que brilha."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고양이 도구를 고르고 빛나는 칸을 탭하세요."
+          }
+        }
+      }
+    },
+    "Stuck? The cat button shows where a cat is hiding.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takıldın mı? Kedi düğmesi bir kedinin yerini gösterir."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "困ったら？猫ボタンが猫の隠れ場所を教えてくれるよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Komm nicht weiter? Der Katzenknopf zeigt, wo sich eine Katze versteckt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloqué ? Le bouton chat montre où se cache un chat."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Atascado? El botón del gato muestra dónde se esconde uno."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Travou? O botão do gato mostra onde um gato está escondido."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "막혔나요? 고양이 버튼이 숨은 고양이를 보여 줘요."
+          }
+        }
+      }
+    },
+    "Your turn! Shortcut: double-tap a square to place a cat.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sıra sende! Kısayol: kareye iki kez dokun, kedi koy."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あなたの番！近道：マスをダブルタップすると猫を置けるよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du bist dran! Abkürzung: Doppeltippen setzt eine Katze."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À toi ! Raccourci : touche deux fois une case pour poser un chat."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Tu turno! Atajo: toca dos veces una casilla para poner un gato."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sua vez! Atalho: toque duas vezes numa casa para pôr um gato."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이제 직접 해 보세요! 단축키: 칸을 두 번 탭하면 고양이를 놓아요."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

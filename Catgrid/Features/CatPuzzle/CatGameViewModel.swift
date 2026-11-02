@@ -70,8 +70,12 @@ final class CatGameViewModel {
     private(set) var lastConflict: CatConflict?
     /// "?" ipucu: kısa bir an gösterilir, sonra tahtaya kendiliğinden işlenir.
     private(set) var pendingHint: CatHint?
-    /// Sihirli silgi: açıkken dokunulan/sürüklenen X'ler silinir; boş kareye dokununca kapanır.
-    private(set) var isErasing = false
+    /// Seçili araç: dokunmak (ve sürüklemek) bunu uygular.
+    /// - Çarpı: boş kareye X, X'e dokununca silinir; sürüklemek X çizer. Hızlı çift dokunuş kedi koyar (kısayol).
+    /// - Kedi: dokunulan kareye kedi.
+    /// - Silgi: dokunulan/sürüklenen X'ler silinir; kedilere dokunmaz.
+    private(set) var tool: CatTool = .cross
+    var isErasing: Bool { tool == .eraser }
     /// Son yanlış kedi denemesi (kısa sallanma için).
     private(set) var lastWrong: GridPosition?
     /// Parmağın altındaki kare.
@@ -125,37 +129,33 @@ final class CatGameViewModel {
         // Gösterilmekte olan ipucu beklemeden işlenir
         applyHint()
         activeCell = position
-        if isErasing {
-            switch game[position] {
-            case .cross:
-                // Silgi: bu X silinir, sürüklenince geçilen X'ler de silinir
-                touchStart = position
-                paintCross = false
-                paint(at: position)
-            case .blank:
-                // Boş kareye dokunmak silgiyi kapatır (kare işaretlenmez)
-                touchStart = nil
-                isErasing = false
-            default:
-                // Bulunan kediler ve yanlış kediler silinmez
-                touchStart = nil
-            }
+        if tool == .eraser {
+            // Silgi: bu X silinir, sürüklenince geçilen X'ler de silinir (kediler ve boş kareler olduğu gibi)
+            touchStart = position
+            paintCross = false
+            if game[position] == .cross { paint(at: position) }
             return
         }
         touchStart = position
         paintCross = nil
     }
 
-    /// Sihirli silgi düğmesi.
-    func toggleEraser() {
+    /// Araç seçici (Çarpı / Kedi / Silgi).
+    func select(_ tool: CatTool) {
         guard !isFinished else { return }
-        isErasing.toggle()
+        self.tool = tool
+        lastTap = nil
     }
 
     func touchMoved(to position: GridPosition) {
         guard !isFinished, let start = touchStart, game.contains(position), position != activeCell else { return }
         activeCell = position
         lastTap = nil
+        // Kedi aracında sürüklemek bir şey çizmez: parmağın kalktığı kareye kedi konur
+        if tool == .cat {
+            touchStart = position
+            return
+        }
         if paintCross == nil {
             // İlk karenin durumu ne yapılacağını belirler: boşsa X koy, X'liyse sil
             switch game[start] {
@@ -180,6 +180,10 @@ final class CatGameViewModel {
             activeCell = nil
         }
         guard let start = touchStart, paintCross == nil, !isFinished else { return }
+        if tool == .cat {
+            handle(game.placeCat(at: start), at: start)
+            return
+        }
         let time = now()
         if let last = lastTap, last.position == start, time.timeIntervalSince(last.time) <= Self.doubleTapWindow {
             lastTap = nil
@@ -207,7 +211,7 @@ final class CatGameViewModel {
     @discardableResult
     func useHint() -> Bool {
         guard !isFinished, pendingHint == nil, let hint = game.hint() else { return false }
-        isErasing = false
+        if tool == .eraser { tool = .cross }
         pendingHint = hint
         hintTask?.cancel()
         // Konacak X kalmadıysa ipucu kediyi koymaz, yalnızca karesini gösterir (oyuncu çift dokunur)
@@ -255,7 +259,7 @@ final class CatGameViewModel {
     func revealCat() {
         guard !isFinished else { return }
         applyHint()
-        isErasing = false
+        if tool == .eraser { tool = .cross }
         usedHints = true
         handle(game.revealCat())
     }
@@ -281,7 +285,7 @@ final class CatGameViewModel {
         completedGroups = []
         hintTask?.cancel()
         pendingHint = nil
-        isErasing = false
+        tool = .cross
         lastWrong = nil
         lastFindAt = nil
         isPaused = false
@@ -511,4 +515,9 @@ extension CatHint {
         if case .onlySpot = kind { return true }
         return false
     }
+}
+
+/// Kedi Bulmaca araçları.
+enum CatTool: CaseIterable {
+    case cross, cat, eraser
 }

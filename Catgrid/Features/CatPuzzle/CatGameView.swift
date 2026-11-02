@@ -79,7 +79,7 @@ struct CatGameView: View {
     private var content: some View {
         VStack(spacing: 12) {
             if isTutorial, game.status == .playing {
-                CatTutorialBanner(step: tutorialStep)
+                CatTutorialBanner(step: tutorialStep, catToolReady: viewModel.tool == .cat)
                     .transition(.opacity)
             }
             scoreHeader
@@ -233,7 +233,9 @@ struct CatGameView: View {
             activeCell: viewModel.activeCell,
             wrongCell: viewModel.lastWrong,
             hint: viewModel.pendingHint,
-            pointer: isTutorial && game.status == .playing ? tutorialStep.pointer : nil,
+            // Eğitimde parlayan kare, Kedi aracı seçilince gösterilir (önce araç seçtirilir)
+            pointer: isTutorial && game.status == .playing && (!tutorialStep.needsCatTool || viewModel.tool == .cat)
+                ? tutorialStep.pointer : nil,
             effects: viewModel.effects,
             banner: viewModel.banner,
             animations: viewModel.animations,
@@ -256,13 +258,12 @@ struct CatGameView: View {
     }
 
     private var bottomBar: some View {
-        HStack(spacing: 22) {
-                CatEraserButton(isOn: viewModel.isErasing) {
+        HStack(spacing: 16) {
+                CatToolPicker(selected: viewModel.tool, guided: guidedTool) { tool in
                     audio.play(.tap)
                     Haptics.selection()
-                    withAnimation(.snappy(duration: 0.2)) { viewModel.toggleEraser() }
+                    withAnimation(.snappy(duration: 0.2)) { viewModel.select(tool) }
                 }
-                .accessibilityIdentifier("cat.eraser")
                 CatHelperButton(
                     systemImage: "cat.fill",
                     title: "Find a Cat",
@@ -408,6 +409,12 @@ struct CatGameView: View {
     }
 
     // MARK: - Eğitim (1. bölüm)
+
+    /// Eğitimde seçilmesi gereken araç (araç seçicide parlar).
+    private var guidedTool: CatTool? {
+        guard isTutorial, game.status == .playing, tutorialStep.needsCatTool, viewModel.tool != .cat else { return nil }
+        return .cat
+    }
 
     private var tutorialStep: CatTutorialStep {
         let level = viewModel.level
@@ -634,49 +641,85 @@ struct CatToken: View {
     }
 }
 
-/// Sihirli silgi: açıkken X'lere dokunmak ya da üzerlerinden sürüklemek onları siler.
-/// Kedilere ve boş karelere dokunmaz; boş bir kareye dokununca kendiliğinden kapanır.
+/// Araç seçici: Çarpı, Kedi ve Silgi. Seçili araç kareye dokununca uygulanır.
 @MainActor
-struct CatEraserButton: View {
+struct CatToolPicker: View {
     @Environment(\.appTheme) private var theme
-    let isOn: Bool
-    let action: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let selected: CatTool
+    /// Eğitimde seçilmesi istenen araç (parlar ve zıplar).
+    var guided: CatTool?
+    let onSelect: (CatTool) -> Void
+    @State private var pulse = false
 
     var body: some View {
-        let tint = Color(hex: "#E58BB0")
-        Button(action: action) {
-            VStack(spacing: 6) {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(isOn ? tint : theme.surface)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .strokeBorder(tint.opacity(isOn ? 0 : 0.35), lineWidth: 1.5)
+        HStack(spacing: 4) {
+            ForEach(CatTool.allCases, id: \.self) { tool in
+                let isOn = tool == selected
+                let tint = tool.tint
+                Button { onSelect(tool) } label: {
+                    VStack(spacing: 3) {
+                        Image(systemName: tool.symbol)
+                            .font(.system(size: 20, weight: .bold))
+                            .frame(height: 24)
+                        Text(tool.title)
+                            .font(.caption2.weight(.bold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                    }
+                    .foregroundStyle(isOn ? .white : tint)
+                    .frame(width: 54, height: 58)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(isOn ? AnyShapeStyle(tint) : AnyShapeStyle(Color.clear))
                     )
-                    .shadow(color: tint.opacity(theme.isDark ? 0 : (isOn ? 0.45 : 0.2)), radius: isOn ? 10 : 6, y: 3)
-                    .frame(width: 64, height: 64)
-                    .overlay {
-                        Image(systemName: "eraser.fill")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(isOn ? .white : tint)
-                            .rotationEffect(.degrees(isOn ? -12 : 0))
-                    }
-                    .overlay(alignment: .topTrailing) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(isOn ? Gold.bright : tint.opacity(0.7))
-                            .offset(x: 4, y: -4)
-                    }
-                    .scaleEffect(isOn ? 1.06 : 1)
-                Text("Magic Eraser")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(isOn ? tint : theme.textSecondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .strokeBorder(Gold.bright, lineWidth: guided == tool && !isOn ? 3 : 0)
+                    )
+                    .scaleEffect(guided == tool && !isOn && pulse ? 1.1 : 1)
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityLabel(Text(tool.title))
+                .accessibilityAddTraits(isOn ? .isSelected : [])
+                .accessibilityIdentifier("cat.tool.\(tool)")
             }
         }
-        .buttonStyle(PressableButtonStyle())
-        .accessibilityLabel(Text("Magic Eraser"))
-        .accessibilityValue(isOn ? Text("On") : Text("Off"))
-        .accessibilityAddTraits(isOn ? .isSelected : [])
+        .padding(4)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(theme.surface)
+                .shadow(color: theme.cardShadow, radius: 6, y: 3)
+        )
+        .onAppear {
+            guard !reduceMotion else { return }
+            withAnimation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true)) { pulse = true }
+        }
+    }
+}
+
+extension CatTool {
+    var title: LocalizedStringResource {
+        switch self {
+        case .cross: "Cross"
+        case .cat: "Cat"
+        case .eraser: "Eraser"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .cross: "xmark"
+        case .cat: "cat.fill"
+        case .eraser: "eraser.fill"
+        }
+    }
+
+    var tint: Color {
+        switch self {
+        case .cross: Color(red: 0.42, green: 0.45, blue: 0.62)
+        case .cat: Color(red: 0.93, green: 0.52, blue: 0.25)
+        case .eraser: Color(hex: "#E58BB0")
+        }
     }
 }
