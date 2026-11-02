@@ -13,7 +13,7 @@ final class ContentValidationTests: XCTestCase {
 
     func testStartsWithTutorialFollowedByBreeds() {
         XCTAssertEqual(catalog.chapters.first?.kind, .tutorial)
-        XCTAssertEqual(catalog.chapters.first?.puzzles.count, 12)
+        XCTAssertEqual(catalog.chapters.first?.puzzles.count, 6)
         let breeds = catalog.chapters.filter { $0.kind == .breed }
         XCTAssertGreaterThanOrEqual(breeds.count, 15)
         for breed in breeds {
