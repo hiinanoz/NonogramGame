@@ -142,6 +142,33 @@ public struct YarnTaxiGame: Codable, Sendable, Equatable {
 
     @discardableResult
     public mutating func tap(carID: Int) -> TapResult {
+        let result = park(carID: carID)
+        guard case .moved = result else { return result }
+        var boarded = 0
+        var departed: [Int] = []
+        while boardNext() != nil {
+            boarded += 1
+            departed += departFullCars()
+        }
+        finishTurn()
+        return .moved(boarded: boarded, departed: departed)
+    }
+
+    /// Bir yumağın binişi (ekranda tek tek canlandırmak için).
+    public struct BoardStep: Equatable, Sendable {
+        /// Sıradaki yumağın sıra içindeki yeri.
+        public let yarnIndex: Int
+        public let color: Int
+        public let carID: Int
+        /// Bindiği durak yeri.
+        public let slot: Int
+        /// Araba doldu (`departFullCars` ile ayrılır).
+        public let filled: Bool
+    }
+
+    /// Adım adım oynatma, 1: araba otoparktan çıkıp durağa gelir (yumaklar henüz binmez).
+    /// Ardından `boardNext` biniş bitene kadar, sonra `finishTurn` çağrılır.
+    public mutating func park(carID: Int) -> TapResult {
         guard status == .playing, let index = lot.firstIndex(where: { $0.id == carID }) else { return .ignored }
         let car = lot[index]
         guard canExit(car) else { return .blocked }
@@ -151,9 +178,34 @@ public struct YarnTaxiGame: Codable, Sendable, Equatable {
         // Geliş sırası korunur: boş yerler sona kaydırılır
         compactStation()
         moves += 1
-        let result = board()
+        return .moved(boarded: 0, departed: [])
+    }
+
+    /// Adım adım oynatma, 2: sıranın önündeki yumak binebiliyorsa biner. Dolan araba durakta
+    /// kalır; `departFullCars` ile ayrılır (doluya zaten yumak binmediği için sonuç aynıdır).
+    public mutating func boardNext() -> BoardStep? {
+        guard let color = frontColor,
+              let slot = station.firstIndex(where: { $0 != nil && $0!.car.color == color && !$0!.isFull }) else { return nil }
+        let yarnIndex = head
+        station[slot]!.riders += 1
+        head += 1
+        return BoardStep(yarnIndex: yarnIndex, color: color, carID: station[slot]!.car.id, slot: slot,
+                         filled: station[slot]!.isFull)
+    }
+
+    /// Dolan arabalar duraktan ayrılır; yerleri boşalır.
+    @discardableResult
+    public mutating func departFullCars() -> [Int] {
+        let full = station.compactMap { $0 }.filter(\.isFull).map(\.car.id)
+        guard !full.isEmpty else { return [] }
+        station = station.map { entry in entry.flatMap { $0.isFull ? nil : $0 } }
+        compactStation()
+        return full
+    }
+
+    /// Adım adım oynatma, 3: biniş bitince durum (kazanıldı / takıldı) güncellenir.
+    public mutating func finishTurn() {
         updateStatus()
-        return .moved(boarded: result.boarded, departed: result.departed)
     }
 
     mutating func lotRemove(_ id: Int) {
@@ -170,23 +222,6 @@ public struct YarnTaxiGame: Codable, Sendable, Equatable {
     private mutating func compactStation() {
         let cars = station.compactMap { $0 }
         station = cars.map { Optional($0) } + Array(repeating: nil, count: station.count - cars.count)
-    }
-
-    private mutating func board() -> (boarded: Int, departed: [Int]) {
-        var boarded = 0
-        var departed: [Int] = []
-        while let color = frontColor,
-              let slot = station.firstIndex(where: { $0 != nil && $0!.car.color == color && !$0!.isFull }) {
-            station[slot]!.riders += 1
-            head += 1
-            boarded += 1
-            if station[slot]!.isFull {
-                departed.append(station[slot]!.car.id)
-                station[slot] = nil
-                compactStation()
-            }
-        }
-        return (boarded, departed)
     }
 
     private mutating func updateStatus() {

@@ -15,27 +15,31 @@ final class YarnTaxiModelTests: XCTestCase {
         XCTAssertEqual(model.recordWin(level: 25, stars: 1), .extraSlot)
     }
 
-    func testSavedGameRoundTrip() {
+    func testSavedGameRoundTrip() async {
         let model = YarnTaxiModel.inMemory()
         let viewModel = YarnTaxiGameViewModel(level: YarnTaxiCatalog.level(5))
         if let car = YarnTaxiSolver.hint(viewModel.game), let target = viewModel.game.lot.first(where: { $0.id == car }) {
             viewModel.tap(target)
         }
+        while viewModel.isAnimating { try? await Task.sleep(for: .milliseconds(50)) }
         XCTAssertTrue(viewModel.hasProgress)
         model.saveGame(viewModel.savedState)
         XCTAssertEqual(model.savedGame(for: 5)?.game, viewModel.game)
         XCTAssertNil(model.savedGame(for: 6))
     }
 
-    /// Görünüm modeliyle ipuçlarını izleyerek bölüm kazanılır; ipucu yıldızı düşürür.
-    func testPlayingThroughWithHints() {
-        let viewModel = YarnTaxiGameViewModel(level: YarnTaxiCatalog.level(3))
+    /// Görünüm modeliyle ipuçlarını izleyerek bölüm kazanılır (her dokunuşta araba durağa gider,
+    /// yumaklar tek tek biner); ipucu yıldızı düşürür.
+    func testPlayingThroughWithHints() async {
+        let viewModel = YarnTaxiGameViewModel(level: YarnTaxiCatalog.level(1))
         var won = false
         viewModel.onWin = { won = true }
         var steps = 0
-        while !viewModel.isWon, steps < 100, let id = YarnTaxiSolver.hint(viewModel.game),
+        while !viewModel.isWon, steps < 50, let id = YarnTaxiSolver.hint(viewModel.game),
               let car = viewModel.game.lot.first(where: { $0.id == id }) {
             viewModel.tap(car)
+            XCTAssertTrue(viewModel.isAnimating)
+            while viewModel.isAnimating { try? await Task.sleep(for: .milliseconds(50)) }
             steps += 1
         }
         XCTAssertTrue(won)

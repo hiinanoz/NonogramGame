@@ -255,17 +255,21 @@ struct YarnShake: GeometryEffect {
     }
 }
 
-/// Durak: yan yana yerler; gelen araba ve bindirdiği yumak sayısı.
+/// Durak: yan yana yerler; gelen araba ve bindirdiği yumak sayısı. Uçan yumak hedef yerde
+/// belirir (sıradaki yerinden buraya kayar), binince araba zıplar; dolan araba sağa sürülüp gider.
 struct YarnStationView: View {
     let game: YarnTaxiGame
     let namespace: Namespace.ID
+    var flyingYarn: (index: Int, color: Int, slot: Int)?
+    var bouncingSlot: Int?
+    var bounceID = 0
 
     var body: some View {
         GeometryReader { proxy in
             let count = max(game.station.count, 1)
             let slot = min(proxy.size.width / CGFloat(count), proxy.size.height * 0.7)
             HStack(spacing: 0) {
-                ForEach(Array(game.station.enumerated()), id: \.offset) { _, entry in
+                ForEach(Array(game.station.enumerated()), id: \.offset) { index, entry in
                     ZStack {
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
                             .strokeBorder(Color.white.opacity(0.75), style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
@@ -274,7 +278,17 @@ struct YarnStationView: View {
                             YarnCarView(color: entry.car.color, length: min(entry.car.length, 2), seats: entry.car.seats,
                                         cell: slot * 0.62, riders: entry.riders)
                                 .matchedGeometryEffect(id: entry.car.id, in: namespace)
-                                .transition(.asymmetric(insertion: .opacity, removal: .move(edge: .top).combined(with: .opacity)))
+                                .modifier(YarnBounce(amount: bouncingSlot == index ? CGFloat(bounceID) : 0))
+                                .id(entry.car.id)
+                                .transition(.asymmetric(
+                                    insertion: .identity,
+                                    removal: .offset(x: proxy.size.width, y: -12).combined(with: .opacity)
+                                ))
+                        }
+                        if let flyingYarn, flyingYarn.slot == index {
+                            YarnBallView(color: flyingYarn.color, size: 22)
+                                .matchedGeometryEffect(id: "yarn-\(flyingYarn.index)", in: namespace)
+                                .offset(y: -proxy.size.height * 0.15)
                         }
                     }
                     .frame(width: proxy.size.width / CGFloat(count), height: proxy.size.height)
@@ -286,15 +300,33 @@ struct YarnStationView: View {
     }
 }
 
-/// Yumak sırası: öndeki yumak büyük, arkadakiler küçülerek dizilir.
+/// Binişte arabanın kısa zıplaması.
+struct YarnBounce: GeometryEffect {
+    var amount: CGFloat
+    var animatableData: CGFloat {
+        get { amount }
+        set { amount = newValue }
+    }
+
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        let lift = -6 * abs(sin(amount * .pi))
+        return ProjectionTransform(CGAffineTransform(translationX: 0, y: lift))
+    }
+}
+
+/// Yumak sırası: öndeki yumak büyük, arkadakiler küçülerek dizilir. Her yumağın kimliği sıradaki
+/// yeri: binen yumak buradan durağa uçar.
 struct YarnQueueView: View {
     let game: YarnTaxiGame
+    let namespace: Namespace.ID
 
     var body: some View {
         HStack(spacing: 4) {
-            let upcoming = Array(game.queue[game.head...].prefix(12))
-            ForEach(Array(upcoming.enumerated()), id: \.offset) { index, color in
-                YarnBallView(color: color, size: index == 0 ? 34 : max(18, 28 - CGFloat(index)))
+            let start = game.head
+            ForEach(start..<min(start + 12, game.queue.count), id: \.self) { index in
+                let offset = index - start
+                YarnBallView(color: game.queue[index], size: offset == 0 ? 34 : max(18, 28 - CGFloat(offset)))
+                    .matchedGeometryEffect(id: "yarn-\(index)", in: namespace)
                     .transition(.scale.combined(with: .opacity))
             }
             Spacer(minLength: 0)
@@ -304,8 +336,8 @@ struct YarnQueueView: View {
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
                 .background(Capsule().fill(.black.opacity(0.3)))
+                .contentTransition(.numericText())
         }
-        .animation(.spring(response: 0.35), value: game.head)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("\(game.remainingYarns) yarn balls waiting"))
     }

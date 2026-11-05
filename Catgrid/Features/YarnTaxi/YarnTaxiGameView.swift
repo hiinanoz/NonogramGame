@@ -73,11 +73,12 @@ struct YarnTaxiGameScreen: View {
             topBar
             // Sıra ve durak: yol şeridinin üstünde
             VStack(spacing: 6) {
-                YarnQueueView(game: viewModel.game)
+                YarnQueueView(game: viewModel.game, namespace: cars)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(Capsule().fill(Color(hex: "#7A5A8C").opacity(0.85)))
-                YarnStationView(game: viewModel.game, namespace: cars)
+                YarnStationView(game: viewModel.game, namespace: cars, flyingYarn: viewModel.flyingYarn,
+                                bouncingSlot: viewModel.bouncingSlot, bounceID: viewModel.bounceID)
                     .frame(height: 74)
                     .padding(.vertical, 6)
                     .background(

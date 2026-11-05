@@ -18,6 +18,13 @@ final class YarnTaxiGameViewModel {
     /// Önü kapalı olduğu için sallanan araba.
     private(set) var shakingCar: Int?
     private(set) var shakeID = 0
+    /// Araba durağa gidiyor ya da yumaklar biniyor: bu sırada yeni dokunuş beklenir.
+    private(set) var isAnimating = false
+    /// Sıradan durağa uçan yumak (sıra içindeki yeri, rengi, hedef durak yeri).
+    private(set) var flyingYarn: (index: Int, color: Int, slot: Int)?
+    /// Yumak binince zıplayan durak yeri.
+    private(set) var bouncingSlot: Int?
+    private(set) var bounceID = 0
 
     var onMove: (() -> Void)?
     var onBoard: ((Int) -> Void)?
@@ -27,6 +34,7 @@ final class YarnTaxiGameViewModel {
     var onStuck: (() -> Void)?
 
     private var moodTask: Task<Void, Never>?
+    private var boardingTask: Task<Void, Never>?
 
     init(level: YarnTaxiLevel, resuming saved: YarnTaxiSavedGame? = nil) {
         self.level = level
@@ -37,7 +45,7 @@ final class YarnTaxiGameViewModel {
 
     var isWon: Bool { game.status == .won }
     var isStuck: Bool { game.status == .stuck }
-    var canUndo: Bool { !history.isEmpty && !isWon }
+    var canUndo: Bool { !history.isEmpty && !isWon && !isAnimating }
     var hasProgress: Bool { game.moves > 0 }
     var savedState: YarnTaxiSavedGame { YarnTaxiSavedGame(level: level.number, game: game, boostersUsed: boostersUsed) }
 
@@ -51,9 +59,9 @@ final class YarnTaxiGameViewModel {
     }
 
     func tap(_ car: YarnCar) {
-        guard game.status == .playing else { return }
+        guard game.status == .playing, !isAnimating else { return }
         var next = game
-        switch next.tap(carID: car.id) {
+        switch next.park(carID: car.id) {
         case .blocked:
             shakingCar = car.id
             shakeID += 1
@@ -64,25 +72,56 @@ final class YarnTaxiGameViewModel {
             onBlocked?()
         case .ignored:
             break
-        case .moved(let boarded, let departed):
+        case .moved:
             history.append(game)
             hintCar = nil
-            withAnimation(.spring(response: 0.45, dampingFraction: 0.8)) { game = next }
+            isAnimating = true
             onMove?()
-            if boarded > 0 { onBoard?(boarded) }
-            if !departed.isEmpty {
-                onDepart?()
+            // 1. Araba otoparktan durağa sürülür
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.82)) { game = next }
+            boardingTask = Task { await boardYarns() }
+        }
+    }
+
+    /// 2. Yumaklar sıradan tek tek uçup biner; dolan araba yola çıkar. 3. Durum güncellenir.
+    private func boardYarns() async {
+        try? await Task.sleep(for: .milliseconds(480))
+        var boardedAny = false
+        while !Task.isCancelled {
+            var next = game
+            guard let step = next.boardNext() else { break }
+            boardedAny = true
+            withAnimation(.easeOut(duration: 0.24)) {
+                flyingYarn = (step.yarnIndex, step.color, step.slot)
+                game = next
+            }
+            try? await Task.sleep(for: .milliseconds(240))
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.5)) {
+                flyingYarn = nil
+                bouncingSlot = step.slot
+                bounceID += 1
+            }
+            onBoard?(1)
+            if step.filled {
                 setMood(.delighted)
-            } else if boarded > 0 {
-                setMood(.pleased)
+                try? await Task.sleep(for: .milliseconds(220))
+                onDepart?()
+                withAnimation(.easeIn(duration: 0.5)) { _ = game.departFullCars() }
+                try? await Task.sleep(for: .milliseconds(420))
+            } else {
+                try? await Task.sleep(for: .milliseconds(60))
             }
-            if game.status == .won {
-                mood = .celebrating
-                onWin?()
-            } else if game.status == .stuck {
-                setMood(.sad, hold: true)
-                onStuck?()
-            }
+        }
+        guard !Task.isCancelled else { return }
+        if boardedAny, mood == .idle { setMood(.pleased) }
+        game.finishTurn()
+        isAnimating = false
+        if game.status == .won {
+            mood = .celebrating
+            onWin?()
+        } else if game.status == .stuck {
+            setMood(.sad, hold: true)
+            onStuck?()
         }
     }
 
@@ -95,7 +134,7 @@ final class YarnTaxiGameViewModel {
 
     /// Ek durak yeri.
     func addSlot() {
-        guard !isWon else { return }
+        guard !isWon, !isAnimating else { return }
         history.append(game)
         boostersUsed += 1
         withAnimation(.spring(response: 0.4)) { game.addSlot() }
@@ -105,7 +144,7 @@ final class YarnTaxiGameViewModel {
     /// İpucu: sıradaki doğru araba parlar.
     @discardableResult
     func showHint() -> Bool {
-        guard game.status == .playing, let car = YarnTaxiSolver.hint(game) else { return false }
+        guard game.status == .playing, !isAnimating, let car = YarnTaxiSolver.hint(game) else { return false }
         boostersUsed += 1
         withAnimation { hintCar = car }
         setMood(.pointing)
@@ -113,6 +152,9 @@ final class YarnTaxiGameViewModel {
     }
 
     func restart() {
+        boardingTask?.cancel()
+        isAnimating = false
+        flyingYarn = nil
         history = []
         boostersUsed = 0
         hintCar = nil
