@@ -250,7 +250,7 @@ public struct CrushLevel: Hashable, Codable, Sendable {
 // MARK: - Rastgelelik
 
 /// Tekrarlanabilir rastgele sayı üreteci (SplitMix64): aynı tohumla aynı tahta, testler için.
-public struct CrushRandom: RandomNumberGenerator, Codable, Sendable {
+public struct CrushRandom: RandomNumberGenerator, Codable, Sendable, Equatable {
     private var state: UInt64
 
     public init(seed: UInt64) { state = seed }
