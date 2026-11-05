@@ -54,6 +54,25 @@ struct PawColonyBoardView: View {
                         .accessibilityLabel(label(for: node))
                         .accessibilityIdentifier("paw.house.\(node.id)")
                 }
+                // Ev kazanılınca halka
+                ForEach(viewModel.bursts) { burst in
+                    if let node = game.node(burst.node) {
+                        PawBurstView(owner: burst.owner).position(point(node.position, size))
+                    }
+                }
+                // Uçan "+3" / "−2"
+                ForEach(viewModel.floats) { item in
+                    if let node = game.node(item.node) {
+                        PawFloatView(amount: item.amount)
+                            .position(point(node.position, size))
+                    }
+                }
+                // Sürüklerken hedef evin üstünde: alabilir mi?
+                if let hover = viewModel.dragOutlook, let node = game.node(hover.target) {
+                    PawOutlookBadge(outlook: hover.outlook)
+                        .position(x: point(node.position, size).x, y: point(node.position, size).y - 58)
+                        .allowsHitTesting(false)
+                }
                 if let guide, let a = game.node(guide.from), let b = game.node(guide.to) {
                     PawGuideHand(from: point(a.position, size), to: point(b.position, size))
                 }
@@ -268,5 +287,70 @@ struct PawColonyCardArt: View {
             withAnimation(.linear(duration: 0.8).repeatForever(autoreverses: false)) { flow = true }
         }
         .accessibilityHidden(true)
+    }
+}
+
+/// Evin üstünden yükselip kaybolan değişim yazısı.
+struct PawFloatView: View {
+    let amount: Int
+    @State private var rise = false
+
+    var body: some View {
+        Text(verbatim: amount > 0 ? "+\(amount)" : "\(amount)")
+            .font(.system(size: 17, weight: .heavy, design: .rounded))
+            .foregroundStyle(amount > 0 ? Color(hex: "#3FA34D") : Color(hex: "#E5484D"))
+            .shadow(color: .white, radius: 2)
+            .offset(x: 26, y: rise ? -52 : -24)
+            .opacity(rise ? 0 : 1)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+            .onAppear { withAnimation(.easeOut(duration: 1.1)) { rise = true } }
+    }
+}
+
+/// Ev el değiştirince genişleyen renkli halka ve yıldızlar.
+struct PawBurstView: View {
+    let owner: PawOwner
+    @State private var grow = false
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(PawColors.fill(owner), lineWidth: 6)
+                .frame(width: grow ? 130 : 40, height: grow ? 130 : 40)
+            ForEach(0..<6, id: \.self) { index in
+                Image(systemName: owner == .cats ? "pawprint.fill" : "star.fill")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(owner == .cats ? PawColors.cats : PawColors.mice)
+                    .offset(y: grow ? -60 : -10)
+                    .rotationEffect(.degrees(Double(index) * 60))
+            }
+        }
+        .opacity(grow ? 0 : 1)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+        .onAppear { withAnimation(.easeOut(duration: 0.8)) { grow = true } }
+    }
+}
+
+/// Sürüklenen yolun hedefi için kısa tahmin.
+struct PawOutlookBadge: View {
+    let outlook: PawColonyGame.LinkOutlook
+
+    var body: some View {
+        let (symbol, text, color): (String, LocalizedStringResource, Color) = switch outlook {
+        case .easily: ("checkmark.circle.fill", "Easy win", Color(hex: "#3FA34D"))
+        case .slowly: ("hourglass", "Takes time", Color(hex: "#E39B2D"))
+        case .cannot: ("xmark.circle.fill", "Not enough cats", Color(hex: "#E5484D"))
+        case .reinforce: ("heart.fill", "Send help", Color(hex: "#3D9BE9"))
+        }
+        Label { Text(text) } icon: { Image(systemName: symbol) }
+            .font(.caption.weight(.heavy))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Capsule().fill(color))
+            .shadow(color: .black.opacity(0.2), radius: 3, y: 2)
+            .fixedSize()
     }
 }

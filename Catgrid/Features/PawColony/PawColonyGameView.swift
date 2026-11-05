@@ -14,6 +14,7 @@ struct PawColonyGameScreen: View {
     @State private var viewModel: PawColonyGameViewModel
     @State private var isPaused = false
     @State private var isShowingStory = false
+    @State private var isShowingRules = false
     @State private var result: PawColonyGame.Status?
 
     init(levelNumber: Int, saved: PawColonySavedGame? = nil) {
@@ -58,7 +59,11 @@ struct PawColonyGameScreen: View {
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             wireEvents()
-            if colony.needsStory(for: levelNumber) { isShowingStory = true }
+            if colony.needsStory(for: levelNumber) {
+                isShowingStory = true
+            } else if !colony.hasSeenRules {
+                isShowingRules = true
+            }
         }
         .onDisappear { saveProgress() }
         .onChange(of: scenePhase) { _, phase in
@@ -67,10 +72,11 @@ struct PawColonyGameScreen: View {
                 if result == nil { isPaused = true }
             }
         }
-        .onChange(of: isPaused) { _, paused in viewModel.isPaused = paused || isShowingStory }
-        .onChange(of: isShowingStory) { _, showing in viewModel.isPaused = showing || isPaused }
+        .onChange(of: isPaused) { _, _ in updatePause() }
+        .onChange(of: isShowingStory) { _, _ in updatePause() }
+        .onChange(of: isShowingRules) { _, _ in updatePause() }
         .task {
-            viewModel.isPaused = isShowingStory
+            updatePause()
             // Oyun saati: ekran kareleriyle ilerler
             let clock = ContinuousClock()
             var last = clock.now
@@ -82,6 +88,10 @@ struct PawColonyGameScreen: View {
                 viewModel.tick(Double(elapsed.components.seconds) + Double(elapsed.components.attoseconds) / 1e18)
             }
         }
+    }
+
+    private func updatePause() {
+        viewModel.isPaused = isPaused || isShowingStory || isShowingRules
     }
 
     private var background: some View {
@@ -137,6 +147,12 @@ struct PawColonyGameScreen: View {
             .padding(.horizontal, 10)
             .frame(height: 38)
             .background(Capsule().fill(theme.surface.opacity(0.95)))
+            BirdSortRoundButton(symbol: "questionmark") {
+                guard result == nil else { return }
+                withAnimation { isShowingRules = true }
+            }
+            .accessibilityLabel(Text("How to Play"))
+            .accessibilityIdentifier("paw.rules")
             ModePauseButton {
                 guard result == nil else { return }
                 Haptics.selection()
@@ -153,7 +169,16 @@ struct PawColonyGameScreen: View {
         if isShowingStory {
             PawStoryOverlay(region: region, isBoss: viewModel.level.isBoss) {
                 colony.markStorySeen(region: region.index)
-                withAnimation { isShowingStory = false }
+                withAnimation {
+                    isShowingStory = false
+                    if !colony.hasSeenRules { isShowingRules = true }
+                }
+            }
+            .transition(.opacity)
+        } else if isShowingRules {
+            PawRulesOverlay {
+                colony.markRulesSeen()
+                withAnimation { isShowingRules = false }
             }
             .transition(.opacity)
         } else if let result {
@@ -381,5 +406,137 @@ struct PawResultOverlay: View {
                 .background(Capsule().fill(LinearGradient(colors: [Color(hex: "#FFB347"), Color(hex: "#F07A3C")], startPoint: .top, endPoint: .bottom)))
         }
         .buttonStyle(PressableButtonStyle())
+    }
+}
+
+/// Görsel kural kartı: üç küçük canlı sahne, her birinin altında tek kısa satır.
+struct PawRulesOverlay: View {
+    @Environment(\.appTheme) private var theme
+    let onClose: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.45).ignoresSafeArea()
+            VStack(spacing: 14) {
+                Text("How to Play")
+                    .font(.title2.weight(.heavy))
+                    .foregroundStyle(theme.textPrimary)
+                PawRuleScene(kind: .drag)
+                PawRuleScene(kind: .flow)
+                PawRuleScene(kind: .cut)
+                Button(action: onClose) {
+                    Text("Got it!")
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Capsule().fill(LinearGradient(colors: [Color(hex: "#FFB347"), Color(hex: "#F07A3C")], startPoint: .top, endPoint: .bottom)))
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityIdentifier("paw.rules.close")
+            }
+            .padding(20)
+            .frame(maxWidth: 360)
+            .background(RoundedRectangle(cornerRadius: 28, style: .continuous).fill(theme.surface))
+            .padding(20)
+        }
+    }
+}
+
+/// Kural sahnesi: solda kedi evi, sağda hedef ev.
+/// - drag: el soldan sağa sürükler, yol uzar.
+/// - flow: yolda patiler akar, hedefin sayısı azalır, ev turuncuya döner.
+/// - cut: yolun ortasından el aşağı kaydırır, yol kesilir, kalan patiler hedefe koşar.
+struct PawRuleScene: View {
+    enum Kind { case drag, flow, cut }
+    @Environment(\.appTheme) private var theme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let kind: Kind
+
+    var body: some View {
+        VStack(spacing: 4) {
+            TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion)) { context in
+                let t = reduceMotion ? 1.5 : context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 3)
+                scene(t: t)
+            }
+            .frame(height: 74)
+            Text(caption)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(theme.textPrimary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity)
+        .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Color(hex: "#E8F6DF").opacity(theme.isDark ? 0.15 : 1)))
+        .accessibilityElement(children: .combine)
+    }
+
+    private var caption: LocalizedStringResource {
+        switch kind {
+        case .drag: "Drag from your house to another house: a yarn path grows."
+        case .flow: "Cats flow along the path. When the number drops below zero, the house is yours!"
+        case .cut: "Swipe across your path to cut it: the cats on it rush ahead."
+        }
+    }
+
+    private func scene(t: Double) -> some View {
+        GeometryReader { proxy in
+            let left = CGPoint(x: 40, y: proxy.size.height / 2)
+            let right = CGPoint(x: proxy.size.width - 40, y: proxy.size.height / 2)
+            let progress: Double = switch kind {
+            case .drag: min(max((t - 0.3) / 1.6, 0), 1)
+            case .flow, .cut: 1
+            }
+            let targetCount: Int = switch kind {
+            case .drag: 8
+            case .flow: max(-3, 8 - Int(max(t - 0.4, 0) * 5))
+            case .cut: t > 1.4 ? max(-2, 8 - Int((t - 1.4) * 12)) : 8
+            }
+            let cutDone = kind == .cut && t > 1.2
+            ZStack {
+                // Yol
+                Path { path in
+                    path.move(to: left)
+                    path.addLine(to: CGPoint(x: left.x + (right.x - left.x) * progress, y: left.y))
+                }
+                .stroke(PawColors.cats, style: StrokeStyle(lineWidth: 6, lineCap: .round, dash: cutDone ? [4, 6] : []))
+                .opacity(cutDone ? 0.35 : 1)
+                if kind != .drag {
+                    // Akan patiler
+                    ForEach(0..<3, id: \.self) { i in
+                        let phase = ((t * 0.6) + Double(i) / 3).truncatingRemainder(dividingBy: 1)
+                        Image(systemName: "pawprint.fill")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.white)
+                            .position(x: left.x + (right.x - left.x) * phase, y: left.y)
+                            .opacity(cutDone && kind == .cut ? 0 : 1)
+                    }
+                }
+                PawHouseView(node: PawNode(id: 1, position: PawPoint(x: 0, y: 0), owner: .cats, count: 20), links: progress >= 1 ? 1 : 0)
+                    .scaleEffect(0.62)
+                    .position(left)
+                PawHouseView(node: PawNode(id: 2, position: PawPoint(x: 0, y: 0), owner: targetCount < 0 ? .cats : .neutral,
+                                           count: Double(abs(targetCount))), links: 0)
+                    .scaleEffect(0.62)
+                    .position(right)
+                // El
+                switch kind {
+                case .drag:
+                    Image(systemName: "hand.point.up.left.fill")
+                        .font(.system(size: 24))
+                        .foregroundStyle(Color.accentColor)
+                        .position(x: left.x + (right.x - left.x) * progress + 10, y: left.y + 18)
+                case .cut:
+                    let y = proxy.size.height * min(max((t - 0.6) / 0.8, 0), 1)
+                    Image(systemName: "hand.point.up.left.fill")
+                        .font(.system(size: 24))
+                        .foregroundStyle(Color.accentColor)
+                        .position(x: (left.x + right.x) / 2 + 10, y: y + 10)
+                case .flow:
+                    EmptyView()
+                }
+            }
+        }
     }
 }

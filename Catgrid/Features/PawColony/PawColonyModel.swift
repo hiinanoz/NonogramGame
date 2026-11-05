@@ -20,18 +20,27 @@ final class PawColonyModel {
     enum Keys {
         static let progress = "pawcolony.progress"
         static let savedGame = "pawcolony.savedGame"
+        static let rulesSeen = "pawcolony.rulesSeen"
     }
 
     private let defaults: UserDefaults
     private(set) var progress: PawColonyProgress
     private(set) var savedGame: PawColonySavedGame?
     var selectedRegion: Int?
+    /// Görsel kural kartı gösterildi mi (1. bölümde bir kez; "?" ile her zaman açılır).
+    private(set) var hasSeenRules: Bool
 
     init(defaults: UserDefaults) {
         self.defaults = defaults
         progress = defaults.data(forKey: Keys.progress).flatMap { try? JSONDecoder().decode(PawColonyProgress.self, from: $0) }
             ?? PawColonyProgress()
         savedGame = defaults.data(forKey: Keys.savedGame).flatMap { try? JSONDecoder().decode(PawColonySavedGame.self, from: $0) }
+        hasSeenRules = defaults.bool(forKey: Keys.rulesSeen)
+    }
+
+    func markRulesSeen() {
+        hasSeenRules = true
+        defaults.set(true, forKey: Keys.rulesSeen)
     }
 
     static func inMemory() -> PawColonyModel {
@@ -99,7 +108,9 @@ final class PawColonyModel {
         progress = PawColonyProgress()
         selectedRegion = nil
         clearSavedGame()
+        hasSeenRules = false
         defaults.removeObject(forKey: Keys.progress)
+        defaults.removeObject(forKey: Keys.rulesSeen)
     }
 
     private func save() {
