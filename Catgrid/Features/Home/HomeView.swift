@@ -208,6 +208,21 @@ struct HomeView: View {
                 .accessibilityIdentifier("home.mode.taxi")
             }
             .frame(height: cardHeight)
+
+            // Pati Kolonisi: en altta, tam genişlik
+            ModeCard(style: .colony, title: "Paw Colony", compact: compact, tight: tight) {
+                HStack(spacing: 3) {
+                    Text("Level \(model.colony.currentLevel)")
+                    Text(verbatim: "·")
+                    Image(systemName: "star.fill")
+                        .foregroundStyle(Gold.mid)
+                    Text(verbatim: "\(model.colony.totalStars)")
+                }
+            } action: {
+                router.push(.colonyHub)
+            }
+            .frame(height: cardHeight)
+            .accessibilityIdentifier("home.mode.colony")
         }
     }
 
@@ -415,6 +430,8 @@ struct ModeCard<Caption: View>: View {
                     // Hareketli kedi (videodan), yoksa sabit çizim; Yumak Taksi kodla çizilir
                     if style == .taxi {
                         YarnTaxiCardArt()
+                    } else if style == .colony {
+                        PawColonyCardArt()
                     } else if LoopingCatAnimation.isAvailable(style.animation) {
                         LoopingCatView(name: style.animation)
                     } else {

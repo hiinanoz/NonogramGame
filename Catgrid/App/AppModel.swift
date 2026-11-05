@@ -20,6 +20,8 @@ final class AppModel {
     let blocks: CatBlockModel
     /// Yumak Taksi.
     let taxi: YarnTaxiModel
+    /// Pati Kolonisi.
+    let colony: PawColonyModel
     /// Testlerde "bugün" sabitlenebilsin diye.
     private let now: () -> Date
 
@@ -33,6 +35,7 @@ final class AppModel {
         birds: BirdSortModel? = nil,
         blocks: CatBlockModel? = nil,
         taxi: YarnTaxiModel? = nil,
+        colony: PawColonyModel? = nil,
         now: @escaping () -> Date = { Date() }
     ) {
         self.catalog = catalog
@@ -45,6 +48,7 @@ final class AppModel {
         self.birds = birds ?? .inMemory()
         self.blocks = blocks ?? .inMemory()
         self.taxi = taxi ?? .inMemory()
+        self.colony = colony ?? .inMemory()
         self.now = now
         // 1.0'dan gelen oyuncunun hak ettiği rozetler sessizce verilir
         self.badges.update(with: badgeProgress)
@@ -66,7 +70,8 @@ final class AppModel {
             return AppModel(
                 catalog: catalog, progress: ProgressStore.live(), daily: loadDaily(), badges: BadgeStore(defaults: .standard),
                 cats: cats, crush: CrushModel(defaults: .standard), birds: BirdSortModel(defaults: .standard),
-                blocks: CatBlockModel(defaults: .standard), taxi: YarnTaxiModel(defaults: .standard)
+                blocks: CatBlockModel(defaults: .standard), taxi: YarnTaxiModel(defaults: .standard),
+                colony: PawColonyModel(defaults: .standard)
             )
         } catch {
             // Paketlenmiş içerik hatalıysa: testler (ContentValidationTests) bunu yayından önce yakalar
@@ -374,6 +379,7 @@ final class AppModel {
         birds.reset()
         blocks.reset()
         taxi.reset()
+        colony.reset()
         isTutorialSkipped = false
         UserDefaults.standard.removeObject(forKey: Self.tutorialSkippedKey)
     }

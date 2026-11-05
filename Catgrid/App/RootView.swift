@@ -45,6 +45,8 @@ struct RootView: View {
                     case .birdGame(let level): BirdSortGameScreen(levelNumber: level, saved: model.birds.savedSession(for: level)).id(level)
                     case .taxiHub: YarnTaxiHubView()
                     case .taxiGame(let level): YarnTaxiGameScreen(levelNumber: level, saved: model.taxi.savedGame(for: level)).id(level)
+                    case .colonyHub: PawColonyHubView()
+                    case .colonyGame(let level): PawColonyGameScreen(levelNumber: level, saved: model.colony.savedGame(for: level)).id(level)
                     }
                 }
         }

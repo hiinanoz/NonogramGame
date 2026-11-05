@@ -31652,6 +31652,1156 @@
           }
         }
       }
+    },
+    "Paw Colony": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pati Kolonisi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "肉球コロニー"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pfotenkolonie"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colonie des Pattes"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colonia de Patitas"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colônia das Patinhas"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "발바닥 마을"
+          }
+        }
+      }
+    },
+    "Muffin's Garden": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muffin'in Bahçesi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マフィンの庭"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muffins Garten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le jardin de Muffin"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El jardín de Muffin"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O jardim da Muffin"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "머핀의 정원"
+          }
+        }
+      }
+    },
+    "Cheese Alley": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peynir Sokağı"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チーズ横丁"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Käsegasse"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruelle du Fromage"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Callejón del Queso"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beco do Queijo"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "치즈 골목"
+          }
+        }
+      }
+    },
+    "Rooftop Town": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çatılar Kasabası"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "屋根の上の町"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dächerstadt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ville des Toits"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pueblo de los Tejados"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cidade dos Telhados"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지붕 마을"
+          }
+        }
+      }
+    },
+    "Old Mill": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eski Değirmen"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "古い水車小屋"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alte Mühle"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Vieux Moulin"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El Viejo Molino"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Velho Moinho"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "낡은 방앗간"
+          }
+        }
+      }
+    },
+    "Mouse Castle": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fare Şatosu"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ネズミ城"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mäuseburg"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Château des Souris"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Castillo Ratón"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Castelo dos Ratos"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "생쥐 성"
+          }
+        }
+      }
+    },
+    "Little Nibbles": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kemirgen Minik"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ちびカジリ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klein Knabber"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Petit Grignote"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pequeño Mordisco"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pequeno Roedor"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "꼬마 갉갉이"
+          }
+        }
+      }
+    },
+    "Captain Squeak": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaptan Cik"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チューチュー船長"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapitän Piep"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capitaine Couic"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capitán Chilli"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capitão Guincho"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "찍찍 선장"
+          }
+        }
+      }
+    },
+    "Roof Rascal": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çatı Haylazı"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "屋根のいたずらっ子"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dachschlingel"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coquin des Toits"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pillo del Tejado"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peralta do Telhado"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지붕 개구쟁이"
+          }
+        }
+      }
+    },
+    "Miller Mouse": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değirmenci Fare"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "粉ひきネズミ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Müllermaus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Souris Meunière"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ratón Molinero"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rato Moleiro"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "방앗간 생쥐"
+          }
+        }
+      }
+    },
+    "King Whiskerless": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bıyıksız Kral"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ヒゲなし王"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "König Schnurrlos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Roi Sans-Moustache"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rey Sinbigotes"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rei Sem-Bigode"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수염 없는 왕"
+          }
+        }
+      }
+    },
+    "Oh no! While we napped, the mice moved into our houses. Let's link the houses with yarn paths and bring the cats home!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eyvah! Biz uyurken fareler evlerimize yerleşmiş. Evleri yün yollarıyla birbirine bağlayıp kedileri eve getirelim!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "たいへん！お昼寝のあいだにネズミたちが家に住みついちゃった。毛糸の道で家をつないで、猫たちを家に帰そう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oh nein! Während wir schliefen, sind die Mäuse in unsere Häuser gezogen. Verbinden wir die Häuser mit Wollwegen und holen die Katzen heim!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oh non ! Pendant notre sieste, les souris se sont installées chez nous. Relions les maisons avec des chemins de laine pour ramener les chats !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Oh, no! Mientras dormíamos, los ratones se mudaron a nuestras casas. ¡Unamos las casas con caminos de lana y traigamos a los gatos a casa!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ah, não! Enquanto cochilávamos, os ratos se mudaram para nossas casas. Vamos ligar as casas com caminhos de lã e trazer os gatos de volta!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이런! 우리가 낮잠 자는 동안 생쥐들이 집에 들어와 살고 있어요. 털실 길로 집들을 이어서 고양이들을 집으로 데려와요!"
+          }
+        }
+      }
+    },
+    "Captain Squeak guards Cheese Alley. Big houses can open more paths. Grow first, then strike!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaptan Cik, Peynir Sokağı'nı koruyor. Büyük evler daha çok yol açabilir. Önce büyü, sonra saldır!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チューチュー船長がチーズ横丁を守っているよ。大きな家ほど道をたくさん出せる。まず育てて、それから攻めよう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapitän Piep bewacht die Käsegasse. Große Häuser können mehr Wege öffnen. Erst wachsen, dann zuschlagen!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le capitaine Couic garde la ruelle du Fromage. Les grandes maisons ouvrent plus de chemins. Grandis d'abord, attaque ensuite !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El capitán Chilli vigila el callejón del Queso. Las casas grandes abren más caminos. ¡Primero crece y luego ataca!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Capitão Guincho guarda o Beco do Queijo. Casas grandes abrem mais caminhos. Cresça primeiro e depois ataque!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "찍찍 선장이 치즈 골목을 지키고 있어요. 큰 집은 길을 더 많이 낼 수 있어요. 먼저 키우고, 그다음 공격해요!"
+          }
+        }
+      }
+    },
+    "The mice ran up to the rooftops. Swipe across a path to cut it: the cats on it rush forward.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fareler çatılara kaçtı. Bir yolun üstünden parmağını kaydırıp kes: üstündeki kediler ileri atılır."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ネズミたちは屋根の上へ逃げたよ。道を指でなぞって切ると、乗っていた猫たちが前へ飛び出すよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Mäuse sind auf die Dächer geflohen. Wisch über einen Weg, um ihn zu kappen: Die Katzen darauf stürmen nach vorn."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les souris ont filé sur les toits. Glisse sur un chemin pour le couper : les chats dessus foncent en avant."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los ratones subieron a los tejados. Desliza sobre un camino para cortarlo: los gatos que van en él se lanzan hacia delante."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Os ratos fugiram para os telhados. Deslize sobre um caminho para cortá-lo: os gatos nele correm para a frente."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "생쥐들이 지붕 위로 달아났어요. 길 위를 손가락으로 그어 자르면 그 위의 고양이들이 앞으로 달려가요."
+          }
+        }
+      }
+    },
+    "Miller Mouse hides in the Old Mill with his whole family. Help your weak houses before they fall!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değirmenci Fare bütün ailesiyle Eski Değirmen'de saklanıyor. Zayıf evlerine düşmeden yardım gönder!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "粉ひきネズミは家族みんなで古い水車小屋に隠れているよ。弱った家が取られる前に助けを送ろう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Müllermaus versteckt sich mit der ganzen Familie in der Alten Mühle. Hilf schwachen Häusern, bevor sie fallen!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La Souris Meunière se cache dans le Vieux Moulin avec toute sa famille. Aide tes maisons faibles avant qu'elles tombent !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El Ratón Molinero se esconde en el Viejo Molino con toda su familia. ¡Ayuda a tus casas débiles antes de que caigan!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Rato Moleiro se esconde no Velho Moinho com a família toda. Ajude suas casas fracas antes que caiam!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "방앗간 생쥐가 가족 모두와 낡은 방앗간에 숨어 있어요. 약한 집이 넘어가기 전에 도와줘요!"
+          }
+        }
+      }
+    },
+    "King Whiskerless waits in Mouse Castle. Win this and the mice become our friends again!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bıyıksız Kral, Fare Şatosu'nda bekliyor. Bunu kazanırsak fareler yeniden dostumuz olacak!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ヒゲなし王がネズミ城で待っているよ。ここで勝てば、ネズミたちとまた仲良しになれる！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "König Schnurrlos wartet in der Mäuseburg. Gewinnen wir hier, werden die Mäuse wieder unsere Freunde!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le roi Sans-Moustache attend au château des Souris. Gagne ici et les souris redeviendront nos amies !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El rey Sinbigotes espera en el Castillo Ratón. ¡Si ganamos, los ratones volverán a ser nuestros amigos!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Rei Sem-Bigode espera no Castelo dos Ratos. Vença aqui e os ratos voltam a ser nossos amigos!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수염 없는 왕이 생쥐 성에서 기다려요. 여기서 이기면 생쥐들이 다시 친구가 돼요!"
+          }
+        }
+      }
+    },
+    "Drag from your cat house to the empty house.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kedi evinden boş eve doğru parmağını sürükle."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "猫の家から空き家へ指でなぞろう。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zieh von deinem Katzenhaus zum leeren Haus."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Glisse de ta maison de chats vers la maison vide."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrastra desde tu casa de gatos hasta la casa vacía."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arraste da sua casa de gatos até a casa vazia."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고양이 집에서 빈집까지 손가락으로 끌어요."
+          }
+        }
+      }
+    },
+    "Cats walk along the yarn. Win the house!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kediler yün boyunca yürüyor. Evi kazan!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "猫たちが毛糸の上を歩いていくよ。家を手に入れよう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Katzen laufen über die Wolle. Gewinn das Haus!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les chats marchent sur la laine. Gagne la maison !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los gatos caminan por la lana. ¡Gana la casa!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Os gatos andam pela lã. Conquiste a casa!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고양이들이 털실을 따라 걸어가요. 집을 차지해요!"
+          }
+        }
+      }
+    },
+    "Bigger houses can open more paths (the dots under a house).": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Büyük evler daha çok yol açabilir (evin altındaki noktalar)."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大きな家ほど道をたくさん出せるよ（家の下の点）。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Größere Häuser können mehr Wege öffnen (Punkte unter dem Haus)."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les grandes maisons ouvrent plus de chemins (les points sous la maison)."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las casas grandes abren más caminos (los puntos bajo la casa)."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Casas maiores abrem mais caminhos (os pontos sob a casa)."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "큰 집은 길을 더 많이 낼 수 있어요(집 아래의 점)."
+          }
+        }
+      }
+    },
+    "Mice! Win their houses too. Swipe across your path to cut it: the cats rush forward.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fareler! Onların evlerini de kazan. Yolunun üstünden kaydırıp kes: kediler ileri atılır."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ネズミだ！ネズミの家も取り返そう。自分の道をなぞって切ると、猫たちが前へ飛び出すよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mäuse! Gewinn auch ihre Häuser. Wisch über deinen Weg, um ihn zu kappen: Die Katzen stürmen vor."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des souris ! Gagne aussi leurs maisons. Glisse sur ton chemin pour le couper : les chats foncent."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Ratones! Gana también sus casas. Desliza sobre tu camino para cortarlo: los gatos se lanzan."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ratos! Conquiste as casas deles também. Deslize sobre seu caminho para cortá-lo: os gatos avançam."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "생쥐다! 생쥐 집도 차지해요. 내 길 위를 그어 자르면 고양이들이 앞으로 달려가요."
+          }
+        }
+      }
+    },
+    "Let's Go!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haydi!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行こう！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los geht's!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C'est parti !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Vamos!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vamos lá!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "가자!"
+          }
+        }
+      }
+    },
+    "The mice won this time!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu sefer fareler kazandı!"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今回はネズミの勝ち！"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diesmal haben die Mäuse gewonnen!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les souris ont gagné cette fois !"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Esta vez ganaron los ratones!"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desta vez os ratos venceram!"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이번엔 생쥐가 이겼어요!"
+          }
+        }
+      }
+    },
+    "Cat house: %lld cats": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kedi evi: %lld kedi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "猫の家：%lld匹"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Katzenhaus: %lld Katzen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maison de chats : %lld chats"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Casa de gatos: %lld gatos"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Casa de gatos: %lld gatos"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고양이 집: %lld마리"
+          }
+        }
+      }
+    },
+    "Mouse house: %lld mice": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fare evi: %lld fare"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ネズミの家：%lld匹"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mäusehaus: %lld Mäuse"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maison de souris : %lld souris"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Casa de ratones: %lld ratones"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Casa de ratos: %lld ratos"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "생쥐 집: %lld마리"
+          }
+        }
+      }
+    },
+    "Empty house: %lld": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boş ev: %lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空き家：%lld"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leeres Haus: %lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maison vide : %lld"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Casa vacía: %lld"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Casa vazia: %lld"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "빈집: %lld"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

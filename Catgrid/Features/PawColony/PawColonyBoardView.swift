@@ -243,3 +243,30 @@ struct PawGuideHand: View {
             }
     }
 }
+
+/// Ana sayfa kartının çizimi: kedi evinden fare evine uzanan yün yolu.
+struct PawColonyCardArt: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var flow = false
+
+    var body: some View {
+        HStack(spacing: 0) {
+            PawHouseView(node: PawNode(id: 1, position: PawPoint(x: 0, y: 0), owner: .cats, count: 24), links: 1)
+                .scaleEffect(0.7)
+            Capsule()
+                .fill(PawColors.cats)
+                .frame(width: 44, height: 6)
+                .overlay(
+                    Capsule().stroke(.white.opacity(0.9), style: StrokeStyle(lineWidth: 2, dash: [2, 8], dashPhase: flow ? -20 : 0))
+                )
+            PawHouseView(node: PawNode(id: 2, position: PawPoint(x: 0, y: 0), owner: .mice, count: 9), links: 0)
+                .scaleEffect(0.7)
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .onAppear {
+            guard !reduceMotion else { return }
+            withAnimation(.linear(duration: 0.8).repeatForever(autoreverses: false)) { flow = true }
+        }
+        .accessibilityHidden(true)
+    }
+}

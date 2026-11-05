@@ -31,6 +31,9 @@ enum Route: Hashable {
     /// Yumak Taksi (park et ve bindir) modu.
     case taxiHub
     case taxiGame(level: Int)
+    /// Pati Kolonisi (yün yollarıyla evleri kazanma) modu.
+    case colonyHub
+    case colonyGame(level: Int)
 }
 
 /// Uygulama içi gezinme yığını. Ekranlar doğrudan `NavigationLink` yerine bunu kullanır
