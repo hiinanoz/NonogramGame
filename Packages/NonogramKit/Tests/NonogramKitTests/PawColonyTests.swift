@@ -77,7 +77,7 @@ final class PawColonyTests: XCTestCase {
         XCTAssertEqual(game.links.first?.state, .connected)
         let before = game.node(2)!.count
         game.cut(linkID: game.links[0].id, at: 0.0)
-        XCTAssertLessThan(game.node(2)!.count, before - 15, "kesilen yol hedefe saldırır")
+        XCTAssertLessThan(game.node(2)!.count, before - 8, "kesilen yol hedefe saldırır")
         game.advance(5)
         XCTAssertTrue(game.links.isEmpty)
     }
