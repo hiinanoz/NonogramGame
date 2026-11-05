@@ -46,7 +46,9 @@ public enum PawColonyCatalog {
             let neutrals = min(8, 2 + Int(progress * 5) + local % 3)
             let tuning = PawColonyTuning.table
             if number <= tuning.count {
-                let (extra, level) = tuning[number - 1]
+                let (extra, tuned) = tuning[number - 1]
+                // Farelerle tanışılan ilk bölümler (4-6) yavaş tempoda da sakin kalsın
+                let level = number <= 6 ? min(tuned, 0.25) : tuned
                 return PawColonyLevel(number: number, neutrals: neutrals, mice: cats + extra, cats: cats, miceLevel: level)
             }
             var level = 0.12 + 0.55 * progress + 0.15 * Double(local) / Double(levelsPerRegion)
@@ -87,6 +89,8 @@ public enum PawColonyCatalog {
             let count = Double(Int.random(in: 4...10, using: &random)) + Double(level.number / 12)
             nodes.append(PawNode(id: nodes.count + 1, position: place(yRange: 0.28...0.72), owner: .neutral, count: count))
         }
-        return PawColonyGame(nodes: nodes, miceLevel: level.miceLevel, seed: UInt64(level.number) &* 31 &+ UInt64(salt))
+        // İlk bölümler daha yavaş akar (öğrenirken ne olduğu izlenebilsin)
+        let speed = level.number <= 10 ? 0.7 : (level.number <= 20 ? 0.85 : 1)
+        return PawColonyGame(nodes: nodes, miceLevel: level.miceLevel, seed: UInt64(level.number) &* 31 &+ UInt64(salt), speed: speed)
     }
 }

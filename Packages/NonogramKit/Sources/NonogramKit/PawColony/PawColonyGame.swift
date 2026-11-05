@@ -92,13 +92,16 @@ public struct PawColonyGame: Codable, Sendable, Equatable {
     public private(set) var time: Double = 0
     /// Farelerin hızı ve saldırganlığı (0 rakipsiz).
     public let miceLevel: Double
+    /// Oyunun temposu: 1 normal; ilk bölümlerde daha yavaş (ne olduğu izlenebilsin).
+    public let speed: Double
     private var nextLinkID = 1
     private var random: CrushRandom
     private var aiClock: Double = 0
 
-    public init(nodes: [PawNode], miceLevel: Double, seed: UInt64 = 1) {
+    public init(nodes: [PawNode], miceLevel: Double, seed: UInt64 = 1, speed: Double = 1) {
         self.nodes = nodes
         self.miceLevel = miceLevel
+        self.speed = speed
         random = CrushRandom(seed: seed)
     }
 
@@ -109,6 +112,26 @@ public struct PawColonyGame: Codable, Sendable, Equatable {
     }
 
     /// Kedi gönderilebilir mi: evimiz, boş yol hakkı var, aynı hedefe yol yok.
+    /// Yol açmanın sonucu tahmini (parmak bir evin üstündeyken gösterilir).
+    public enum LinkOutlook: Equatable, Sendable {
+        /// Yol açılamaz: kedi yetmez ya da yol hakkı yok.
+        case cannot
+        /// Yol açılır, ev zamanla kazanılır (akış sürdükçe).
+        case slowly
+        /// Yol ulaşınca kalan kediler evi hemen kazanmaya yeter.
+        case easily
+        /// Kendi evine destek.
+        case reinforce
+    }
+
+    public func outlook(from: Int, to: Int) -> LinkOutlook {
+        guard canLink(from: from, to: to), let a = node(from), let b = node(to) else { return .cannot }
+        let cost = a.position.distance(to: b.position) * Self.costPerLength
+        guard a.count > cost + 1 else { return .cannot }
+        if b.owner == a.owner { return .reinforce }
+        return a.count - cost > b.count ? .easily : .slowly
+    }
+
     public func canLink(from: Int, to: Int, owner: PawOwner = .cats) -> Bool {
         guard status == .playing, from != to, let source = node(from), node(to) != nil, source.owner == owner else { return false }
         let out = outgoing(from: from)
@@ -160,9 +183,9 @@ public struct PawColonyGame: Codable, Sendable, Equatable {
 
     // MARK: - Zaman
 
-    /// `seconds` kadar ilerletir (0,1 sn'lik adımlarla; sonuç kare hızından bağımsız).
+    /// `seconds` kadar (tempoyla çarpılarak) ilerletir; 0,1 sn'lik adımlarla, sonuç kare hızından bağımsız.
     public mutating func advance(_ seconds: Double) {
-        var left = seconds
+        var left = seconds * speed
         while left > 1e-9, status == .playing {
             let dt = min(0.1, left)
             step(dt)
