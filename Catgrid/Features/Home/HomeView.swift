@@ -181,18 +181,33 @@ struct HomeView: View {
             }
             .frame(height: cardHeight)
 
-            // Kedi Kutusu: en altta, en yüksek puanla
-            ModeCard(style: .block, title: "Cat Block", compact: compact, tight: tight) {
-                HStack(spacing: 3) {
-                    Image(systemName: "crown.fill")
-                        .foregroundStyle(Gold.mid)
-                    Text("Best \(model.blocks.bestScore)")
+            // Kedi Kutusu ve Yumak Taksi: en altta, aynı boyda
+            HStack(spacing: 10) {
+                ModeCard(style: .block, title: "Cat Block", compact: compact, tight: tight) {
+                    HStack(spacing: 3) {
+                        Image(systemName: "crown.fill")
+                            .foregroundStyle(Gold.mid)
+                        Text("Best \(model.blocks.bestScore)")
+                    }
+                } action: {
+                    router.push(.blockHub)
                 }
-            } action: {
-                router.push(.blockHub)
+                .accessibilityIdentifier("home.mode.block")
+
+                ModeCard(style: .taxi, title: "Yarn Taxi", compact: compact, tight: tight) {
+                    HStack(spacing: 3) {
+                        Text("Level \(model.taxi.currentLevel)")
+                        Text(verbatim: "·")
+                        Image(systemName: "star.fill")
+                            .foregroundStyle(Gold.mid)
+                        Text(verbatim: "\(model.taxi.totalStars)")
+                    }
+                } action: {
+                    router.push(.taxiHub)
+                }
+                .accessibilityIdentifier("home.mode.taxi")
             }
             .frame(height: cardHeight)
-            .accessibilityIdentifier("home.mode.block")
         }
     }
 
@@ -397,8 +412,10 @@ struct ModeCard<Caption: View>: View {
             VStack(alignment: .leading, spacing: compact ? 4 : 6) {
                 // Üstte büyük çizim kartın genişliğince; ikon sol üst köşesinde
                 Group {
-                    // Hareketli kedi (videodan), yoksa sabit çizim
-                    if LoopingCatAnimation.isAvailable(style.animation) {
+                    // Hareketli kedi (videodan), yoksa sabit çizim; Yumak Taksi kodla çizilir
+                    if style == .taxi {
+                        YarnTaxiCardArt()
+                    } else if LoopingCatAnimation.isAvailable(style.animation) {
                         LoopingCatView(name: style.animation)
                     } else {
                         IllustrationView(name: style.illustration)

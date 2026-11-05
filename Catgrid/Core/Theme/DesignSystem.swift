@@ -10,6 +10,7 @@ enum ModeStyle: CaseIterable {
     case crush
     case sort
     case block
+    case taxi
 
     /// İkon, ok ve ilerleme rengi.
     func tint(_ theme: AppTheme) -> Color {
@@ -26,6 +27,8 @@ enum ModeStyle: CaseIterable {
         case (.sort, true): Color(hex: "#8FCDEB")
         case (.block, false): Color(hex: "#6A5BD0")
         case (.block, true): Color(hex: "#B3A8F5")
+        case (.taxi, false): Color(hex: "#D9822B")
+        case (.taxi, true): Color(hex: "#F5BD7C")
         }
     }
 
@@ -48,6 +51,8 @@ enum ModeStyle: CaseIterable {
         case (.sort, true): [Color(hex: "#21384A"), Color(hex: "#1A2D3B")]
         case (.block, false): [Color(hex: "#ECEBFF"), Color(hex: "#D6D3FA")]
         case (.block, true): [Color(hex: "#2B2748"), Color(hex: "#211E38")]
+        case (.taxi, false): [Color(hex: "#FFF3D9"), Color(hex: "#FBDDB0")]
+        case (.taxi, true): [Color(hex: "#40342A"), Color(hex: "#332920")]
         }
     }
 
@@ -60,6 +65,7 @@ enum ModeStyle: CaseIterable {
         case (.crush, false): Color(hex: "#9B2C4F")
         case (.sort, false): Color(hex: "#1E5B7A")
         case (.block, false): Color(hex: "#3F3394")
+        case (.taxi, false): Color(hex: "#8A4A12")
         case (_, true): theme.textPrimary
         }
     }
@@ -72,6 +78,7 @@ enum ModeStyle: CaseIterable {
         case .crush: "sparkles"
         case .sort: "bird.fill"
         case .block: "square.grid.3x3.square"
+        case .taxi: "car.fill"
         }
     }
 
@@ -84,6 +91,8 @@ enum ModeStyle: CaseIterable {
         case .crush: LoopingCatAnimation.crushCat
         case .sort: LoopingCatAnimation.sortCat
         case .block: LoopingCatAnimation.blockCat
+        // Kodla çizilen araba ve yumaklar (bkz. ModeCard)
+        case .taxi: ""
         }
     }
 
@@ -96,6 +105,7 @@ enum ModeStyle: CaseIterable {
         case .crush: "mode-crush"
         case .sort: "mode-sort"
         case .block: "mode-block"
+        case .taxi: "mode-taxi"
         }
     }
 }

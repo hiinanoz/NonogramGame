@@ -18,6 +18,8 @@ final class AppModel {
     let birds: BirdSortModel
     /// Kedi Kutusu modu.
     let blocks: CatBlockModel
+    /// Yumak Taksi.
+    let taxi: YarnTaxiModel
     /// Testlerde "bugün" sabitlenebilsin diye.
     private let now: () -> Date
 
@@ -30,6 +32,7 @@ final class AppModel {
         crush: CrushModel? = nil,
         birds: BirdSortModel? = nil,
         blocks: CatBlockModel? = nil,
+        taxi: YarnTaxiModel? = nil,
         now: @escaping () -> Date = { Date() }
     ) {
         self.catalog = catalog
@@ -41,6 +44,7 @@ final class AppModel {
         self.crush = crush ?? .inMemory()
         self.birds = birds ?? .inMemory()
         self.blocks = blocks ?? .inMemory()
+        self.taxi = taxi ?? .inMemory()
         self.now = now
         // 1.0'dan gelen oyuncunun hak ettiği rozetler sessizce verilir
         self.badges.update(with: badgeProgress)
@@ -62,7 +66,7 @@ final class AppModel {
             return AppModel(
                 catalog: catalog, progress: ProgressStore.live(), daily: loadDaily(), badges: BadgeStore(defaults: .standard),
                 cats: cats, crush: CrushModel(defaults: .standard), birds: BirdSortModel(defaults: .standard),
-                blocks: CatBlockModel(defaults: .standard)
+                blocks: CatBlockModel(defaults: .standard), taxi: YarnTaxiModel(defaults: .standard)
             )
         } catch {
             // Paketlenmiş içerik hatalıysa: testler (ContentValidationTests) bunu yayından önce yakalar
@@ -369,6 +373,7 @@ final class AppModel {
         crush.reset()
         birds.reset()
         blocks.reset()
+        taxi.reset()
         isTutorialSkipped = false
         UserDefaults.standard.removeObject(forKey: Self.tutorialSkippedKey)
     }

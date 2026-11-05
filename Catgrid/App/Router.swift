@@ -28,6 +28,9 @@ enum Route: Hashable {
     case blockHub
     /// Her açılışta yeni kimlik: ekran yeniden kurulur (yeni oyun ya da kayıttan devam).
     case blockGame(String)
+    /// Yumak Taksi (park et ve bindir) modu.
+    case taxiHub
+    case taxiGame(level: Int)
 }
 
 /// Uygulama içi gezinme yığını. Ekranlar doğrudan `NavigationLink` yerine bunu kullanır
