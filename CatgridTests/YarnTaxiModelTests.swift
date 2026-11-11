@@ -45,7 +45,8 @@ final class YarnTaxiModelTests: XCTestCase {
         XCTAssertTrue(won)
         XCTAssertEqual(viewModel.stars, 3)
         viewModel.restart()
-        XCTAssertTrue(viewModel.showHint())
+        let hinted = await viewModel.showHint()
+        XCTAssertTrue(hinted)
         XCTAssertEqual(viewModel.stars, 2)
     }
 }

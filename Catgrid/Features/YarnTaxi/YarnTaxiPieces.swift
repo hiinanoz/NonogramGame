@@ -15,6 +15,11 @@ enum YarnPalette {
     ]
 
     static func color(_ index: Int) -> Color { colors[index % colors.count] }
+
+    /// Her rengin simgesi: renkleri ayırt edemeyenler için (yumakta ve arabada aynı simge).
+    static let symbols = ["heart.fill", "drop.fill", "star.fill", "leaf.fill", "moon.fill", "flame.fill", "bolt.fill", "snowflake"]
+
+    static func symbol(_ index: Int) -> String { symbols[index % symbols.count] }
 }
 
 /// Kodla çizilmiş yün yumağı: renkli küre, üstünde kıvrımlı iplikler ve küçük bir ucu.
@@ -36,6 +41,10 @@ struct YarnBallView: View {
                     .rotationEffect(.degrees(Double(i) * 55 - 30))
             }
             Circle().strokeBorder(.black.opacity(0.12), lineWidth: 1)
+            Image(systemName: YarnPalette.symbol(color))
+                .font(.system(size: size * 0.42, weight: .heavy))
+                .foregroundStyle(.white.opacity(0.92))
+                .shadow(color: .black.opacity(0.25), radius: 0.5, y: 0.5)
         }
         .frame(width: size, height: size)
         .clipShape(Circle())
@@ -109,6 +118,12 @@ struct YarnCarView: View {
             RoundedRectangle(cornerRadius: width * 0.14, style: .continuous)
                 .fill(Color(hex: "#DFF3FF").opacity(0.95))
                 .frame(width: width * 0.68, height: min(height * 0.2, width * 0.42))
+                .overlay {
+                    // Gidiş yönü oku
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: width * 0.26, weight: .black))
+                        .foregroundStyle(Color(hex: "#3A3340"))
+                }
                 .padding(.top, width * 0.2)
             // Farlar
             HStack {
@@ -121,13 +136,18 @@ struct YarnCarView: View {
             // Tavanda koltuk sayısı ya da binenler
             VStack {
                 Spacer()
-                Text(verbatim: riders.map { "\($0)/\(seats)" } ?? "\(seats)")
-                    .font(.system(size: max(8, width * 0.3), weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white)
-                    .shadow(color: .black.opacity(0.35), radius: 1, y: 1)
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .rotationEffect(-angle)
+                VStack(spacing: 0) {
+                    Image(systemName: YarnPalette.symbol(color))
+                        .font(.system(size: max(7, width * 0.2), weight: .heavy))
+                    Text(verbatim: riders.map { "\($0)/\(seats)" } ?? "\(seats)")
+                        .font(.system(size: max(8, width * 0.3), weight: .heavy, design: .rounded))
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .contentTransition(.numericText())
+                }
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.35), radius: 1, y: 1)
+                .rotationEffect(-angle)
                 Spacer()
             }
             .padding(.top, height * 0.25)
@@ -170,8 +190,16 @@ struct YarnLotView: View {
     var guideCar: Int?
     var shakingCar: Int?
     var shakeID: Int
-    let namespace: Namespace.ID
+    /// Önü kapalı arabayı engelleyen araba: kırmızı yanar.
+    var blockerCar: Int?
     let onTap: (YarnCar) -> Void
+
+    /// Izgaranın (otoparkın) kapsayıcı içindeki yeri; oyun ekranı araba yolunu buna göre hesaplar.
+    static func gridRect(in size: CGSize, rows: Int, columns: Int) -> CGRect {
+        let cell = min(size.width / CGFloat(columns), size.height / CGFloat(rows))
+        let width = cell * CGFloat(columns), height = cell * CGFloat(rows)
+        return CGRect(x: (size.width - width) / 2, y: (size.height - height) / 2, width: width, height: height)
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -189,7 +217,22 @@ struct YarnLotView: View {
                 ForEach(game.lot) { car in
                     let frame = frame(of: car, cell: cell)
                     YarnCarView(color: car.color, length: car.length, seats: car.seats, cell: cell, direction: car.direction)
-                        .matchedGeometryEffect(id: car.id, in: namespace)
+                        .overlay {
+                            // Önü açık araba hafifçe parlar
+                            if game.canExit(car) {
+                                RoundedRectangle(cornerRadius: cell * 0.3)
+                                    .strokeBorder(.white.opacity(0.55), lineWidth: 1.5)
+                                    .padding(1)
+                            }
+                        }
+                        .overlay {
+                            if car.id == blockerCar {
+                                RoundedRectangle(cornerRadius: cell * 0.3)
+                                    .fill(Color.red.opacity(0.45))
+                                    .overlay(RoundedRectangle(cornerRadius: cell * 0.3).strokeBorder(.red, lineWidth: 3))
+                                    .padding(2)
+                            }
+                        }
                         .overlay {
                             if car.id == hintCar || car.id == guideCar {
                                 RoundedRectangle(cornerRadius: cell * 0.3)
@@ -255,14 +298,31 @@ struct YarnShake: GeometryEffect {
     }
 }
 
-/// Durak: yan yana yerler; gelen araba ve bindirdiği yumak sayısı. Uçan yumak hedef yerde
-/// belirir (sıradaki yerinden buraya kayar), binince araba zıplar; dolan araba sağa sürülüp gider.
+/// Durak: yan yana yerler; gelen araba ve bindirdiği yumak sayısı. Yoldaki araba varana kadar
+/// gizlidir; atlayan yumak inene kadar sayı artmaz. Yer azalınca çerçeve sararır, dolunca kızarır.
 struct YarnStationView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let game: YarnTaxiGame
-    let namespace: Namespace.ID
-    var flyingYarn: (index: Int, color: Int, slot: Int)?
+    var travelingCar: Int?
+    var flyingSlot: Int?
     var bouncingSlot: Int?
     var bounceID = 0
+    var confetti: [YarnConfettiBurst] = []
+    @State private var pulse = false
+
+    /// Durak içinde araba için kare boyu (oyun ekranı yoldaki arabayı buna küçültür).
+    static func carCell(in size: CGSize, slots: Int) -> CGFloat {
+        min(size.width / CGFloat(max(slots, 1)), size.height * 0.7) * 0.62
+    }
+
+    private var warning: Color? {
+        guard game.status != .won else { return nil }
+        switch game.freeSlots {
+        case 0: return Color(hex: "#E5484D")
+        case 1: return Color(hex: "#F6B73C")
+        default: return nil
+        }
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -272,28 +332,32 @@ struct YarnStationView: View {
                 ForEach(Array(game.station.enumerated()), id: \.offset) { index, entry in
                     ZStack {
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.white.opacity(0.75), style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
+                            .strokeBorder((entry == nil ? warning : nil) ?? Color.white.opacity(0.75),
+                                          style: StrokeStyle(lineWidth: entry == nil && warning != nil ? 3 : 2, dash: [5, 4]))
                             .frame(width: slot * 0.82, height: proxy.size.height * 0.92)
+                            .scaleEffect(entry == nil && warning != nil && pulse ? 1.06 : 1)
                         if let entry {
                             YarnCarView(color: entry.car.color, length: min(entry.car.length, 2), seats: entry.car.seats,
-                                        cell: slot * 0.62, riders: entry.riders)
-                                .matchedGeometryEffect(id: entry.car.id, in: namespace)
+                                        cell: slot * 0.62, riders: entry.riders - (flyingSlot == index ? 1 : 0))
                                 .modifier(YarnBounce(amount: bouncingSlot == index ? CGFloat(bounceID) : 0))
+                                .opacity(entry.car.id == travelingCar ? 0 : 1)
                                 .id(entry.car.id)
                                 .transition(.asymmetric(
                                     insertion: .identity,
                                     removal: .offset(x: proxy.size.width, y: -12).combined(with: .opacity)
                                 ))
                         }
-                        if let flyingYarn, flyingYarn.slot == index {
-                            YarnBallView(color: flyingYarn.color, size: 22)
-                                .matchedGeometryEffect(id: "yarn-\(flyingYarn.index)", in: namespace)
-                                .offset(y: -proxy.size.height * 0.15)
+                        ForEach(confetti.filter { $0.slot == index }) { burst in
+                            YarnConfettiView(color: burst.color)
                         }
                     }
                     .frame(width: proxy.size.width / CGFloat(count), height: proxy.size.height)
                 }
             }
+        }
+        .onAppear {
+            guard !reduceMotion else { return }
+            withAnimation(.easeInOut(duration: 0.55).repeatForever(autoreverses: true)) { pulse = true }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("Station: \(game.freeSlots) free places"))
@@ -314,20 +378,42 @@ struct YarnBounce: GeometryEffect {
     }
 }
 
-/// Yumak sırası: öndeki yumak büyük, arkadakiler küçülerek dizilir. Her yumağın kimliği sıradaki
-/// yeri: binen yumak buradan durağa uçar.
+/// Dolan araba ayrılırken saçılan renkli parçalar.
+struct YarnConfettiView: View {
+    let color: Int
+    @State private var burst = false
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<10, id: \.self) { index in
+                let angle = Double(index) / 10 * 2 * .pi
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(index % 3 == 0 ? Gold.bright : YarnPalette.color(color + index % 2))
+                    .frame(width: 7, height: 7)
+                    .rotationEffect(.degrees(burst ? Double(index) * 80 : 0))
+                    .offset(x: burst ? cos(angle) * 46 : 0, y: burst ? sin(angle) * 46 - 8 : 0)
+            }
+        }
+        .opacity(burst ? 0 : 1)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+        .onAppear { withAnimation(.easeOut(duration: 0.8)) { burst = true } }
+    }
+}
+
+/// Yumak sırası: sıradaki ilk üç yumak büyük, arkadakiler küçülerek dizilir.
 struct YarnQueueView: View {
     let game: YarnTaxiGame
-    let namespace: Namespace.ID
+    /// En öndeki yumağın boyu (oyun ekranı atlayan yumağı buradan başlatır).
+    static let headSize: CGFloat = 36
 
     var body: some View {
         HStack(spacing: 4) {
             let start = game.head
-            ForEach(start..<min(start + 12, game.queue.count), id: \.self) { index in
+            ForEach(start..<min(start + 11, game.queue.count), id: \.self) { index in
                 let offset = index - start
-                YarnBallView(color: game.queue[index], size: offset == 0 ? 34 : max(18, 28 - CGFloat(offset)))
-                    .matchedGeometryEffect(id: "yarn-\(index)", in: namespace)
-                    .transition(.scale.combined(with: .opacity))
+                YarnBallView(color: game.queue[index], size: offset == 0 ? Self.headSize : (offset < 3 ? 30 : max(16, 26 - CGFloat(offset))))
+                    .transition(.asymmetric(insertion: .scale.combined(with: .opacity), removal: .identity))
             }
             Spacer(minLength: 0)
             Text(verbatim: "\(game.remainingYarns)")
@@ -338,8 +424,107 @@ struct YarnQueueView: View {
                 .background(Capsule().fill(.black.opacity(0.3)))
                 .contentTransition(.numericText())
         }
+        .frame(height: Self.headSize)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("\(game.remainingYarns) yarn balls waiting"))
+    }
+}
+
+/// Bir yol boyunca (köşeli çizgi) sabit hızla ilerleyen görünüm: araba otoparktan çıkıp yoldan
+/// durağa gider. `content` ilerleme (0-1) ve gidiş açısını alır.
+struct YarnPathFollower<Content: View>: View, Animatable {
+    var progress: CGFloat
+    let points: [CGPoint]
+    @ViewBuilder let content: (CGFloat, Angle) -> Content
+
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    var body: some View {
+        let (point, angle) = location
+        content(progress, angle).position(point)
+    }
+
+    private var location: (CGPoint, Angle) {
+        guard points.count > 1 else { return (points.first ?? .zero, .zero) }
+        let lengths = zip(points, points.dropFirst()).map { hypot($1.x - $0.x, $1.y - $0.y) }
+        let total = max(lengths.reduce(0, +), 0.001)
+        var left = min(max(progress, 0), 1) * total
+        for (index, length) in lengths.enumerated() {
+            let a = points[index], b = points[index + 1]
+            if left <= length || index == lengths.count - 1 {
+                let t = length > 0 ? min(left / length, 1) : 1
+                // Yukarı giderken açı 0 (araba yukarı bakacak şekilde çizilir)
+                return (CGPoint(x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t), .radians(atan2(b.x - a.x, -(b.y - a.y))))
+            }
+            left -= length
+        }
+        return (points[points.count - 1], .zero)
+    }
+}
+
+/// Yoldaki araba: belirince yol boyunca sürülür; durağa yaklaşırken durak boyuna küçülür.
+struct YarnTravelingCar: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let car: YarnCar
+    let points: [CGPoint]
+    let cell: CGFloat
+    let endScale: CGFloat
+    let duration: Double
+    @State private var progress: CGFloat = 0
+
+    var body: some View {
+        YarnPathFollower(progress: progress, points: points) { progress, angle in
+            YarnCarView(color: car.color, length: car.length, seats: car.seats, cell: cell, riders: 0)
+                .scaleEffect(1 + (endScale - 1) * max(0, (progress - 0.6) / 0.4))
+                .rotationEffect(angle)
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+        .onAppear {
+            if reduceMotion {
+                progress = 1
+            } else {
+                withAnimation(.easeInOut(duration: duration)) { progress = 1 }
+            }
+        }
+    }
+}
+
+/// Sıradan arabaya yay çizerek atlayan yumak.
+struct YarnHop: View, Animatable {
+    var progress: CGFloat
+    let from: CGPoint
+    let to: CGPoint
+    let color: Int
+
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    var body: some View {
+        let x = from.x + (to.x - from.x) * progress
+        let y = from.y + (to.y - from.y) * progress - sin(progress * .pi) * 34
+        YarnBallView(color: color, size: YarnQueueView.headSize - 12 * progress)
+            .position(x: x, y: y)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+    }
+}
+
+struct YarnHoppingBall: View {
+    let from: CGPoint
+    let to: CGPoint
+    let color: Int
+    let duration: Double
+    @State private var progress: CGFloat = 0
+
+    var body: some View {
+        YarnHop(progress: progress, from: from, to: to, color: color)
+            .onAppear { withAnimation(.easeIn(duration: duration)) { progress = 1 } }
     }
 }
 

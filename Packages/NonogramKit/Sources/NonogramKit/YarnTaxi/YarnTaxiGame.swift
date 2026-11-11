@@ -137,6 +137,16 @@ public struct YarnTaxiGame: Codable, Sendable, Equatable {
         }
     }
 
+    /// Arabanın önünü kapatan ilk araba (yoksa `nil`).
+    public func blocker(of car: YarnCar) -> YarnCar? {
+        var cell = car.front
+        while true {
+            cell = YarnCell(row: cell.row + car.direction.step.row, column: cell.column + car.direction.step.column)
+            guard (0..<rows).contains(cell.row), (0..<columns).contains(cell.column) else { return nil }
+            if let other = lot.first(where: { $0.id != car.id && $0.cells.contains(cell) }) { return other }
+        }
+    }
+
     /// Önü boş arabalar.
     public var exitableCars: [YarnCar] { lot.filter(canExit) }
 

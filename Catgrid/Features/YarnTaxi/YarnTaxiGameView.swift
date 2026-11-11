@@ -12,7 +12,11 @@ struct YarnTaxiGameScreen: View {
     @Environment(StoreManager.self) private var store
     @Environment(\.appTheme) private var theme
     @Environment(\.scenePhase) private var scenePhase
-    @Namespace private var cars
+    // Araba yolu ve yumak atlayışı için parçaların ekrandaki yerleri
+    @State private var queueFrame: CGRect = .zero
+    @State private var stationFrame: CGRect = .zero
+    @State private var lotFrame: CGRect = .zero
+    private static let space = "taxi"
     let levelNumber: Int
     @State private var viewModel: YarnTaxiGameViewModel
     @State private var isPaused = false
@@ -73,13 +77,16 @@ struct YarnTaxiGameScreen: View {
             topBar
             // Sıra ve durak: yol şeridinin üstünde
             VStack(spacing: 6) {
-                YarnQueueView(game: viewModel.game, namespace: cars)
+                YarnQueueView(game: viewModel.game)
+                    .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(Self.space)) } action: { queueFrame = $0 }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(Capsule().fill(Color(hex: "#7A5A8C").opacity(0.85)))
-                YarnStationView(game: viewModel.game, namespace: cars, flyingYarn: viewModel.flyingYarn,
-                                bouncingSlot: viewModel.bouncingSlot, bounceID: viewModel.bounceID)
+                YarnStationView(game: viewModel.game, travelingCar: viewModel.traveling?.car.id,
+                                flyingSlot: viewModel.flyingYarn?.slot, bouncingSlot: viewModel.bouncingSlot,
+                                bounceID: viewModel.bounceID, confetti: viewModel.confetti)
                     .frame(height: 74)
+                    .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(Self.space)) } action: { stationFrame = $0 }
                     .padding(.vertical, 6)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -100,14 +107,89 @@ struct YarnTaxiGameScreen: View {
                     .transition(.opacity)
             }
             YarnLotView(game: viewModel.game, hintCar: viewModel.hintCar, guideCar: viewModel.guideCar,
-                        shakingCar: viewModel.shakingCar, shakeID: viewModel.shakeID, namespace: cars) { car in
+                        shakingCar: viewModel.shakingCar, shakeID: viewModel.shakeID,
+                        blockerCar: viewModel.blockerCar) { car in
                 viewModel.tap(car)
             }
             .animation(.easeInOut(duration: 0.35), value: viewModel.shakeID)
+            .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(Self.space)) } action: { lotFrame = $0 }
             .padding(.horizontal, 14)
             .frame(maxHeight: .infinity)
             .accessibilityIdentifier("taxi.lot")
             dock(height: dockHeight)
+        }
+        .overlay(alignment: .topLeading) { motionLayer }
+        .coordinateSpace(.named(Self.space))
+    }
+
+    // MARK: - Hareket katmanı (yoldaki araba, atlayan yumak)
+
+    private var grid: CGRect {
+        let inner = YarnLotView.gridRect(in: lotFrame.size, rows: viewModel.game.rows, columns: viewModel.game.columns)
+        return inner.offsetBy(dx: lotFrame.minX, dy: lotFrame.minY)
+    }
+
+    private func slotCenter(_ slot: Int) -> CGPoint {
+        let count = CGFloat(max(viewModel.game.station.count, 1))
+        return CGPoint(x: stationFrame.minX + (CGFloat(slot) + 0.5) * stationFrame.width / count, y: stationFrame.midY)
+    }
+
+    /// Arabanın yolu: baktığı yöne doğru otoparktan çıkar, kenardaki yoldan durağın altındaki
+    /// şeride gelir ve yerine girer.
+    private func route(for car: YarnCar, to slot: Int) -> [CGPoint] {
+        let grid = grid
+        let cell = grid.width / CGFloat(viewModel.game.columns)
+        let columns = car.direction.isHorizontal ? CGFloat(car.length) : 1
+        let rows = car.direction.isHorizontal ? 1 : CGFloat(car.length)
+        let start = CGPoint(x: grid.minX + (CGFloat(car.column) + columns / 2) * cell,
+                            y: grid.minY + (CGFloat(car.row) + rows / 2) * cell)
+        let target = slotCenter(slot)
+        let reach = cell * CGFloat(car.length) / 2 + 4
+        let laneY = (stationFrame.maxY + grid.minY) / 2 + 4
+        let leftX = max(grid.minX - cell * 0.45, 14)
+        let rightX = min(grid.maxX + cell * 0.45, lotFrame.maxX + 6)
+        var points = [start]
+        switch car.direction {
+        case .up:
+            break
+        case .left:
+            points.append(CGPoint(x: min(leftX, grid.minX - reach * 0.4), y: start.y))
+            points.append(CGPoint(x: points.last!.x, y: laneY))
+        case .right:
+            points.append(CGPoint(x: max(rightX, grid.maxX + reach * 0.4), y: start.y))
+            points.append(CGPoint(x: points.last!.x, y: laneY))
+        case .down:
+            let bottom = grid.maxY + reach * 0.5
+            let sideX = start.x < grid.midX ? leftX : rightX
+            points.append(CGPoint(x: start.x, y: bottom))
+            points.append(CGPoint(x: sideX, y: bottom))
+            points.append(CGPoint(x: sideX, y: laneY))
+        }
+        if car.direction == .up { points.append(CGPoint(x: start.x, y: laneY)) }
+        points.append(CGPoint(x: target.x, y: laneY))
+        points.append(target)
+        return points
+    }
+
+    @ViewBuilder
+    private var motionLayer: some View {
+        if !lotFrame.isEmpty, !stationFrame.isEmpty {
+            ZStack(alignment: .topLeading) {
+                Color.clear
+                if let travel = viewModel.traveling {
+                    let cell = grid.width / CGFloat(viewModel.game.columns)
+                    let stationCell = YarnStationView.carCell(in: stationFrame.size, slots: viewModel.game.station.count)
+                    YarnTravelingCar(car: travel.car, points: route(for: travel.car, to: travel.slot), cell: cell,
+                                     endScale: stationCell / max(cell, 1), duration: YarnTaxiGameViewModel.travelTime)
+                        .id(travel.car.id)
+                }
+                if let yarn = viewModel.flyingYarn {
+                    YarnHoppingBall(from: CGPoint(x: queueFrame.minX + YarnQueueView.headSize / 2, y: queueFrame.midY),
+                                    to: slotCenter(yarn.slot), color: yarn.color, duration: YarnTaxiGameViewModel.hopTime)
+                        .id(yarn.index)
+                }
+            }
+            .allowsHitTesting(false)
         }
     }
 
@@ -296,11 +378,13 @@ struct YarnTaxiGameScreen: View {
 
     private func showHint() {
         if store.isPremium {
-            if viewModel.showHint() { audio.play(.catHint) }
+            Task { if await viewModel.showHint() { audio.play(.catHint) } }
         } else if taxi.progress.hints > 0 {
-            if viewModel.showHint() {
-                _ = taxi.useHint()
-                audio.play(.catHint)
+            Task {
+                if await viewModel.showHint() {
+                    _ = taxi.useHint()
+                    audio.play(.catHint)
+                }
             }
         } else {
             adOffer = .hint
@@ -312,7 +396,7 @@ struct YarnTaxiGameScreen: View {
             guard await ads.watchRewardedAd() else { return }
             switch booster {
             case .hint:
-                if viewModel.showHint() { audio.play(.catHint) }
+                if await viewModel.showHint() { audio.play(.catHint) }
             case .slot:
                 viewModel.addSlot()
                 audio.play(.card)
