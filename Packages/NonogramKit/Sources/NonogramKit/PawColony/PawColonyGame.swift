@@ -25,8 +25,13 @@ public struct PawPoint: Hashable, Codable, Sendable {
         self.y = y
     }
 
-    func distance(to other: PawPoint) -> Double {
-        ((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y)).squareRoot()
+    /// Oyun alanının yükseklik / genişlik oranı: konumlar 0-1 arası tutulur ama ekran dikeydir;
+    /// uzaklık ekranda görünen uzaklıkla orantılı olsun diye dikey fark bu oranla çarpılır.
+    public static let aspect = 1.5
+
+    public func distance(to other: PawPoint) -> Double {
+        let dy = (y - other.y) * Self.aspect
+        return ((x - other.x) * (x - other.x) + dy * dy).squareRoot()
     }
 }
 
@@ -78,9 +83,9 @@ public struct PawColonyGame: Codable, Sendable, Equatable {
 
     // Kurallar (birim: saniye)
     /// Uzunluk birimi başına yol maliyeti (1 uzunluk = haritanın genişliği).
-    public static let costPerLength = 12.0
-    public static let extendSpeed = 0.35
-    public static let retractSpeed = 0.7
+    public static let costPerLength = 9.0
+    public static let extendSpeed = 0.45
+    public static let retractSpeed = 0.9
     /// Bağlı yol başına saniyede akan kedi.
     public static let flowRate = 2.5
     /// Saniyede büyüme (evin büyüklüğüne göre artar).
@@ -97,6 +102,37 @@ public struct PawColonyGame: Codable, Sendable, Equatable {
     private var nextLinkID = 1
     private var random: CrushRandom
     private var aiClock: Double = 0
+    /// Evlere yollardan gelen kediler (+ destek, − saldırı); ekran `takeTransfers` ile okur.
+    private var transfers: [Int: Double] = [:]
+    /// Farelerin kararlaştırdığı ama henüz açmadığı yollar: ev önce kısa süre titrer (uyarı).
+    public private(set) var micePlans: [MicePlan] = []
+
+    public struct MicePlan: Codable, Sendable, Equatable {
+        public let from: Int
+        public let to: Int
+        public var delay: Double
+    }
+
+    /// Farelerin yol açmadan önceki uyarı süresi (saniye).
+    public static let miceWarning = 1.2
+
+    /// Son okumadan beri evlere yollardan gelen kedi sayıları; okununca sıfırlanır.
+    public mutating func takeTransfers() -> [Int: Double] {
+        defer { transfers = [:] }
+        return transfers
+    }
+
+    /// Yolun kedi maliyeti.
+    public func linkCost(from: Int, to: Int) -> Double {
+        guard let a = node(from), let b = node(to) else { return 0 }
+        return a.position.distance(to: b.position) * Self.costPerLength
+    }
+
+    /// Düşman akışı altındaki evler (bağlı karşıt yol var).
+    public func isUnderAttack(_ id: Int) -> Bool {
+        guard let target = node(id) else { return false }
+        return links.contains { $0.to == id && $0.state == .connected && $0.owner != target.owner }
+    }
 
     public init(nodes: [PawNode], miceLevel: Double, seed: UInt64 = 1, speed: Double = 1) {
         self.nodes = nodes
@@ -243,12 +279,23 @@ public struct PawColonyGame: Codable, Sendable, Equatable {
             let opposing = links.contains { $0.from == links[i].to && $0.to == links[i].from && $0.owner != links[i].owner && $0.state != .retracting }
             if !opposing { links[i].state = .extending }
         }
-        if miceLevel > 0 { thinkMice(dt) }
+        if miceLevel > 0 {
+            // Uyarı süresi dolan fare yolları açılır
+            for i in micePlans.indices { micePlans[i].delay -= dt }
+            let due = micePlans.filter { $0.delay <= 0 }
+            for plan in due {
+                link(from: plan.from, to: plan.to, owner: .mice)
+            }
+            let mouseHouses = Set(nodes.filter { $0.owner == .mice }.map(\.id))
+            micePlans.removeAll { $0.delay <= 0 || !mouseHouses.contains($0.from) }
+            thinkMice(dt)
+        }
         updateStatus()
     }
 
     private mutating func deliver(_ amount: Double, from owner: PawOwner, to target: Int) {
         guard amount > 0, let index = nodes.firstIndex(where: { $0.id == target }) else { return }
+        transfers[target, default: 0] += nodes[index].owner == owner ? amount : -amount
         if nodes[index].owner == owner {
             nodes[index].count = min(nodes[index].capacity, nodes[index].count + amount)
             return
@@ -294,7 +341,8 @@ public struct PawColonyGame: Codable, Sendable, Equatable {
                 cut(linkID: weakest.id, at: 0.5, owner: .mice)
                 continue
             }
-            guard out.count < source.maxLinks, source.count > 12 - miceLevel * 4 else { continue }
+            guard out.count < source.maxLinks, source.count > 12 - miceLevel * 4,
+                  !micePlans.contains(where: { $0.from == source.id }) else { continue }
             let targets = nodes.filter { target in target.id != source.id && !out.contains { $0.to == target.id } }
             let scored = targets.map { target -> (PawNode, Double) in
                 let distance = source.position.distance(to: target.position)
@@ -315,7 +363,7 @@ public struct PawColonyGame: Codable, Sendable, Equatable {
                 return (target, score)
             }
             if let best = scored.max(by: { $0.1 < $1.1 }), best.1 > -20, Double.random(in: 0..<1, using: &random) < 0.4 + miceLevel * 0.6 {
-                link(from: source.id, to: best.0.id, owner: .mice)
+                micePlans.append(MicePlan(from: source.id, to: best.0.id, delay: Self.miceWarning))
             }
         }
     }

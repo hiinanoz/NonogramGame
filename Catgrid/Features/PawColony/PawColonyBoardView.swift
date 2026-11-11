@@ -31,8 +31,8 @@ enum PawColors {
 /// Kendi evinden başka bir eve sürüklemek yol açar; boş yerden bir yolun üstünden kaydırmak keser.
 struct PawColonyBoardView: View {
     let viewModel: PawColonyGameViewModel
-    /// İlk bölümde gösterilen sürükleme (kaynak ve hedef ev).
-    var guide: (from: Int, to: Int)?
+    /// Öğreticide elin gösterdiği hareket.
+    var guide: PawGuide?
 
     var body: some View {
         GeometryReader { proxy in
@@ -48,7 +48,9 @@ struct PawColonyBoardView: View {
                 .allowsHitTesting(false)
                 ForEach(game.nodes) { node in
                     PawHouseView(node: node, links: game.outgoing(from: node.id).count,
-                                 isSelected: viewModel.dragFrom == node.id)
+                                 isSelected: viewModel.dragFrom == node.id,
+                                 isUnderAttack: game.isUnderAttack(node.id),
+                                 isAlert: viewModel.alertNodes.contains(node.id))
                         .position(point(node.position, size))
                         .accessibilityElement()
                         .accessibilityLabel(label(for: node))
@@ -68,13 +70,33 @@ struct PawColonyBoardView: View {
                     }
                 }
                 // Sürüklerken hedef evin üstünde: alabilir mi?
+                ForEach(viewModel.cuts) { cut in
+                    PawCutView().position(point(cut.point, size))
+                }
                 if let hover = viewModel.dragOutlook, let node = game.node(hover.target) {
-                    PawOutlookBadge(outlook: hover.outlook)
+                    PawOutlookBadge(outlook: hover.outlook, cost: viewModel.dragCost)
                         .position(x: point(node.position, size).x, y: point(node.position, size).y - 58)
                         .allowsHitTesting(false)
                 }
-                if let guide, let a = game.node(guide.from), let b = game.node(guide.to) {
-                    PawGuideHand(from: point(a.position, size), to: point(b.position, size))
+                switch guide {
+                case .drag(let from, let to):
+                    if let a = game.node(from), let b = game.node(to) {
+                        PawGuideHand(from: point(a.position, size), to: point(b.position, size))
+                            .id("drag-\(from)-\(to)")
+                    }
+                case .cut(let linkID):
+                    // El, yolun ortasından dik geçer
+                    if let link = game.links.first(where: { $0.id == linkID }), let a = game.node(link.from), let b = game.node(link.to) {
+                        let start = point(a.position, size), end = point(b.position, size)
+                        let mid = CGPoint(x: (start.x + end.x) / 2, y: (start.y + end.y) / 2)
+                        let length = max(hypot(end.x - start.x, end.y - start.y), 1)
+                        let normal = CGPoint(x: -(end.y - start.y) / length * 46, y: (end.x - start.x) / length * 46)
+                        PawGuideHand(from: CGPoint(x: mid.x - normal.x, y: mid.y - normal.y),
+                                     to: CGPoint(x: mid.x + normal.x, y: mid.y + normal.y))
+                            .id("cut-\(linkID)")
+                    }
+                case nil:
+                    EmptyView()
                 }
             }
             .contentShape(Rectangle())
@@ -125,9 +147,17 @@ struct PawColonyBoardView: View {
             context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 6, lineCap: .round))
             // Akan kediler: yol boyunca kayan beyaz patiler (kesik çizgi)
             if link.state == .connected {
-                let offset = CGFloat(-phase * 40).truncatingRemainder(dividingBy: 18)
-                context.stroke(path, with: .color(.white.opacity(0.85)),
-                               style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [3, 15], dashPhase: offset))
+                // Yolda yürüyen patiler
+                let distance = hypot(tip.x - start.x, tip.y - start.y)
+                let gap: CGFloat = 22
+                let shift = CGFloat(phase * 34).truncatingRemainder(dividingBy: gap)
+                let paw = context.resolve(Text(Image(systemName: "pawprint.fill")).font(.system(size: 9, weight: .bold)).foregroundColor(.white))
+                var travelled = shift
+                while travelled < distance - 4 {
+                    let t = travelled / max(distance, 1)
+                    context.draw(paw, at: CGPoint(x: start.x + (tip.x - start.x) * t, y: start.y + (tip.y - start.y) * t))
+                    travelled += gap
+                }
             }
             // Yolun ucu: küçük yumak
             context.fill(Path(ellipseIn: CGRect(x: tip.x - 6, y: tip.y - 6, width: 12, height: 12)), with: .color(color))
@@ -139,7 +169,10 @@ struct PawColonyBoardView: View {
             var path = Path()
             path.move(to: point(node.position, size))
             path.addLine(to: point(finger, size))
-            context.stroke(path, with: .color(PawColors.cats.opacity(0.7)), style: StrokeStyle(lineWidth: 5, lineCap: .round, dash: [8, 8]))
+            // Açılamayacak yol kırmızı
+            let blocked = viewModel.dragOutlook?.outlook == .cannot
+            context.stroke(path, with: .color((blocked ? Color(hex: "#E5484D") : PawColors.cats).opacity(0.8)),
+                           style: StrokeStyle(lineWidth: 5, lineCap: .round, dash: [8, 8]))
         }
         if viewModel.cutTrail.count > 1 {
             var path = Path()
@@ -155,11 +188,24 @@ struct PawHouseView: View {
     let node: PawNode
     let links: Int
     var isSelected = false
+    /// Düşman akışı altında: çerçeve kırmızı yanıp söner.
+    var isUnderAttack = false
+    /// Fareler bu evden yol açmak üzere: ev titrer.
+    var isAlert = false
+    @State private var flash = false
 
     var body: some View {
         let size: CGFloat = node.count >= 40 ? 70 : (node.count >= 15 ? 60 : 52)
         VStack(spacing: 2) {
             ZStack(alignment: .top) {
+                // Doluluk halkası: evin gücü (100 üzerinden)
+                Circle()
+                    .trim(from: 0, to: min(node.count / node.capacity, 1))
+                    .stroke(isUnderAttack && flash ? Color(hex: "#E5484D") : PawColors.deep(node.owner).opacity(0.75),
+                            style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .frame(width: size * 1.32, height: size * 1.32)
+                    .offset(y: -size * 0.12)
                 // Gövde
                 RoundedRectangle(cornerRadius: size * 0.18, style: .continuous)
                     .fill(PawColors.fill(node.owner))
@@ -178,6 +224,7 @@ struct PawHouseView: View {
             .frame(width: size, height: size)
             .shadow(color: isSelected ? Gold.bright : .black.opacity(0.2), radius: isSelected ? 10 : 3, y: 2)
             .scaleEffect(isSelected ? 1.08 : 1)
+            .rotationEffect(.degrees(isAlert ? (flash ? 5 : -5) : 0))
             if node.owner != .neutral {
                 HStack(spacing: 3) {
                     ForEach(0..<node.maxLinks, id: \.self) { index in
@@ -191,6 +238,9 @@ struct PawHouseView: View {
         }
         .animation(.spring(response: 0.35), value: node.owner)
         .animation(.spring(response: 0.25), value: isSelected)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.22).repeatForever(autoreverses: true)) { flash = true }
+        }
     }
 
     @ViewBuilder
@@ -336,6 +386,8 @@ struct PawBurstView: View {
 /// Sürüklenen yolun hedefi için kısa tahmin.
 struct PawOutlookBadge: View {
     let outlook: PawColonyGame.LinkOutlook
+    /// Yolun kedi maliyeti.
+    var cost: Int?
 
     var body: some View {
         let (symbol, text, color): (String, LocalizedStringResource, Color) = switch outlook {
@@ -344,7 +396,17 @@ struct PawOutlookBadge: View {
         case .cannot: ("xmark.circle.fill", "Not enough cats", Color(hex: "#E5484D"))
         case .reinforce: ("heart.fill", "Send help", Color(hex: "#3D9BE9"))
         }
-        Label { Text(text) } icon: { Image(systemName: symbol) }
+        Label {
+            HStack(spacing: 4) {
+                Text(text)
+                if let cost, outlook != .cannot {
+                    Text(verbatim: "−\(cost)")
+                    Image(systemName: "cat.fill")
+                }
+            }
+        } icon: {
+            Image(systemName: symbol)
+        }
             .font(.caption.weight(.heavy))
             .foregroundStyle(.white)
             .padding(.horizontal, 10)
@@ -352,5 +414,30 @@ struct PawOutlookBadge: View {
             .background(Capsule().fill(color))
             .shadow(color: .black.opacity(0.2), radius: 3, y: 2)
             .fixedSize()
+    }
+}
+
+/// Öğreticide elin gösterdiği hareket.
+enum PawGuide: Equatable {
+    /// Bir evden diğerine sürükle.
+    case drag(from: Int, to: Int)
+    /// Yolun üstünden kaydırıp kes.
+    case cut(link: Int)
+}
+
+/// Kesilen noktada kısa süre görünen makas.
+struct PawCutView: View {
+    @State private var fade = false
+
+    var body: some View {
+        Image(systemName: "scissors")
+            .font(.system(size: 26, weight: .heavy))
+            .foregroundStyle(.white)
+            .shadow(color: .black.opacity(0.4), radius: 2)
+            .scaleEffect(fade ? 1.5 : 0.8)
+            .opacity(fade ? 0 : 1)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+            .onAppear { withAnimation(.easeOut(duration: 0.6)) { fade = true } }
     }
 }

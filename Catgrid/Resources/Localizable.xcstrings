@@ -33216,6 +33216,236 @@
           }
         }
       }
+    },
+    "Win a house, then drag from your big house to the small one to send help.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir ev kazan, sonra büyük evinden küçük evine sürükleyip destek gönder."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "家を手に入れたら、大きな家から小さな家へなぞって応援を送ろう。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gewinn ein Haus, dann zieh von deinem großen Haus zum kleinen, um Hilfe zu schicken."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gagne une maison, puis glisse de ta grande maison vers la petite pour l'aider."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gana una casa y luego arrastra de tu casa grande a la pequeña para enviar ayuda."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conquiste uma casa e depois arraste da casa grande para a pequena para mandar ajuda."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "집을 하나 차지한 뒤, 큰 집에서 작은 집으로 끌어 지원을 보내요."
+          }
+        }
+      }
+    },
+    "Well done! Cutting sends the cats on the path straight ahead.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aferin! Kesince yoldaki kediler doğrudan ileri gider."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "いいね！切ると、道の上の猫たちがまっすぐ前へ進むよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gut gemacht! Beim Kappen laufen die Katzen auf dem Weg direkt nach vorn."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bravo ! Couper envoie les chats du chemin droit devant."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Bien hecho! Al cortar, los gatos del camino siguen hacia delante."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muito bem! Cortar manda os gatos do caminho direto para a frente."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잘했어요! 자르면 길 위의 고양이들이 곧장 앞으로 가요."
+          }
+        }
+      }
+    },
+    "Swipe across your path to cut it: the cats rush forward.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yolunun üstünden kaydırıp kes: kediler ileri atılır."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自分の道をなぞって切ろう。猫たちが前へ飛び出すよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wisch über deinen Weg, um ihn zu kappen: Die Katzen stürmen vor."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Glisse sur ton chemin pour le couper : les chats foncent."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desliza sobre tu camino para cortarlo: los gatos se lanzan."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deslize sobre seu caminho para cortá-lo: os gatos avançam."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "내 길 위를 그어 잘라요. 고양이들이 앞으로 달려가요."
+          }
+        }
+      }
+    },
+    "Mice! Win their houses too. A mouse house wiggles before it attacks.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fareler! Onların evlerini de kazan. Fare evi saldırmadan önce titrer."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ネズミだ！ネズミの家も取り返そう。ネズミの家は攻める前にゆれるよ。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mäuse! Gewinn auch ihre Häuser. Ein Mäusehaus wackelt, bevor es angreift."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des souris ! Gagne aussi leurs maisons. Une maison de souris tremble avant d'attaquer."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Ratones! Gana también sus casas. Una casa de ratones se mueve antes de atacar."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ratos! Conquiste as casas deles também. A casa dos ratos treme antes de atacar."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "생쥐다! 생쥐 집도 차지해요. 생쥐 집은 공격하기 전에 흔들려요."
+          }
+        }
+      }
+    },
+    "Game speed": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oyun hızı"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲームの速さ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spieltempo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vitesse du jeu"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velocidad del juego"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velocidade do jogo"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "게임 속도"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

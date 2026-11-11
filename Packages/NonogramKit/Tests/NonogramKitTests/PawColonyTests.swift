@@ -73,7 +73,7 @@ final class PawColonyTests: XCTestCase {
         let house = PawNode(id: 2, position: PawPoint(x: 0.5, y: 0.1), owner: .neutral, count: 50)
         var game = PawColonyGame(nodes: [cat, house], miceLevel: 0)
         game.link(from: 1, to: 2)
-        game.advance(2.4)
+        game.advance(2.8)
         XCTAssertEqual(game.links.first?.state, .connected)
         let before = game.node(2)!.count
         game.cut(linkID: game.links[0].id, at: 0.0)

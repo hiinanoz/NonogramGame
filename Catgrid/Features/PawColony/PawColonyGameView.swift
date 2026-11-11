@@ -15,6 +15,7 @@ struct PawColonyGameScreen: View {
     @State private var isPaused = false
     @State private var isShowingStory = false
     @State private var isShowingRules = false
+    @State private var ticker = PawTicker()
     @State private var result: PawColonyGame.Status?
 
     init(levelNumber: Int, saved: PawColonySavedGame? = nil) {
@@ -75,19 +76,12 @@ struct PawColonyGameScreen: View {
         .onChange(of: isPaused) { _, _ in updatePause() }
         .onChange(of: isShowingStory) { _, _ in updatePause() }
         .onChange(of: isShowingRules) { _, _ in updatePause() }
-        .task {
+        .onAppear {
             updatePause()
-            // Oyun saati: ekran kareleriyle ilerler
-            let clock = ContinuousClock()
-            var last = clock.now
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .milliseconds(33))
-                let now = clock.now
-                let elapsed = last.duration(to: now)
-                last = now
-                viewModel.tick(Double(elapsed.components.seconds) + Double(elapsed.components.attoseconds) / 1e18)
-            }
+            // Oyun saati ekran yenilemesine bağlı
+            ticker.start { dt in viewModel.tick(dt) }
         }
+        .onDisappear { ticker.stop() }
     }
 
     private func updatePause() {
@@ -99,23 +93,51 @@ struct PawColonyGameScreen: View {
             .overlay(theme.isDark ? Color.black.opacity(0.45) : Color.clear)
     }
 
-    /// İlk bölümlerde tek cümlelik ipucu.
+    /// İlk bölümlerde tek cümlelik ipucu: her bölüm tek bir şey öğretir (yol aç, destek gönder, kes).
     private var tip: LocalizedStringResource? {
         guard result == nil else { return nil }
         switch levelNumber {
         case 1: return viewModel.game.links.isEmpty ? "Drag from your cat house to the empty house." : "Cats walk along the yarn. Win the house!"
-        case 2: return "Bigger houses can open more paths (the dots under a house)."
-        case 4: return "Mice! Win their houses too. Swipe across your path to cut it: the cats rush forward."
+        case 2: return viewModel.didReinforce
+            ? "Bigger houses can open more paths (the dots under a house)."
+            : "Win a house, then drag from your big house to the small one to send help."
+        case 3: return viewModel.didCut ? "Well done! Cutting sends the cats on the path straight ahead." : "Swipe across your path to cut it: the cats rush forward."
+        case 4: return "Mice! Win their houses too. A mouse house wiggles before it attacks."
         default: return nil
         }
     }
 
-    /// 1. bölümde, henüz yol yokken: el kedi evinden sahipsiz eve sürükler.
-    private var guide: (from: Int, to: Int)? {
-        guard levelNumber == 1, viewModel.game.links.isEmpty, result == nil,
-              let cat = viewModel.game.nodes.first(where: { $0.owner == .cats }),
-              let target = viewModel.game.nodes.first(where: { $0.owner == .neutral }) else { return nil }
-        return (cat.id, target.id)
+    /// Öğretici eli: 1. bölümde ilk yol, 2. bölümde destek, 3. bölümde kesme (oyuncu yapana kadar).
+    private var guide: PawGuide? {
+        guard result == nil, !isShowingStory, !isShowingRules else { return nil }
+        let game = viewModel.game
+        let cats = game.nodes.filter { $0.owner == .cats }
+        switch levelNumber {
+        case 1:
+            guard game.links.isEmpty, let cat = cats.first, let target = game.nodes.first(where: { $0.owner == .neutral }) else { return nil }
+            return .drag(from: cat.id, to: target.id)
+        case 2:
+            guard !viewModel.didReinforce else { return nil }
+            if cats.count >= 2, let big = cats.max(by: { $0.count < $1.count }), let small = cats.min(by: { $0.count < $1.count }),
+               game.canLink(from: big.id, to: small.id) {
+                return .drag(from: big.id, to: small.id)
+            }
+            if game.links.isEmpty, let cat = cats.first,
+               let target = game.nodes.filter({ $0.owner == .neutral }).min(by: { $0.position.distance(to: cat.position) < $1.position.distance(to: cat.position) }) {
+                return .drag(from: cat.id, to: target.id)
+            }
+            return nil
+        case 3:
+            guard !viewModel.didCut else { return nil }
+            if let link = game.links.first(where: { $0.owner == .cats && $0.state == .connected }) { return .cut(link: link.id) }
+            if game.links.isEmpty, let cat = cats.first,
+               let target = game.nodes.filter({ $0.owner == .neutral }).max(by: { $0.count < $1.count }) {
+                return .drag(from: cat.id, to: target.id)
+            }
+            return nil
+        default:
+            return nil
+        }
     }
 
     private var topBar: some View {
@@ -147,6 +169,20 @@ struct PawColonyGameScreen: View {
             .padding(.horizontal, 10)
             .frame(height: 38)
             .background(Capsule().fill(theme.surface.opacity(0.95)))
+            Button {
+                Haptics.selection()
+                viewModel.speedMultiplier = viewModel.speedMultiplier == 1 ? 2 : 1
+            } label: {
+                Text(verbatim: viewModel.speedMultiplier == 1 ? "1×" : "2×")
+                    .font(.subheadline.weight(.heavy).monospacedDigit())
+                    .foregroundStyle(viewModel.speedMultiplier == 1 ? theme.textPrimary : .white)
+                    .frame(width: 38, height: 38)
+                    .background(Circle().fill(viewModel.speedMultiplier == 1 ? theme.surface.opacity(0.95) : PawColors.cats))
+            }
+            .buttonStyle(PressableButtonStyle())
+            .accessibilityLabel(Text("Game speed"))
+            .accessibilityValue(Text(verbatim: viewModel.speedMultiplier == 1 ? "1×" : "2×"))
+            .accessibilityIdentifier("paw.speed")
             BirdSortRoundButton(symbol: "questionmark") {
                 guard result == nil else { return }
                 withAnimation { isShowingRules = true }
@@ -211,7 +247,10 @@ struct PawColonyGameScreen: View {
             audio.play(.tap)
             Haptics.selection()
         }
-        viewModel.onCut = { audio.play(.erase) }
+        viewModel.onCut = {
+            audio.play(.erase)
+            Haptics.play(.mistake)
+        }
         viewModel.onCapture = { owner in
             if owner == .cats {
                 audio.play(.meow)
@@ -537,6 +576,41 @@ struct PawRuleScene: View {
                     EmptyView()
                 }
             }
+        }
+    }
+}
+
+/// Ekran yenilemesiyle eşzamanlı oyun saati (CADisplayLink).
+@MainActor
+final class PawTicker {
+    private var link: CADisplayLink?
+    private var proxy: Proxy?
+
+    func start(_ onTick: @escaping @MainActor (Double) -> Void) {
+        stop()
+        let proxy = Proxy(onTick)
+        let link = CADisplayLink(target: proxy, selector: #selector(Proxy.step(_:)))
+        link.add(to: .main, forMode: .common)
+        self.proxy = proxy
+        self.link = link
+    }
+
+    func stop() {
+        link?.invalidate()
+        link = nil
+        proxy = nil
+    }
+
+    private final class Proxy: NSObject {
+        let onTick: @MainActor (Double) -> Void
+        private var last: CFTimeInterval?
+
+        init(_ onTick: @escaping @MainActor (Double) -> Void) { self.onTick = onTick }
+
+        @MainActor @objc func step(_ link: CADisplayLink) {
+            defer { last = link.timestamp }
+            guard let last else { return }
+            onTick(link.timestamp - last)
         }
     }
 }
