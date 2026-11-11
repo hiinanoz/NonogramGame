@@ -158,7 +158,7 @@ struct HomeView: View {
         let entries = entries
         return VStack(spacing: 10) {
             if let last = entries.first(where: { $0.style.key == lastMode }) {
-                ContinueCard(style: last.style, title: last.title, caption: last.caption) {
+                HomeContinueCard(style: last.style, title: last.title, caption: last.caption) {
                     open(last, resume: true)
                 }
                 .accessibilityIdentifier("home.continue")
@@ -455,7 +455,7 @@ struct ModeCard<Caption: View>: View {
 
 /// Oyun kartlarının altındaki kısa ilerleme şeridi: günlük seri, toplanan tür, son Kedi Bulmaca bölümü.
 /// "Devam et": en son oynanan mod, kaldığı yerden tek dokunuşla.
-struct ContinueCard: View {
+struct HomeContinueCard: View {
     @Environment(\.appTheme) private var theme
     let style: ModeStyle
     let title: LocalizedStringKey
