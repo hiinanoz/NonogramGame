@@ -18,17 +18,12 @@ struct HomeView: View {
     @State private var topInset: CGFloat = HomeView.windowTopInset
 
     var body: some View {
-        // Ekrana sığan ilk düzen seçilir: önce rahat, sonra sıkı, sonra daha da sıkı (kartlar ve
-        // üst çizim biraz daha kısa); o da sığmazsa (çok küçük ekran ya da büyük yazı) kaydırılabilir.
-        ViewThatFits(in: .vertical) {
-            content(compact: false)
+        // Tek, kaydırılabilir düzen: üstte "Devam et", altında iki sütunlu mod ızgarası
+        ScrollView {
             content(compact: true)
-            content(compact: true, tight: true)
-            ScrollView {
-                content(compact: true, tight: true)
-            }
-            .scrollBounceBehavior(.basedOnSize)
         }
+        .scrollBounceBehavior(.basedOnSize)
+        .scrollIndicators(.hidden)
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { measured in
             // Ölçüm 0 gelirse pencerenin güvenli alanı kullanılır
             topInset = max(measured, Self.windowTopInset)
@@ -103,126 +98,86 @@ struct HomeView: View {
         .padding(.bottom, compact ? 6 : 12)
     }
 
-    /// Kedi Bulmaca öne çıkar: üstte tam genişlikte büyük kart, altında Günlük Bulmaca ve
-    /// Kart Koleksiyonu yan yana, en altta Miyav Crush ve Miyav Sort yan yana; hepsi aynı yükseklikte.
-    private func modeCards(compact: Bool, tight: Bool = false) -> some View {
-        // Bütün oyun kartları aynı yükseklikte (Kedi Bulmaca kartının boyu)
-        let cardHeight: CGFloat = tight ? 124 : (compact ? 140 : 168)
-        let streak = model.dailyStreak
-        let collected = model.collectedBreeds.count
+    /// En son oynanan mod (ana sayfadaki "Devam et" kartı için).
+    @AppStorage("home.lastMode") private var lastMode = ""
+
+    private struct ModeEntry: Identifiable {
+        let style: ModeStyle
+        let title: LocalizedStringKey
+        let caption: Text
+        let identifier: String
+        /// Mod sayfası ve (varsa) doğrudan kalınan bölüm.
+        let hub: Route
+        var resume: Route?
+        var isNew = false
+        /// Bugün yapılacak bir şey var (günlük bulmaca çözülmedi).
+        var hasDot = false
+        var id: String { style.key }
+    }
+
+    private var entries: [ModeEntry] {
         let cats = model.cats
         let crush = model.crush
-        let birds = model.birds
+        let catIndex = min(cats.solvedCount, max(cats.levels.count - 1, 0))
+        let streak = model.dailyStreak
+        return [
+            ModeEntry(style: .cats, title: "Cat Puzzle", caption: Text("Level \(catIndex + 1)"), identifier: "home.mode.cats",
+                      hub: .catHub, resume: cats.levels.indices.contains(catIndex) ? .catGame(levelID: cats.levels[catIndex].id) : nil),
+            ModeEntry(style: .daily, title: "Daily Puzzle",
+                      caption: model.isTodaysPuzzleSolved ? Text("Solved! A new one tomorrow.")
+                          : (streak > 0 ? Text("\(streak)-day streak") : Text("Today's nonogram")),
+                      identifier: "home.daily", hub: .daily, hasDot: !model.isTodaysPuzzleSolved),
+            ModeEntry(style: .collection, title: "Card Collection",
+                      caption: Text("\(model.collectedBreeds.count)/\(model.breeds.count) breeds"),
+                      identifier: "home.mode.collection", hub: .collectionHub),
+            ModeEntry(style: .crush, title: "Meow Crush",
+                      caption: Text("Level \(crush.currentLevel.map { crush.number(of: $0) } ?? crush.levels.count)"),
+                      identifier: "home.mode.crush", hub: .crushHub),
+            ModeEntry(style: .sort, title: "Meow Sort", caption: Text("Level \(model.birds.currentLevel)"),
+                      identifier: "home.mode.birds", hub: .birdHub, resume: .birdGame(level: model.birds.currentLevel)),
+            ModeEntry(style: .block, title: "Cat Block", caption: Text("Best \(model.blocks.bestScore)"),
+                      identifier: "home.mode.block", hub: .blockHub),
+            ModeEntry(style: .taxi, title: "Yarn Taxi", caption: Text("Level \(model.taxi.currentLevel)"),
+                      identifier: "home.mode.taxi", hub: .taxiHub, resume: .taxiGame(level: model.taxi.currentLevel),
+                      isNew: model.taxi.completedCount == 0),
+            ModeEntry(style: .colony, title: "Paw Colony", caption: Text("Level \(model.colony.currentLevel)"),
+                      identifier: "home.mode.colony", hub: .colonyHub, resume: .colonyGame(level: model.colony.currentLevel),
+                      isNew: model.colony.completedCount == 0),
+        ]
+    }
+
+    private func open(_ entry: ModeEntry, resume: Bool = false) {
+        lastMode = entry.style.key
+        router.push(entry.hub)
+        // "Devam et": mod sayfasının üstüne kalınan bölüm açılır (geri tuşu mod sayfasına döner)
+        if resume, let route = entry.resume { router.push(route) }
+    }
+
+    /// Üstte en son oynanan mod için "Devam et" kartı, altında sekiz mod iki sütunda.
+    private func modeCards(compact: Bool, tight: Bool = false) -> some View {
+        let entries = entries
         return VStack(spacing: 10) {
-            FeaturedModeCard(style: .cats, title: "Cat Puzzle", subtitle: Text("One cat per color, row and column"), compact: compact) {
-                Text("Level \(min(cats.solvedCount + 1, max(cats.levels.count, 1)))")
-            } action: {
-                router.push(.catHub)
-            }
-            .frame(height: cardHeight)
-            .accessibilityIdentifier("home.mode.cats")
-
-            HStack(spacing: 10) {
-                ModeCard(style: .daily, title: "Daily Puzzle", compact: compact, tight: tight) {
-                    if model.isTodaysPuzzleSolved {
-                        Text("Solved! A new one tomorrow.")
-                    } else if streak > 0 {
-                        Text("\(streak)-day streak")
-                    } else {
-                        Text("Today's nonogram")
-                    }
-                } action: {
-                    router.push(.daily)
+            if let last = entries.first(where: { $0.style.key == lastMode }) {
+                ContinueCard(style: last.style, title: last.title, caption: last.caption) {
+                    open(last, resume: true)
                 }
-                .accessibilityIdentifier("home.daily")
-
-                ModeCard(style: .collection, title: "Card Collection", compact: compact, tight: tight) {
-                    Text("\(collected)/\(model.breeds.count) breeds")
-                } action: {
-                    router.push(.collectionHub)
-                }
-                .accessibilityIdentifier("home.mode.collection")
+                .accessibilityIdentifier("home.continue")
             }
-            .frame(height: cardHeight)
-
-            // Miyav Crush ve Miyav Sort: Günlük ve Koleksiyon kartlarının altında, aynı boyda
-            HStack(spacing: 10) {
-                ModeCard(style: .crush, title: "Meow Crush", compact: compact, tight: tight) {
-                    HStack(spacing: 3) {
-                        if let level = crush.currentLevel {
-                            Text("Level \(crush.number(of: level))")
+            // Tembel ızgara değil: bütün kartlar hep hazır (kaydırınca gecikme olmaz)
+            ForEach(Array(stride(from: 0, to: entries.count, by: 2)), id: \.self) { row in
+                HStack(spacing: 10) {
+                    ForEach(entries[row..<min(row + 2, entries.count)]) { entry in
+                        ModeCard(style: entry.style, title: entry.title, compact: true, tight: true,
+                                 isNew: entry.isNew, hasDot: entry.hasDot) {
+                            entry.caption
+                        } action: {
+                            open(entry)
                         }
-                        Text(verbatim: "·")
-                        Image(systemName: "heart.fill")
-                            .foregroundStyle(Color(hex: "#F0506E"))
-                        if store.isPremium {
-                            Text(verbatim: "∞")
-                        } else {
-                            Text(verbatim: "\(crush.livesCount())")
-                        }
+                        .accessibilityIdentifier(entry.identifier)
                     }
-                } action: {
-                    router.push(.crushHub)
                 }
-                .accessibilityIdentifier("home.mode.crush")
-
-                ModeCard(style: .sort, title: "Meow Sort", compact: compact, tight: tight) {
-                    HStack(spacing: 3) {
-                        Text("Level \(birds.currentLevel)")
-                        Text(verbatim: "·")
-                        Image(systemName: "star.fill")
-                            .foregroundStyle(Gold.mid)
-                        Text(verbatim: "\(birds.totalStars)")
-                    }
-                } action: {
-                    router.push(.birdHub)
-                }
-                .accessibilityIdentifier("home.mode.birds")
+                .frame(height: 132)
             }
-            .frame(height: cardHeight)
-
-            // Kedi Kutusu ve Yumak Taksi: en altta, aynı boyda
-            HStack(spacing: 10) {
-                ModeCard(style: .block, title: "Cat Block", compact: compact, tight: tight) {
-                    HStack(spacing: 3) {
-                        Image(systemName: "crown.fill")
-                            .foregroundStyle(Gold.mid)
-                        Text("Best \(model.blocks.bestScore)")
-                    }
-                } action: {
-                    router.push(.blockHub)
-                }
-                .accessibilityIdentifier("home.mode.block")
-
-                ModeCard(style: .taxi, title: "Yarn Taxi", compact: compact, tight: tight) {
-                    HStack(spacing: 3) {
-                        Text("Level \(model.taxi.currentLevel)")
-                        Text(verbatim: "·")
-                        Image(systemName: "star.fill")
-                            .foregroundStyle(Gold.mid)
-                        Text(verbatim: "\(model.taxi.totalStars)")
-                    }
-                } action: {
-                    router.push(.taxiHub)
-                }
-                .accessibilityIdentifier("home.mode.taxi")
-            }
-            .frame(height: cardHeight)
-
-            // Pati Kolonisi: en altta, tam genişlik
-            ModeCard(style: .colony, title: "Paw Colony", compact: compact, tight: tight) {
-                HStack(spacing: 3) {
-                    Text("Level \(model.colony.currentLevel)")
-                    Text(verbatim: "·")
-                    Image(systemName: "star.fill")
-                        .foregroundStyle(Gold.mid)
-                    Text(verbatim: "\(model.colony.totalStars)")
-                }
-            } action: {
-                router.push(.colonyHub)
-            }
-            .frame(height: cardHeight)
-            .accessibilityIdentifier("home.mode.colony")
         }
     }
 
@@ -419,6 +374,10 @@ struct ModeCard<Caption: View>: View {
     var compact = false
     /// Sıkı düzen: çizim biraz daha alçak.
     var tight = false
+    /// Henüz oynanmamış yeni mod: köşede "YENİ" etiketi.
+    var isNew = false
+    /// Bugün yapılacak bir şey var: ikonun köşesinde kırmızı nokta.
+    var hasDot = false
     @ViewBuilder let caption: () -> Caption
     let action: () -> Void
 
@@ -442,6 +401,23 @@ struct ModeCard<Caption: View>: View {
                 .frame(height: tight ? 50 : (compact ? 62 : 80))
                 .overlay(alignment: .topLeading) {
                     ModeIcon(style: style, size: compact ? 28 : 32)
+                        .overlay(alignment: .topTrailing) {
+                            if hasDot {
+                                Circle().fill(Color(hex: "#E5484D")).frame(width: 10, height: 10)
+                                    .overlay(Circle().stroke(.white, lineWidth: 1.5))
+                                    .offset(x: 3, y: -3)
+                            }
+                        }
+                }
+                .overlay(alignment: .topTrailing) {
+                    if isNew {
+                        Text("NEW")
+                            .font(.caption2.weight(.heavy))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(Capsule().fill(Color(hex: "#E5484D")))
+                    }
                 }
                 Spacer(minLength: 0)
                 Text(title)
@@ -478,6 +454,53 @@ struct ModeCard<Caption: View>: View {
 }
 
 /// Oyun kartlarının altındaki kısa ilerleme şeridi: günlük seri, toplanan tür, son Kedi Bulmaca bölümü.
+/// "Devam et": en son oynanan mod, kaldığı yerden tek dokunuşla.
+struct ContinueCard: View {
+    @Environment(\.appTheme) private var theme
+    let style: ModeStyle
+    let title: LocalizedStringKey
+    let caption: Text
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                ModeIcon(style: style, size: 40)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Continue")
+                        .font(.caption.weight(.heavy))
+                        .textCase(.uppercase)
+                        .foregroundStyle(style.tint(theme))
+                    Text(title)
+                        .font(.title3.bold())
+                        .foregroundStyle(style.ink(theme))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    caption
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(style.ink(theme).opacity(0.85))
+                        .lineLimit(1)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "play.fill")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 46, height: 46)
+                    .background(Circle().fill(style.tint(theme)))
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity)
+            .background(RoundedRectangle(cornerRadius: 22, style: .continuous).fill(style.background(theme)))
+            .overlay(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .strokeBorder(style.tint(theme).opacity(0.45), lineWidth: 1.5)
+            )
+            .shadow(color: style.tint(theme).opacity(theme.isDark ? 0 : 0.2), radius: 8, y: 4)
+        }
+        .buttonStyle(PressableButtonStyle())
+    }
+}
+
 @MainActor
 struct HomeStatsStrip: View {
     @Environment(AppModel.self) private var model

@@ -13,6 +13,9 @@ enum ModeStyle: CaseIterable {
     case taxi
     case colony
 
+    /// Kayıt için sabit ad.
+    var key: String { String(describing: self) }
+
     /// İkon, ok ve ilerleme rengi.
     func tint(_ theme: AppTheme) -> Color {
         switch (self, theme.isDark) {
